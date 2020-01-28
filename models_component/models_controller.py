@@ -2,14 +2,14 @@ import os
 
 import pandas as pd
 
-from models_component.models.perceptron.perceptron_sgd import PerceptronSGD
+from models_component.models.perceptron.perceptron_sgd import PerceptronSGDUtils
 from models_component.utils.data_preprocessing import SonarDataPreprocessing
 
 
 class ModelController:
 
     def __init__(self):
-        self.perceptron_sgd = PerceptronSGD()
+        self.perceptron_sgd = PerceptronSGDUtils()
 
         self.data_preprocess = {'sonar_data': SonarDataPreprocessing()}
         self.data_source = {'sonar_data': os.path.join(os.getcwd() + '/models_component/data/sonar.all-data.csv')}
