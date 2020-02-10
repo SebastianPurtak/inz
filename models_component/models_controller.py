@@ -21,12 +21,13 @@ class ModelController:
         data = self.data_preprocess[data_name].run_preprocessing()
         return data
 
-    def run_model(self, model_name, model_config):
-        print('number of epoch: ', model_config['n_epoch'])
+    def run_model(self, config):
+        # print('number of epoch: ', model_config['n_epoch'])
 
-        data = self.get_data(model_config['data_name'])
+        data = self.get_data(config['data'])
 
-        model = getattr(self, model_name)
-        model.run(data)
+        model = getattr(self, config['model'])
+        results, metrics = model.run(data, config['model_config'])
 
         print()
+        return results, metrics
