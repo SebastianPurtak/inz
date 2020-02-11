@@ -1,5 +1,6 @@
 import random
 
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
@@ -50,14 +51,31 @@ class PerceptronSGDUtils:
     # metrics()
 
     # get_metrics()
-    def mean_error_sum(self, error_sum, real_result, prediction):
-        error = real_result - prediction
-        error_sum += error_sum**2
-        return error_sum
+    # def mean_error_sum(self, error_sum, error, N):
+    #     error_sum += error**2
+    #     # model_config['metrics']['MSE'].append(error_sum)
+    #     mean_error_square = error_sum / N
+    #
+    #     print('MSE = ', mean_error_square)
+    #
+    #     return error_sum, mean_error_square
+    #
+    # def get_metric(self, real_result, prediction, error_sum, model_config, N):
+    #     # error_sum = self.mean_error_sum(error_sum, real_result, prediction, model_config)
+    #
+    #     return error_sum
+    #
+    # def calculate_metrics(self, error_sum, error, N, model_config):
+    #     error_sum, mean_error_square = self.mean_error_sum(error_sum, error, N)
+    #
+    #     return error_sum
 
-    def get_metric(self, real_result, prediction, error_sum, model_config):
-        error_sum = self.mean_error_sum(error_sum, real_result, prediction)
-        return error_sum
+    def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
+        # metrics.append([[n_epoch, n_row, prediction, real_value, error]])
+        df2 = pd.DataFrame([[n_epoch, n_row, prediction, real_value, error]],
+                           columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
+        metrics = metrics.append(df2, ignore_index=True)
+        return metrics
 
     # METODY UCZĄCE I TESTOWE
 
@@ -97,22 +115,30 @@ class PerceptronSGDUtils:
         :return: metrics (dict)
         """
         print('Proces uczenia')
+        metrics = pd.DataFrame(columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
         for epoch in range(model_config['n_epoch']):
             error_sum = 0
+
 
             for idx, row in train_set.iterrows():
                 prediction = perceptron.predict(row[:-1])
                 error = row.iloc[-1] - prediction
                 error_sum += error ** 2
 
-                # error_sum = self.get_metric(row.iloc[-1], prediction, error_sum, model_config)
+                metrics = self.collect_metrics(epoch, idx, prediction, row.iloc[-1], error, metrics)
 
                 perceptron.weights[0] += model_config['l_rate'] * error
 
                 for idx, x in enumerate(row[:-1]):
                     perceptron.weights[idx + 1] += model_config['l_rate'] * error * x
 
+            # self.get_metric()
+            # mean_error_square = error_sum / len(train_set)
+            # model_config['metrics']['MSE'].append(mean_error_square)
             print('epoch: ', epoch, 'error: ', error_sum)
+
+        model_config['metrics']['data'] = metrics
+
 
 
     # WALIDACJA ZA POMOCĄ ZBIORU TESTOWEGO
