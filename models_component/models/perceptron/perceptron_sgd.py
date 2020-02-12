@@ -70,12 +70,31 @@ class PerceptronSGDUtils:
     #
     #     return error_sum
 
+    # def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
+    #     # metrics.append([[n_epoch, n_row, prediction, real_value, error]])
+    #     df2 = pd.DataFrame([[n_epoch, n_row, prediction, real_value, error]],
+    #                        columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
+    #     metrics = metrics.append(df2, ignore_index=True)
+    #     return metrics
+
     def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
-        # metrics.append([[n_epoch, n_row, prediction, real_value, error]])
-        df2 = pd.DataFrame([[n_epoch, n_row, prediction, real_value, error]],
-                           columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
-        metrics = metrics.append(df2, ignore_index=True)
+        metrics['n_epoch'].append(n_epoch)
+        metrics['n_row'].append(n_row)
+        metrics['prediction'].append(prediction)
+        metrics['real_value'].append(real_value)
+        metrics['error'].append(error)
+
+    def get_metrics(self, metrics_data, metrics, N):
+        metrics['n_epoch'] = metrics_data['n_epoch']
+        metrics['n_row'] = metrics_data['n_row']
+        metrics['prediction'] = metrics_data['prediction']
+        metrics['real_value'] = metrics_data['real_value']
+        metrics['error'] = metrics_data['error']
+        metrics['N'] = N
+
         return metrics
+
+
 
     # METODY UCZĄCE I TESTOWE
 
@@ -95,7 +114,7 @@ class PerceptronSGDUtils:
             prediction = perceptron.predict(row[:1])
 
             # wywołanie get_metrics
-            error = prediction - row.iloc[-1]
+            error = row.iloc[-1] - prediction
             error_sum += error**2
 
             print('row: ', idx, ', error: ', error, ', error_sum: ', error_sum)
@@ -125,17 +144,17 @@ class PerceptronSGDUtils:
                 error = row.iloc[-1] - prediction
                 error_sum += error ** 2
 
-                metrics = self.collect_metrics(epoch, idx, prediction, row.iloc[-1], error, metrics)
+                self.collect_metrics(epoch, idx, prediction, row.iloc[-1], error, model_config["metrics"])
 
                 perceptron.weights[0] += model_config['l_rate'] * error
 
                 for idx, x in enumerate(row[:-1]):
                     perceptron.weights[idx + 1] += model_config['l_rate'] * error * x
 
-            # self.get_metric()
-            # mean_error_square = error_sum / len(train_set)
-            # model_config['metrics']['MSE'].append(mean_error_square)
+
             print('epoch: ', epoch, 'error: ', error_sum)
+
+        metrics = self.get_metrics(model_config['metrics'], metrics, len(train_set))
 
         model_config['metrics']['data'] = metrics
 
