@@ -1,7 +1,8 @@
 import random
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.utils import shuffle
 
 
 class PerceptronSGDCore:
@@ -12,6 +13,7 @@ class PerceptronSGDCore:
         :param n_inputs:
         """
         self.weights = [random.uniform(0,1) for input in range(n_inputs + 1)]
+        # self.weights = [0 for input in range(n_inputs + 1)]
 
     def rectified_linear_activation_function(self, activation):
         """
@@ -48,34 +50,12 @@ class PerceptronSGDUtils:
 
     # GROMADZENIE METRYK
 
-    # metrics()
-
-    # get_metrics()
-    # def mean_error_sum(self, error_sum, error, N):
-    #     error_sum += error**2
-    #     # model_config['metrics']['MSE'].append(error_sum)
-    #     mean_error_square = error_sum / N
-    #
-    #     print('MSE = ', mean_error_square)
-    #
-    #     return error_sum, mean_error_square
-    #
-    # def get_metric(self, real_result, prediction, error_sum, model_config, N):
-    #     # error_sum = self.mean_error_sum(error_sum, real_result, prediction, model_config)
-    #
-    #     return error_sum
-    #
-    # def calculate_metrics(self, error_sum, error, N, model_config):
-    #     error_sum, mean_error_square = self.mean_error_sum(error_sum, error, N)
-    #
-    #     return error_sum
-
-    # def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
-    #     # metrics.append([[n_epoch, n_row, prediction, real_value, error]])
-    #     df2 = pd.DataFrame([[n_epoch, n_row, prediction, real_value, error]],
-    #                        columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
-    #     metrics = metrics.append(df2, ignore_index=True)
-    #     return metrics
+    def clear_metrics(self, metrics):
+        metrics['n_epoch'] = []
+        metrics['n_row'] = []
+        metrics['prediction'] = []
+        metrics['real_value'] = []
+        metrics['error'] = []
 
     def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
         metrics['n_epoch'].append(n_epoch)
@@ -85,6 +65,7 @@ class PerceptronSGDUtils:
         metrics['error'].append(error)
 
     def get_metrics(self, metrics_data, metrics, N):
+        # TODO: upewnić się czy to jest potrzebne
         metrics['n_epoch'] = metrics_data['n_epoch']
         metrics['n_row'] = metrics_data['n_row']
         metrics['prediction'] = metrics_data['prediction']
@@ -93,8 +74,6 @@ class PerceptronSGDUtils:
         metrics['N'] = N
 
         return metrics
-
-
 
     # METODY UCZĄCE I TESTOWE
 
@@ -108,6 +87,8 @@ class PerceptronSGDUtils:
         :param model_config: dict
         :return: metrics (dict)
         """
+        metrics = pd.DataFrame(columns=['n_row', 'prediction', 'real_value', 'error'])
+        self.clear_metrics(model_config['metrics'])
         error_sum = 0
 
         for idx, row in test_set.iterrows():
@@ -117,7 +98,13 @@ class PerceptronSGDUtils:
             error = row.iloc[-1] - prediction
             error_sum += error**2
 
+            self.collect_metrics(0, idx, prediction, row.iloc[-1], error, model_config["metrics"])
+
             print('row: ', idx, ', error: ', error, ', error_sum: ', error_sum)
+
+        metrics = self.get_metrics(model_config['metrics'], metrics, len(test_set))
+        # model_config['metrics']['data_test'] = metrics
+        model_config['metrics']['data_test'].append(metrics)
 
 
     # train()
@@ -155,8 +142,8 @@ class PerceptronSGDUtils:
             print('epoch: ', epoch, 'error: ', error_sum)
 
         metrics = self.get_metrics(model_config['metrics'], metrics, len(train_set))
-
-        model_config['metrics']['data'] = metrics
+        # model_config['metrics']['data_train'] = metrics
+        model_config['metrics']['data_train'].append(metrics)
 
 
 
@@ -184,6 +171,42 @@ class PerceptronSGDUtils:
 
         return 'results', 'metrics'
 
+    # WALIDACJA ZA POMOCĄ METODY KRZYŻOWEJ
+
+    # k_fold_split
+    def k_fold_split(self, data, k):
+        # data = shuffle(data)
+        # data.reset_index()
+        kf = KFold(n_splits=k)
+        for train_index, test_index in kf.split(data):
+            train_set = data.loc[train_index]
+            train_set = shuffle(train_set)
+            print()
+        print()
+
+    # cross_validation
+    def cross_validation(self, data, model_config):
+        # k_fold_data = self.k_fold_split(data, model_config['validation_mode']['k'])
+
+
+        kf = KFold(n_splits=model_config['validation_mode']['k'])
+
+        for i, (train_index, test_index) in enumerate(kf.split(data)):
+            perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
+            print('k_fold: ', i+1)
+
+            train_set = data.loc[train_index]
+            train_set = shuffle(train_set)
+            self.train(perceptron, train_set, model_config)
+
+            test_set = data.loc[test_index]
+            test_set = shuffle(test_set)
+            self.test(perceptron, test_set, model_config)
+
+
+        return 'x', 'y'
+
+
     # run()
 
     def run(self, data, model_config):
@@ -195,7 +218,8 @@ class PerceptronSGDUtils:
         :return: results (list?), metrics (dict)
         """
         print('Start perceptron SGD')
-        validation_method = {'simple_split':    self.simple_split}
+        validation_method = {'simple_split':        self.simple_split,
+                             'cross_validation':    self.cross_validation}
 
         results, metrics = validation_method[model_config['validation_mode']['mode']](data, model_config)
 
