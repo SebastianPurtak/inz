@@ -24,10 +24,9 @@ class ModelController:
     def run_model(self, config):
         # print('number of epoch: ', model_config['n_epoch'])
 
-        data = self.get_data(config['data'])
+        data = self.get_data(config['data_source'])    # data_source
 
         model = getattr(self, config['model'])
-        results, metrics = model.run(data, config['model_config'])
+        model.run(data, config['model_config']) # wywalić results i metrics
 
         print()
-        return results, metrics

@@ -2,7 +2,10 @@ import os
 
 import pandas as pd
 
-
+"""
+zastanowić się czy nie należy dodać klasy która będzie generyczna i będzie w stanie przyjmowac dane w określonym 
+formacie, aby dalej umożliwić na nich prace reszty oprogramowania
+"""
 class SonarDataPreprocessing:
 
     def __init__(self):

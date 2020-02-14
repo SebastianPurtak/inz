@@ -13,7 +13,6 @@ class PerceptronSGDCore:
         :param n_inputs:
         """
         self.weights = [random.uniform(0,1) for input in range(n_inputs + 1)]
-        # self.weights = [0 for input in range(n_inputs + 1)]
 
     def rectified_linear_activation_function(self, activation):
         """
@@ -46,11 +45,20 @@ class PerceptronSGDCore:
 class PerceptronSGDUtils:
 
     def __init__(self):
-        print()
+        pass
 
+    # =================================================================================================================
     # GROMADZENIE METRYK
+    # =================================================================================================================
 
     def clear_metrics(self, metrics):
+        """
+        Metoda odpowiada za czyszczenie pól konfiguracji modelu, w których zbierane są metryki przed ich agregacją.
+        Wykorzystywana jest przez metody, które uruchamiane są w sytuacji zapełnienia wspomnianych pól, a jednocześnie
+        mają za zadanie gromadzenie metryk.
+        :param metrics: dict
+        :return:
+        """
         metrics['n_epoch'] = []
         metrics['n_row'] = []
         metrics['prediction'] = []
@@ -58,26 +66,44 @@ class PerceptronSGDUtils:
         metrics['error'] = []
 
     def collect_metrics(self, n_epoch, n_row, prediction, real_value, error, metrics):
+        """
+        Zadaniem metody jest gromadzenie danych niezbędnych do obliczenia metryk jakości modelu i przypisanie ich do
+        struktury danych obejmującej konfigurację modelu.
+        :param n_epoch: int
+        :param n_row: int
+        :param prediction: int
+        :param real_value: float
+        :param error: float
+        :param metrics: dict
+        :return:
+        """
         metrics['n_epoch'].append(n_epoch)
         metrics['n_row'].append(n_row)
         metrics['prediction'].append(prediction)
         metrics['real_value'].append(real_value)
         metrics['error'].append(error)
 
-    def get_metrics(self, metrics_data, metrics, N):
-        # TODO: upewnić się czy to jest potrzebne
-        metrics['n_epoch'] = metrics_data['n_epoch']
-        metrics['n_row'] = metrics_data['n_row']
-        metrics['prediction'] = metrics_data['prediction']
-        metrics['real_value'] = metrics_data['real_value']
-        metrics['error'] = metrics_data['error']
-        metrics['N'] = N
+    def aggregate_metrics(self, model_config, data_target):
+        """
+        Metoda odpowiada za agregację metryk w zbiorczym polu konfiguracji modelu.
+        :param model_config: dict
+        :param data_target: string
+        :return:
+        """
+        metrics = pd.DataFrame(columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
 
-        return metrics
+        metrics['n_epoch'] = model_config['metrics']['n_epoch']
+        metrics['n_row'] = model_config['metrics']['n_row']
+        metrics['prediction'] = model_config['metrics']['prediction']
+        metrics['real_value'] = model_config['metrics']['real_value']
+        metrics['error'] = model_config['metrics']['error']
 
+        model_config['metrics'][data_target].append(metrics)
+
+    # =================================================================================================================
     # METODY UCZĄCE I TESTOWE
+    # =================================================================================================================
 
-    # test()
     def test(self, perceptron, test_set, model_config):
         """
         Metoda walidacji na testowych danych. Przeprowadza ona predykcję na zbiorze danych testowych. Dla kazdego
@@ -87,14 +113,12 @@ class PerceptronSGDUtils:
         :param model_config: dict
         :return: metrics (dict)
         """
-        metrics = pd.DataFrame(columns=['n_row', 'prediction', 'real_value', 'error'])
         self.clear_metrics(model_config['metrics'])
         error_sum = 0
 
         for idx, row in test_set.iterrows():
             prediction = perceptron.predict(row[:1])
 
-            # wywołanie get_metrics
             error = row.iloc[-1] - prediction
             error_sum += error**2
 
@@ -102,29 +126,23 @@ class PerceptronSGDUtils:
 
             print('row: ', idx, ', error: ', error, ', error_sum: ', error_sum)
 
-        metrics = self.get_metrics(model_config['metrics'], metrics, len(test_set))
-        # model_config['metrics']['data_test'] = metrics
-        model_config['metrics']['data_test'].append(metrics)
+        self.aggregate_metrics(model_config, 'data_test')
 
-
-    # train()
     def train(self, perceptron, train_set, model_config):
         """
         Głowna metoda odpowiedzialna za przeprowadzenie procesu uczenia. Ilość iteracji określona jest za pomocą
         wartości pola model_config['n_epoch']. W każdej iteracji suma błędów inicjalizowana jest wartością 0,
         następnie dla każdego z wierszy przeprowadzana jest predykcja, obliczany jest błąd, a kwadrat jego wartości
         dodawany jest do sumy błędów. Po wykonaniu predykcji i obliczeniu błędu, dla każdego z wierszy aktualizowane są
-        wagi oraz uruchamiana jest metoda get_metrics.
+        wagi oraz zbierane są metryki.
         :param perceptron: obiekt klasy PerceptronSGDCore
         :param train_set: Pandas DataFrame
         :param model_config: dict
         :return: metrics (dict)
         """
         print('Proces uczenia')
-        metrics = pd.DataFrame(columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
         for epoch in range(model_config['n_epoch']):
             error_sum = 0
-
 
             for idx, row in train_set.iterrows():
                 prediction = perceptron.predict(row[:-1])
@@ -138,21 +156,17 @@ class PerceptronSGDUtils:
                 for idx, x in enumerate(row[:-1]):
                     perceptron.weights[idx + 1] += model_config['l_rate'] * error * x
 
-
             print('epoch: ', epoch, 'error: ', error_sum)
 
-        metrics = self.get_metrics(model_config['metrics'], metrics, len(train_set))
-        # model_config['metrics']['data_train'] = metrics
-        model_config['metrics']['data_train'].append(metrics)
+        self.aggregate_metrics(model_config, 'data_train')
 
-
-
+    # =================================================================================================================
     # WALIDACJA ZA POMOCĄ ZBIORU TESTOWEGO
+    # =================================================================================================================
 
-    # train_test_split()
     def split_test_train(self, data, test_set_size):
         """
-        Metoda dzieli zbiór danych na treningowy i testowy, zgodnie z zadanym wpsólczynnikiem podziału.
+        Metoda dzieli zbiór danych na treningowy i testowy, zgodnie z zadanym współczynnikiem podziału.
         :param data: Pandas DataFrame
         :param test_set_size: int
         :return: tarin_set (Pandas DataFrame), test_set (Pandas DataFrame)
@@ -161,39 +175,45 @@ class PerceptronSGDUtils:
 
         return train_set, test_set
 
-    # simple_split()
-    def simple_split(self, data, model_config):
+    def simple_split(self, data, model_config): # dodać doc stringa
+        """
+        Metoda obsługuje proces uczenia z wykorzystaniem walidacji za pomocą zbioru testowego. W pierwszej kolejności
+        inicjalizowany jest obiekt klasy PerceptronSGDCore. Nastepnie dane dzielone są na zbiór testowy i treningowy
+        oraz uruchamiane są metody odpowiedzialne za procesu uczenia i weryfikacji modelu.
+        :param data: Pandas DataFrame
+        :param model_config: dict
+        :return:
+        """
         perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
         train_set, test_set = self.split_test_train(data, model_config['validation_mode']['test_set_size'])
 
         self.train(perceptron, train_set, model_config)
         self.test(perceptron, test_set, model_config)
 
-        return 'results', 'metrics'
-
+    # =================================================================================================================
     # WALIDACJA ZA POMOCĄ METODY KRZYŻOWEJ
+    # =================================================================================================================
 
-    # k_fold_split
-    def k_fold_split(self, data, k):
-        # data = shuffle(data)
-        # data.reset_index()
-        kf = KFold(n_splits=k)
-        for train_index, test_index in kf.split(data):
-            train_set = data.loc[train_index]
-            train_set = shuffle(train_set)
-            print()
-        print()
-
-    # cross_validation
     def cross_validation(self, data, model_config):
-        # k_fold_data = self.k_fold_split(data, model_config['validation_mode']['k'])
-
-
+        """
+        Proces uczenia z wykorzystaniem walidacji krzyżowej. Dane dzielone są na k zbiorów z których każdy kolejno
+        pełni rolę zbioru testowego. W każdej iteracji:
+        1. Tworzony jest obiekt klasy PerceptronSGDCore;
+        2. Wybrane dane są przydzielane do zbioru treningowego, który jest następnie mieszany;
+        3. Uruchamiana jest procedura uczenia;
+        4. Przydzielane są dane do zbioru testowego, który jest następnie mieszany;
+        5. Uruchamiana jest procedura testowania modelu;
+        :param data: Pandas DataFrame
+        :param model_config:
+        :return:
+        """
         kf = KFold(n_splits=model_config['validation_mode']['k'])
 
         for i, (train_index, test_index) in enumerate(kf.split(data)):
             perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
+            print('============================================')
             print('k_fold: ', i+1)
+            print('============================================')
 
             train_set = data.loc[train_index]
             train_set = shuffle(train_set)
@@ -203,11 +223,9 @@ class PerceptronSGDUtils:
             test_set = shuffle(test_set)
             self.test(perceptron, test_set, model_config)
 
-
-        return 'x', 'y'
-
-
-    # run()
+    # =================================================================================================================
+    # METODY STERUJĄCE MODELEM
+    # =================================================================================================================
 
     def run(self, data, model_config):
         """
@@ -221,72 +239,4 @@ class PerceptronSGDUtils:
         validation_method = {'simple_split':        self.simple_split,
                              'cross_validation':    self.cross_validation}
 
-        results, metrics = validation_method[model_config['validation_mode']['mode']](data, model_config)
-
-        return 'results', 'metrics'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # Funkcje do dalszego przetworzenia danych
-
-    # Funkcje do treningu
-    # def train(self, data, n_epoch, l_rate, perceptron):
-    #     for epoch in range(n_epoch):
-    #         error_sum = 0
-    #
-    #         for idx, row in data.iterrows():
-    #             prediction = perceptron.predict(row[:-1])
-    #
-    #             error = float(row[-1:] - prediction)
-    #             error_sum += error**2
-    #
-    #             perceptron.weights[0] += l_rate * error
-    #
-    #             for i, x in enumerate(row[:-1]):
-    #                 perceptron.weights[i + 1] += l_rate * error * x
-    #         print('epoch: ', epoch, 'error: ', error_sum)
-
-    # Ewentualna funkcja do testowania
-    # def test(self, data, perceptron):
-    #     good = 0
-    #     bad = 0
-    #     for idx, row in data.iterrows():
-    #         prediction = perceptron.predict(row[:-1])
-    #         print('prediction:', prediction, 'expected: ', int(row[-1:]))
-    #         if prediction == int(row[-1:]):
-    #            good += 1
-    #         else:
-    #             bad += 1
-    #     print('Good prediction: ', good, 'Bad prediction: ', bad)
-
-    # def run(self, data):
-    #     print('Start perceptron SGD')
-    #     perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
-    #
-    #     data = data.sample(frac=1)
-    #     train = data.iloc[:150, :]
-    #     test = data.iloc[150:,:]
-    #
-    #     self.train(train, 50, 0.01, perceptron)
-    #     self.test(test, perceptron)
-
-
-        # data = self.model_controller.get_data()
-
-        # print('data: ', data)
+        validation_method[model_config['validation_mode']['mode']](data, model_config)
