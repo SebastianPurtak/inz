@@ -132,7 +132,7 @@ dmypy.json
 ./idea
 
 # testing modules
-test_mine.py
+# test_mine.py
 
 # data dir
 ./models_component/data/*
