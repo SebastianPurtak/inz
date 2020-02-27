@@ -8,7 +8,7 @@ class Perceptron:
         :param n_inputs:
         """
         # TODO: zastanowić się nad bardziej generycznym sposobem inicjalizowania wag
-        self.weights = [random.uniform(0,1) for input in range(n_inputs + 1)]
+        self.weights = [random.uniform(-1,1) for input in range(n_inputs + 1)]
 
     def rectified_linear_activation_function(self, activation):
         """

@@ -4,45 +4,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.utils import shuffle
 
-
-class PerceptronSGDCore:
-
-    def __init__(self, n_inputs):
-        """
-        Inicjalizacja wag, jako tablicy złożonej z samych 0, o dłógości równej ilości wejść + bias.
-        :param n_inputs:
-        """
-        self.weights = [random.uniform(0,1) for input in range(n_inputs + 1)]
-
-    def rectified_linear_activation_function(self, activation):
-        """
-        Unipolarna funkcja aktywacji.
-        :param activation: float
-        :return: wartość aktywacji (int)
-        """
-        if activation >= 0:
-            return 1
-        else:
-            return 0
-
-    def predict(self, data_row):
-        """
-        Metoda odpowiedzialna za przeprowadzenie predykcji. Przyjmuje jeden wiersz danych oraz oblicza wartość
-        aktywacji dla wszystkich wejści.
-        :param data_row: Pandas DataFrame
-        :return: wartość aktywacji (int lub float)
-        """
-        activation = 0
-
-        for i, input in enumerate(data_row):
-            activation += self.weights[i + 1] * input
-
-        activation += self.weights[0]
-
-        return self.rectified_linear_activation_function(activation)
+from models_component.models.perceptron.perceptron import Perceptron
 
 
-class PerceptronSGDUtils:
+class PerceptronSGD:
 
     def __init__(self):
         pass
@@ -184,7 +149,7 @@ class PerceptronSGDUtils:
         :param model_config: dict
         :return:
         """
-        perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
+        perceptron = Perceptron(len(data.iloc[0][:-1]))
         train_set, test_set = self.split_test_train(data, model_config['validation_mode']['test_set_size'])
 
         self.train(perceptron, train_set, model_config)
@@ -210,7 +175,7 @@ class PerceptronSGDUtils:
         kf = KFold(n_splits=model_config['validation_mode']['k'])
 
         for i, (train_index, test_index) in enumerate(kf.split(data)):
-            perceptron = PerceptronSGDCore(len(data.iloc[0][:-1]))
+            perceptron = Perceptron(len(data.iloc[0][:-1]))
             print('============================================')
             print('k_fold: ', i+1)
             print('============================================')

@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 
 from models_component.models.perceptron.perceptron import Perceptron
 
-class PerceptronGAUtils:
+
+class PerceptronGA:
 
     def __init__(self):
         self.parents_counter = 0

@@ -15,6 +15,8 @@ def calculate_mse(data):
 
         mse.append(mean)
 
+    print('best result: ', min(mse))
+
     plt.figure(figsize=(17, 10))
     plt.plot(mse, color='orange')
     plt.title('Mean square error')
@@ -35,6 +37,23 @@ def calculate_mae(data):
 
     plt.figure(figsize=(17, 10))
     plt.plot(mae)
+    plt.title('Mean absolute error')
+    plt.xlabel('Number of epoch')
+    plt.ylabel('Mean absolute error')
+    plt.show()
+    print()
+
+def calculate_mae_ga(data):
+    # mae = []
+    #
+    # for epoch in data['n_generations'].unique():
+    #     epoch_data = data.loc[data['n_generations'] == epoch]
+    #     mean = mean_absolute_error(epoch_data['real_value'], epoch_data['prediction'])
+    #
+    #     mae.append(mean)
+
+    plt.figure(figsize=(17, 10))
+    plt.plot(data['best_fit'])
     plt.title('Mean absolute error')
     plt.xlabel('Number of epoch')
     plt.ylabel('Mean absolute error')
@@ -169,7 +188,7 @@ if __name__ == '__main__':
     #           'data_source':    'sonar_data',   # data_source
     #           'model_config':   {'n_epoch':         50,
     #                              'l_rate':          0.01,
-    #                              'validation_mode':  {'mode':           'cross_validation', # 'simple_split', 'cross_validation'
+    #                              'validation_mode':  {'mode':           'simple_split', # 'simple_split', 'cross_validation'
     #                                                   'test_set_size':  0.25,
     #                                                   'k':              10},
     #                              'metrics':         {'data_train':      [],
@@ -188,7 +207,7 @@ if __name__ == '__main__':
     config = {'model': 'perceptron_ga',  # perceptron_sgd
               'data_source': 'sonar_data',  # data_source
               'model_config': {'no_generations':    50,
-                               'pop_size':          50,
+                               'pop_size':          100,
                                'select_n':          0.3,
                                'mut_prob':          0.2,
                                'rand_mut':          0.2,
@@ -197,7 +216,7 @@ if __name__ == '__main__':
                                'parents_choice':    'sequence_parents', # random_parents, sequence_parents
                                'cross_type':        'cross_uniform', # cross_uniform, cross_one_point, cross_two_point
                                'evaluation_pop':     5,
-                               'max_fit':           0.22,
+                               'max_fit':           0.1,
                                'validation_mode': {'mode': 'cross_validation',  # 'simple_split', 'cross_validation'
                                                    'test_set_size': 0.25,
                                                    'k': 10},
@@ -220,7 +239,7 @@ if __name__ == '__main__':
     # plt.plot(config['model_config']['metrics']['MSE'])
     # plt.show()
 
-    data = config['model_config']['metrics']['data_train']
+    data = config['model_config']['metrics']['data_train'][0]
     # N = config['model_config']['metrics']['N']
 
     # calculate_mse(data)
@@ -234,6 +253,8 @@ if __name__ == '__main__':
     # calculate_mse(data[0])
 
     # k_fold_mse(data)
+
+    calculate_mae_ga(data)
 
     # for data in config['model_config']['metrics']['data_train']:
     #     calculate_mse(data)
