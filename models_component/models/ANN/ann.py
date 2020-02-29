@@ -52,7 +52,9 @@ class NeuralNetwork:
             outputs = []
 
             for neuron in layer:
-                outputs.append(self.activate(inputs, neuron))
+                output = self.activate(inputs, neuron)
+                outputs.append(output)
+                neuron['output'] = output
 
             inputs = outputs
 

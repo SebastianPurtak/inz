@@ -237,10 +237,10 @@ if __name__ == '__main__':
     # Simple ANN config
 
     config = {'model': 'ann_bp',  # perceptron_sgd
-              'data_source': 'seed_data',  # data_source
+              'data_source': 'seed_data',  # seed_data
               'model_config': {'n_epoch':       50,
-                               'l_rate':        0.01,
-                               'n_hidden':      [6],
+                               'l_rate':        0.3,
+                               'n_hidden':      [5],
                                'validation_mode': {'mode': 'simple_split',  # 'simple_split', 'cross_validation'
                                                    'test_set_size': 0.25,
                                                    'k': 10},
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     data = config['model_config']['metrics']['data_train'][0]
     # N = config['model_config']['metrics']['N']
 
-    # calculate_mse(data)
+    calculate_mse(data)
     # calculate_mae(data)
     # calculate_accuracy(data)
     # calculate_log_loss(data)
@@ -279,7 +279,7 @@ if __name__ == '__main__':
 
     # k_fold_mse(data)
 
-    calculate_mae_ga(data)
+    # calculate_mae_ga(data)
 
     # for data in config['model_config']['metrics']['data_train']:
     #     calculate_mse(data)
