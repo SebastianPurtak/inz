@@ -4,6 +4,7 @@ import pandas as pd
 
 from models_component.models.perceptron.perceptron_sgd import PerceptronSGD
 from models_component.models.perceptron.perceptron_ga import PerceptronGA
+from models_component.models.ANN.ann_bp import NeuralNetworkBP
 from models_component.utils.data_preprocessing import SonarDataPreprocessing
 from models_component.utils.data_preprocessing import DataPreprocessing
 
@@ -13,6 +14,7 @@ class ModelController:
     def __init__(self):
         self.perceptron_sgd = PerceptronSGD()
         self.perceptron_ga = PerceptronGA()
+        self.ann_bp = NeuralNetworkBP()
 
         self.data_preprocess = {'sonar_data':   SonarDataPreprocessing(),
                                 'seed_data':    DataPreprocessing()}

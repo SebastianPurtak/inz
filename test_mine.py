@@ -236,20 +236,12 @@ if __name__ == '__main__':
 
     # Simple ANN config
 
-    config = {'model': 'perceptron_ga',  # perceptron_sgd
+    config = {'model': 'ann_bp',  # perceptron_sgd
               'data_source': 'seed_data',  # data_source
-              'model_config': {'no_generations': 50,
-                               'pop_size': 100,
-                               'select_n': 0.3,
-                               'mut_prob': 0.2,
-                               'rand_mut': 0.2,
-                               'mut_type': 'swap_mut',  # random_mut, swap_mut
-                               'selection_method': 'best_selection',  # simple_selection
-                               'parents_choice': 'sequence_parents',  # random_parents, sequence_parents
-                               'cross_type': 'cross_uniform',  # cross_uniform, cross_one_point, cross_two_point
-                               'evaluation_pop': 5,
-                               'max_fit': 0.1,
-                               'validation_mode': {'mode': 'cross_validation',  # 'simple_split', 'cross_validation'
+              'model_config': {'n_epoch':       50,
+                               'l_rate':        0.01,
+                               'n_hidden':      [6],
+                               'validation_mode': {'mode': 'simple_split',  # 'simple_split', 'cross_validation'
                                                    'test_set_size': 0.25,
                                                    'k': 10},
                                'metrics': {'data_train': [],

@@ -140,7 +140,7 @@ class PerceptronSGD:
 
         return train_set, test_set
 
-    def simple_split(self, data, model_config): # dodać doc stringa
+    def simple_split(self, data, model_config):
         """
         Metoda obsługuje proces uczenia z wykorzystaniem walidacji za pomocą zbioru testowego. W pierwszej kolejności
         inicjalizowany jest obiekt klasy PerceptronSGDCore. Nastepnie dane dzielone są na zbiór testowy i treningowy
