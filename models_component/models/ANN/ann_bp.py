@@ -157,6 +157,23 @@ class NeuralNetworkBP:
         self.test(test_set, model, model_config)
 
     # walidacja krzyżowa
+    def cross_validation(self, _, data, model_config):
+        kf = KFold(n_splits=model_config['validation_mode']['k'])
+
+        for i, (train_index, test_index) in enumerate(kf.split(data)):
+            # perceptron = Perceptron(len(data.iloc[0][:-1]))
+            model = self.init_model(data, model_config)
+            print('============================================')
+            print('k_fold: ', i + 1)
+            print('============================================')
+
+            train_set = data.loc[train_index]
+            train_set = shuffle(train_set)
+            self.train(train_set, model, model_config)
+
+            test_set = data.loc[test_index]
+            test_set = shuffle(test_set)
+            self.test(test_set, model, model_config)
 
     # =================================================================================================================
     # METODY STERUJĄCE MODELEM
@@ -174,7 +191,8 @@ class NeuralNetworkBP:
 
     def run(self, data, model_config):
         print("Start backpropagation")
-        validation_method ={'simple_split':        self.simple_split}
+        validation_method ={'simple_split':         self.simple_split,
+                            'cross_validation':     self.cross_validation}
 
         model = self.init_model(data, model_config)
 
