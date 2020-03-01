@@ -198,7 +198,7 @@ class PerceptronSGD:
         procedurę uczenia, z wykorzystaniem odpowiedniej metody walidacji.
         :param data: Pandas DataFrame
         :param model_config: dict
-        :return: results (list?), metrics (dict)
+        :return:
         """
         print('Start perceptron SGD')
         validation_method = {'simple_split':        self.simple_split,
