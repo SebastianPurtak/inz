@@ -38,6 +38,22 @@ class NeuralNetwork:
 
         return self.sigmoid_activation_function(activation)
 
+    def set_weights(self, weights, genom_size):
+        net = self.network[1:]
+
+        for layer in net:
+            for idx, neuron in enumerate(layer):
+                no_weights = genom_size[0]
+                del genom_size[0]
+                neuron['weights'] = []
+
+                for i in range(no_weights):
+                    neuron['weights'].append(weights[0])
+                    del weights[0]
+
+
+        pass
+
     def feed_forward(self, inputs):
         """
         Metoda odpowiedzialna za wykonywanie obliczeń przez model. Przyjmuje określony sygnał, który wprowadza do

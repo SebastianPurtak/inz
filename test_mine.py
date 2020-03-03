@@ -236,11 +236,43 @@ if __name__ == '__main__':
 
     # Simple ANN config
 
-    config = {'model': 'ann_bp',  # perceptron_sgd
+    # config = {'model': 'ann_bp',  # perceptron_sgd
+    #           'data_source': 'seed_data',  # seed_data
+    #           'model_config': {'n_epoch':       100,
+    #                            'l_rate':        0.3,
+    #                            'n_hidden':      [5],
+    #                            'validation_mode': {'mode': 'simple_split',  # 'simple_split', 'cross_validation'
+    #                                                'test_set_size': 0.25,
+    #                                                'k': 10},
+    #                            'metrics': {'data_train': [],
+    #                                        'data_test': [],
+    #                                        'cv_data_train': [],
+    #                                        'cv_data_test': [],
+    #                                        'n_epoch': [],
+    #                                        'n_row': [],
+    #                                        'prediction': [],
+    #                                        'real_value': [],
+    #                                        'error': [],
+    #                                        'generation': [],
+    #                                        'best_fit': [],
+    #                                        'val_fit': []}}}  # wartość funkcji dopasowania najlepszych osobników w populacji, obliczona na zbiorze testowym
+
+    # ANN_GA config
+
+    config = {'model': 'ann_ga',  # perceptron_sgd
               'data_source': 'seed_data',  # seed_data
-              'model_config': {'n_epoch':       50,
-                               'l_rate':        0.3,
-                               'n_hidden':      [5],
+              'model_config': {'no_generations':        50,
+                               'pop_size':              100,
+                               'select_n':              0.3,
+                               'mut_prob':              0.2,
+                               'rand_mut':              0.5,
+                               'mut_type':              'node_mut', # random_add
+                               'n_hidden':              [5],
+                               'selection_method':      'best_selection',
+                               'parents_choice':        'random_parents',  # random_parents, sequence_parents
+                                'cross_type':           'corss_nodes', # cross_uniform, cross_one_point, cross_two_point, corss_nodes
+                               'max_fit':               0.1,
+                               'evaluation_pop':        5,
                                'validation_mode': {'mode': 'simple_split',  # 'simple_split', 'cross_validation'
                                                    'test_set_size': 0.25,
                                                    'k': 10},
@@ -255,7 +287,7 @@ if __name__ == '__main__':
                                            'error': [],
                                            'generation': [],
                                            'best_fit': [],
-                                           'val_fit': []}}}  # wartość funkcji dopasowania najlepszych osobników w populacji, obliczona na zbiorze testowym
+                                           'val_fit': []}}}
 
 
     model_controller.run_model(config)
@@ -267,7 +299,7 @@ if __name__ == '__main__':
     data = config['model_config']['metrics']['data_train'][0]
     # N = config['model_config']['metrics']['N']
 
-    calculate_mse(data)
+    # calculate_mse(data)
     # calculate_mae(data)
     # calculate_accuracy(data)
     # calculate_log_loss(data)
@@ -279,7 +311,7 @@ if __name__ == '__main__':
 
     # k_fold_mse(data)
 
-    # calculate_mae_ga(data)
+    calculate_mae_ga(data)
 
     # for data in config['model_config']['metrics']['data_train']:
     #     calculate_mse(data)

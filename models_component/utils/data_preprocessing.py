@@ -51,7 +51,7 @@ class SonarDataPreprocessing:
         data['Type'] = data['Type'].cat.codes
         return data
 
-    def run_preprocessing(self):
+    def run_preprocessing(self, _):
         data = self.get_data()
         data = self.label_encoding(data)
         return data

@@ -3,16 +3,17 @@ import random
 import numpy as np
 import pandas as pd
 from sklearn.utils import shuffle
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import accuracy_score, mean_squared_error, mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-from models_component.models.perceptron.perceptron import Perceptron
+from models_component.models.ANN.ann import NeuralNetwork
 
 
-class PerceptronGA:
+class NeuralNetworkGA:
 
     def __init__(self):
         self.parents_counter = 0
+        self.genom_size = []
         pass
 
     # =================================================================================================================
@@ -51,6 +52,61 @@ class PerceptronGA:
     # =================================================================================================================
     # MUTACJE
     # =================================================================================================================
+
+    def random_add(self, genom, rand_mut, population):
+        """
+        Mutacja poprzez dodanie losowych współczynników. Dla wszystkich wag w genomie losowane są, a następnie dodawane
+        współczynniki o losowej wartości.
+        :param genom: list
+        :param rand_mut: float
+        :param population: list
+        :return:
+        """
+        coefs = np.random.uniform(0, 3, size=len(genom))
+
+        for idx, coef in enumerate(coefs):
+            genom[idx] += coef
+
+    def aggregate_nodes(self):
+        """
+        Metoda obliczająca miejsca w genomie które odpowiadają wagą na połączeniach wchodziących do poszczególnych
+        neuronów.
+        :return: nodes: list
+        """
+        nodes = []
+        start = 0
+        end = 0
+
+        for node in range(len(self.genom_size)):
+            end += self.genom_size[node]
+            node = (start, end -1)
+
+            start = end
+            nodes.append(node)
+
+        return nodes
+
+    def node_mut(self, genom, rand_mut, population):
+        """
+        Mutacja neuronu:
+        1. Obliczane są miejsca w genomie, odpowiadające wagą wchodzącym do poszczególnych neuronów;
+        2. Dla każdego z neuronów przeporwadzany jest losowy test na mutację;
+        3. Jeśli wynik testu przekroczy wartość rand_mut generowane są nowe wagi;
+        4. nowe wagi przypisywane są w odpowiednie miejsca w genomie;
+        :param genom: list
+        :param rand_mut: float
+        :param population: list
+        :return:
+        """
+        nodes = self.aggregate_nodes()
+
+        for node in nodes:
+            if rand_mut > np.random.random():
+                n_weights = node[1] - node[0] + 1
+                new_weights = list(np.random.uniform(0, 5, size=n_weights))
+
+                for i, pos in enumerate(range(node[0], node[1])):
+                    genom[pos] += new_weights[i]
 
     def swap_mut(self, genom, rand_mut, population):
         """
@@ -95,7 +151,9 @@ class PerceptronGA:
         :return: population: list
         """
         mutation_types = {'random_mut': self.random_mut,
-                          'swap_mut':   self.swap_mut}
+                          'swap_mut':   self.swap_mut,
+                          'node_mut':   self.node_mut,
+                          'random_add': self.random_add}
 
         for genom in population:
             if model_config['mut_prob'] > np.random.uniform():
@@ -104,8 +162,55 @@ class PerceptronGA:
         return population
 
     # =================================================================================================================
-    # TWORZENIE NOWEGO POKOLENIA
+    # NEXT GENERATION
     # =================================================================================================================
+
+    def split_parents(self, parents):
+        """
+        Metoda zmienia struktórę chromosomów rodziców do postaci listy zagnieżdżonej, w której każda podlista odpowiada
+        wagą połączeń wchodzących do jednego neuronu.
+        :param parents: list
+        :return: new_parents: list
+        """
+        new_parents = []
+        for parent in parents:
+            new_parent = []
+
+            start = 0
+            end = 0
+
+            for n_neuron in self.genom_size:
+                end += n_neuron
+
+                new_parent.append([weight for weight in parent[start:end]])
+
+                start = end
+
+            new_parents.append(new_parent)
+
+        return new_parents
+
+    def corss_nodes(self, parents):
+        """
+        Krzyżowanie neuronów:
+        1. W chromosomach rodziców wyodrębniane sa listy odpowiadające wagą na połączeniach wchodząchych
+        do poszczególnych neuronów;
+        2. Dla kazdego dziecka losowane są kolejne zestawy wag od obydwu rodziców;
+        :param parents: list
+        :return: child1: list, child2: list
+        """
+        parents = self.split_parents(parents.copy())
+        child1 = []
+        child2 = []
+
+        for parent1, parent2 in zip(parents[0], parents[1]):
+            gens1 = random.choice([parent1, parent2])
+            [child1.append(gen) for gen in gens1]
+
+            gens2 = random.choice([parent1, parent2])
+            [child2.append(gen) for gen in gens2]
+
+        return child1, child2
 
     def cross_two_point(self, parents):
         """
@@ -211,7 +316,8 @@ class PerceptronGA:
                           'sequence_parents':   self.sequence_parents}
         cross_type = {'cross_uniform':      self.cross_uniform,
                       'cross_one_point':    self.cross_one_point,
-                      'cross_two_point':    self.cross_two_point}
+                      'cross_two_point':    self.cross_two_point,
+                      'corss_nodes':        self.corss_nodes}
 
         new_population = selected_individuals
         offspring_size = len(population) - len(selected_individuals)
@@ -237,57 +343,11 @@ class PerceptronGA:
         :param select_n: int
         :return: select_n: int
         """
-        select_n = round(pop_size*select_n)
+        select_n = round(pop_size * select_n)
         while select_n % 2 != 0:
             select_n -= 1
 
         return select_n
-
-    def get_selection_prob(self, pop_fitness):
-        """
-        Metoda określa prawdopodobieństwo wyboru do kolejnego pokolenia dla wszystkich osobników. Funkcja dopasowania
-        dla każdego z osobników przyjmuje wartości w przedziale od 0 do 1 i jest minimalizowana, w związku z czym,
-        prawdopodobieństwo wyboru dla dengo genomu określane jest jako 1 - wartość dopasowania.
-        :param pop_fitness: list
-        :return: selection_prob: list
-        """
-        selection_prob = []
-
-        for individual_fit in pop_fitness:
-            prob = 1 - individual_fit
-
-            selection_prob.append(prob)
-
-        return selection_prob
-
-    def simple_selection(self, population, pop_fitness, select_n):
-        """
-        Metoda wybiera osobniki według prawdopodobieństwa ich wyboru:
-        1. Prawdopodobieństwa wyboru poszczególnych osobników okreslane są za pomocą metody get_selection_prob;
-        2. Dla każdej pozycji w liście wybranych osobników badane są kolejno wszystkie genomy;
-        3. Każdy z badanych osobników przechodzi test, w którym jego wybór jest losowany zgodnie z określonym wcześniej
-        prawdopodobieństwem;
-        4. Jeśli jakiś osobnik został wybrany, jest dodawany do tablicy wybranych osobników, usuwany z bierzacej
-        populacji i listy prawdopodobieństw wyboru, a petla przechodzi do kolejnej pozycji w liście wybranych osobników;
-        5. Po zapełnieniu listy wybranych osobników, jest ona zwracana;
-        :param population: list
-        :param pop_fitness: list
-        :param select_n: int
-        :return: selected_individuals: list
-        """
-        selected_individuals = []
-
-        selection_prob = self.get_selection_prob(pop_fitness)
-
-        for i in range(select_n):
-            for idx, (genome_chance, genom) in enumerate(zip(selection_prob, population)):
-                if np.random.choice([False, True], p=[(1 - genome_chance), genome_chance]):
-                    selected_individuals.append(genom)
-                    del selection_prob[idx]
-                    del population[idx]
-                    break
-
-        return selected_individuals
 
     def best_selection(self, population, pop_fitness, select_n):
         """
@@ -303,7 +363,7 @@ class PerceptronGA:
 
         return [population[idx] for idx in sort_index[:select_n]]
 
-    def nex_generation(self, population, pop_fitness, model_config):
+    def nex_generation(self, population, pop_fittness, model_config):
         """
         Metoda tworzy nowe pokolenie:
         1. Określana jest liczba osobników, które bez zmian przejdą do nowego pokolenia i wezmą udział w krzyżowaniu;
@@ -314,12 +374,12 @@ class PerceptronGA:
         :param model_config: dict
         :return: population: list
         """
-        selection_methods = {'simple_selection':    self.simple_selection,
-                             'best_selection':      self.best_selection,}
+
+        selection_methods = {'best_selection':   self.best_selection}
 
         select_n = self.get_select_n(len(population), model_config['select_n'])
 
-        selected_individuals = selection_methods[model_config['selection_method']](population, pop_fitness, select_n)
+        selected_individuals = selection_methods[model_config['selection_method']](population, pop_fittness, select_n)
 
         population = self.create_offspring(population, selected_individuals, model_config)
 
@@ -329,54 +389,59 @@ class PerceptronGA:
     # EWALUACJA
     # =================================================================================================================
 
-    def calculate_fitness(self, real_values, results):
+    def calculate_fittnes(self, outputs, real_values):
         """
-        Metoda oblicza sumę kwadratów błędów dla konkretengo osobnika, w celu wyznaczenia jego funkcji dopasowania.
-        :param real_values: list
-        :param results: list
+        Wartość funkcji dopasowania obliczana jest jako średnia kwadratów błędów.
+        :param outputs:
+        :param real_values:
+        :return:
+        """
+        # fit = accuracy_score(real_values, outputs)
+        fit = mean_squared_error(real_values, outputs)
+        # fit = mean_absolute_error(real_values, outputs)
+        return fit
+
+    def individual_evaluation(self, model, data):
+        """
+        Metoda ewaluacji poszczególnych osobników. Gromadzone są odpowiedzi modelu dla wszystkich wierszy w zbioerze
+        treningowym, a następnie uruchamiana jest metoda obliczająca na tej podstawie wartość funkcji dopasowania.
+        :param model: list
+        :param data: Pandas Dataframe
         :return: float
         """
-        # TODO: Zmienic na mean square error - sprawdzić czy wszystko działa dobrze
-        return mean_absolute_error(real_values, results)
-
-    def individual_evaluation(self, perceptron, data):
-        """
-        Metoda obliczająca wartość funkcji dopasowania dla konkretnego osobnika. Każdy genom wykonuje predykcję na
-        pełnym zbiorze danych treningowych, a otrzymana suma kwadratów błędów jest jego wynikiem dopasowania.
-        :param perceptron: obiekt klasy Perceptron
-        :param data: Pandas DataFrame
-        :return:
-        """
-        results = []
+        outputs = []
+        real_values = list(data.iloc[:, -1])
 
         for idx, row in data.iterrows():
-            prediction = perceptron.predict(row[:-1])
-            results.append(prediction)
+            output = model.feed_forward(row[:-1])
 
-        return self.calculate_fitness(data.iloc[:, -1], results)
+            outputs.append(output.index((max(output))) + 1)
 
-    def get_fitness(self, population, data):
+        fit = self.calculate_fittnes(outputs, real_values)
+        return fit
+
+    def get_fitness(self, model, population, genom_size, data):
         """
-        Metoda odpowiada za obliczenie wartości funkcji dopasowania dla osobników w populacji:
-        1. Inicjalizowany jest obiekt klasy Perceptron;
-        2. Obiekt klasy Perceptron przyjmuje kolejno wagi każdego z osobników;
-        3. Dla każdego osobnika obliczana jest wartość dopasowania;
-        4. Otrzymane wyniki są agregowane i zwracane;
+        Obliczanie funkcji dopasowania dla osobników w populacji. Pętla przechodzi przez całą populację, ustawiając
+        wagi w modelu zgodnie z wartościami w kolejnych genomach. Dla kazdego tak przygotowanego osobnika uruchamiana
+        jest metoda indywidualnej ewaluacji, a jego wynik dodawany jest do zbiorczej tablicy.
+        :param model: list
         :param population: list
-        :param data:
-        :return:
+        :param genom_size: list
+        :param data: Pandas DataFrame
+        :return: pop_fittness: list
         """
-        perceptron = Perceptron(len(data.iloc[0][:-1]))
-        pop_fit = []
+        pop_fittness = []
 
         for idx, genom in enumerate(population):
-            perceptron.set_weights(genom)
-            fit = self.individual_evaluation(perceptron, data)
-            pop_fit.append(fit)
+            model.set_weights(genom.copy(), genom_size.copy())
+            fit = self.individual_evaluation(model, data)
 
-        return pop_fit
+            pop_fittness.append(fit)
 
-    def evaluation_best_individuals(self, population, pop_fitness, test_set, model_config):
+        return pop_fittness
+
+    def evaluation_best_individuals(self, model, population, pop_fitness, test_set, model_config):
         """
         Ewaluacja najlepszych osobników w populacji za pomocą zbioru testowego:
         1. Z populacji wybierane są najlepsze osobniki;
@@ -390,7 +455,7 @@ class PerceptronGA:
         """
         best_individuals = self.best_selection(population, pop_fitness, model_config['evaluation_pop'])
 
-        best_fitness = self.get_fitness(best_individuals, test_set)
+        best_fitness = self.get_fitness(model, best_individuals, self.genom_size, test_set)
 
         model_config['metrics']['val_fit'] = best_fitness
 
@@ -398,7 +463,7 @@ class PerceptronGA:
     # METODY STERUJĄCE MODELEM
     # =================================================================================================================
 
-    def evolution(self, population, model_config, data):
+    def evolution(self, model, population, genom_size, train_set, model_config):
         """
         Metoda zawiera główną pętle ewolucji. w pierwszym kroku badana jest funkcja dopasowania populacji początkowej
         oraz zerowany jest licznik pokoleń. Następnie uruchamiana jest pętla, która w każdej iteracji sprawdza czy
@@ -414,22 +479,20 @@ class PerceptronGA:
         :param data: Pandas DataFrame
         :return: pop_fitness: list
         """
-        pop_fitness = self.get_fitness(population, data)
+        pop_fittnes = self.get_fitness(model, population, genom_size, train_set)
 
         n_generation = 0
-        while n_generation <= model_config['no_generations'] and min(pop_fitness) > model_config['max_fit']:
-            print('generation: ', n_generation)
-            pop_fitness = self.get_fitness(population, data)
-            self.collect_metrics(model_config, min(pop_fitness), n_generation)
-            population = self.nex_generation(population, pop_fitness, model_config)
+        while n_generation <= model_config['no_generations'] and min(pop_fittnes) > model_config['max_fit']:
+            print('Generation: ', n_generation)
+            pop_fitnness = self.get_fitness(model, population, genom_size, train_set)
+            self.collect_metrics(model_config, min(pop_fitnness), n_generation)
+            population = self.nex_generation(population, pop_fitnness, model_config)
             population = self.mutations(population, model_config)
-            print('best fit: ', min(pop_fitness))
-            print('len population: ', len(population))
+            print('Best fit: ', min(pop_fitnness))
             n_generation += 1
 
         self.aggregate_metrics(model_config, 'data_train')
-
-        return pop_fitness
+        return pop_fitnness
 
     def split_test_train(self, data, test_set_size):
         """
@@ -445,39 +508,76 @@ class PerceptronGA:
 
         return train_set, test_set
 
-    def get_init_pop(self, pop_size, genom_size):
+    def get_genom_size(self, model):
         """
-        Metoda tworzy populację początkową. Każdy genom inicjalizowany jest jako tablica wartości z przedziału
-        od -1 do 1.
+        Metoda określająca rozmiar genomu. Zlicza wzystkie parametry sieci na każdej warstwie.
+        :param model: list
+        :return: list
+        """
+        genom_size = []
+        net = model.network[1:]
+
+        for layer in net:
+            for neuron in layer:
+                genom_size.append(len(neuron['weights']))
+
+        return genom_size
+
+    def get_init_pop(self, pop_size, model):
+        """
+        Inicjalizacja populacji początkowej:
+        1. Zliczana jest ilość parametrów sieci;
+        2. Dla każdego osobnika w populacji losowane są wagi, z przdziału od -1 do 1, zgodnie z rozkładem normalnym.
         :param pop_size: int
-        :param genom_size: int
-        :return: population: list
+        :param model: list
+        :return: population: list, genom_size: list
         """
+        genom_size = self.get_genom_size(model)
+
         population = []
 
         for i in range(pop_size):
-            genom = np.random.uniform(-1, 1, size=genom_size).tolist()
+            genom = np.random.uniform(-1, 1, size=sum(genom_size)).tolist()
             population.append(genom)
 
-        return population
+        return population, genom_size
+
+    def init_model(self, data, model_config):
+        """
+        Metoda inicjalizująca sieć neuronową. Na podstawie charakterystyk danych oraz ustawień konfiguracji określa
+        liczbę wejść i wyjść do sieci oraz liczbę warstw i neuronów ukrytych. Na tej podstawie tworzony jest obiekt
+        klasy NeuralNetwork.
+        :param data: Pandas DataFrame
+        :param model_config: dict
+        :return: list
+        """
+        n_inputs = len(data.loc[0]) - 1
+        n_hidden = model_config['n_hidden']
+        n_outputs = len(data.iloc[:, -1].unique())
+
+        model = NeuralNetwork(n_inputs, n_hidden, n_outputs)
+        model.create_network()
+
+        return model
 
     def run(self, data, model_config):
         """
-        Główna metoda sterująca procesem uczenia:
-        1. Tworzona jest populacja początkowa;
-        2. Zbiór danych dzielony jest na testowy i treningowy;
-        3. Uruchamiany jest proces ewolucji na zbiorze treningowym;
-        4. Przeprowadzana jest weryfikacja wyników najlepszych osobników, za pomocą zbioru testowego;
-        :param data:
-        :param model_config:
+        Głowna metoda sterująca działaniem modelu:
+        1. Inicjalizowany jest model sieci neuronowej;
+        2. Tworzona jest populacja początkowa;
+        3. Dane dzielone sa na zbiór treningowy i testowy;
+        4. Uruchamiany jest proces ewolucji, z wykorzystaniem zbioru treningowego;
+        5. Uruchamiany jest proces oceny najlepszych osobników, z wykorzystaniem zbioru testowego;
+        :param data: Pandas DataFrame
+        :param model_config: dict
         :return:
         """
-        print('Perceptron GA')
-
-        population = self.get_init_pop(model_config['pop_size'], len(list(data[:1])))
+        model = self.init_model(data, model_config)
+        population, genom_size = self.get_init_pop(model_config['pop_size'], model)
+        self.genom_size = genom_size
 
         train_set, test_set = self.split_test_train(data, model_config['validation_mode']['test_set_size'])
 
-        pop_fitnes = self.evolution(population, model_config, train_set)
+        pop_fitness = self.evolution(model, population, genom_size, train_set, model_config)
 
-        self.evaluation_best_individuals(population, pop_fitnes, test_set, model_config)
+        self.evaluation_best_individuals(model, population, pop_fitness, test_set, model_config)
