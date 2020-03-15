@@ -136,7 +136,6 @@ class NeuralNetworkBP:
                 for j in range(len(inputs)):
                     neuron['weights'][j] += l_rate * neuron['delta'] * inputs[j]
             neuron['weights'][-1] += l_rate * neuron['delta']
-        pass
 
     def transfer_derivative(self, output):
         """
@@ -155,8 +154,8 @@ class NeuralNetworkBP:
         2. Dla każdego neuronu obliczana jest delta;
         3. Dla neuronów w warstwach ukrytych błąd obliczany jest jako iloczyn wartość wagi na połączeniu z neuronem
         w warstwie wyzszej i wartości jego delty
-        :param model:
-        :param answer:
+        :param model: list
+        :param answer: list
         :return:
         """
         for i in reversed(range(len(model))):

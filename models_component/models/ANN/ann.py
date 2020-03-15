@@ -51,15 +51,12 @@ class NeuralNetwork:
                     neuron['weights'].append(weights[0])
                     del weights[0]
 
-
-        pass
-
     def feed_forward(self, inputs):
         """
         Metoda odpowiedzialna za wykonywanie obliczeń przez model. Przyjmuje określony sygnał, który wprowadza do
         pierwszej warstwy i stopniowo przeprowadza przez kolejne.
-        :param inputs:
-        :return: list
+        :param inputs: list
+        :return: outputs: list
         """
         self.network[0] = inputs
         outputs = []

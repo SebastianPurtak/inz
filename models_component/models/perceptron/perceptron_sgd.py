@@ -163,7 +163,7 @@ class PerceptronSGD:
         """
         Proces uczenia z wykorzystaniem walidacji krzyżowej. Dane dzielone są na k zbiorów z których każdy kolejno
         pełni rolę zbioru testowego. W każdej iteracji:
-        1. Tworzony jest obiekt klasy PerceptronSGDCore;
+        1. Tworzony jest obiekt klasy Perceptron;
         2. Wybrane dane są przydzielane do zbioru treningowego, który jest następnie mieszany;
         3. Uruchamiana jest procedura uczenia;
         4. Przydzielane są dane do zbioru testowego, który jest następnie mieszany;
