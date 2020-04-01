@@ -56,6 +56,8 @@ class PerceptronSGD:
         :return:
         """
         metrics = pd.DataFrame(columns=['n_epoch', 'n_row', 'prediction', 'real_value', 'error'])
+        # model_config['metrics'][data_target][0] = None
+        # model_config['metrics'][data_target].append(metrics)
 
         metrics['n_epoch'] = model_config['metrics']['n_epoch']
         metrics['n_row'] = model_config['metrics']['n_row']
@@ -64,6 +66,10 @@ class PerceptronSGD:
         metrics['error'] = model_config['metrics']['error']
 
         model_config['metrics'][data_target].append(metrics)
+
+        # poniżej rozwiązanie problemu odświeżania dla walidacji za pomocą zbioru testowego (problem będzie stanowić walidacja krzyżowa)
+        # model_config['metrics'][data_target] = metrics
+        print()
 
     # =================================================================================================================
     # METODY UCZĄCE I TESTOWE
@@ -117,6 +123,8 @@ class PerceptronSGD:
                 self.collect_metrics(epoch, idx, prediction, row.iloc[-1], error, model_config["metrics"])
 
                 perceptron.weights[0] += model_config['l_rate'] * error
+
+                model_config['iter'] += 1
 
                 for idx, x in enumerate(row[:-1]):
                     perceptron.weights[idx + 1] += model_config['l_rate'] * error * x
@@ -205,3 +213,4 @@ class PerceptronSGD:
                              'cross_validation':    self.cross_validation}
 
         validation_method[model_config['validation_mode']['mode']](data, model_config)
+
