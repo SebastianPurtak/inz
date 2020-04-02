@@ -112,7 +112,13 @@ def generate_raport():
                 'backgroundColor': '#C0C0C0',
             }),
 
-    # ==PIERWSZY_WYKRES================================================================================================
+    dbc.Row(id='train_metrics_header',
+            children=html.H4('Metryki procesu uczenia'),
+            justify='center',
+            style={'padding': '10px',
+                   'margin-top': '30px'}),
+
+    # ==ŚREDNIA_KWADRATÓW_BŁĘDÓW========================================================================================
 
     dbc.Row([
         dcc.Graph(id='mse-graph',
@@ -156,7 +162,7 @@ def generate_raport():
     # ==CONFUSION_MATRIX================================================================================================
 
     dbc.Row([
-        dcc.Graph(id='cf-matrix',
+        dcc.Graph(id='cf-matrix-train-set',
                   figure={'data': [{'type': 'heatmap',
                                     'x': ['True', 'False'],
                                     'y': ['Positive', 'Negative'],
@@ -191,7 +197,62 @@ def generate_raport():
                                                      'font': {'color': 'white'}}]}})
         ], justify='center', style={'padding': '10px'}),
 
-    # ==TESTY=======================================================================================================
+    # ==METRYKI_ZBIORU_TESTOWEGO========================================================================================
+
+    dbc.Row(id='test_metrics_header',
+            children=html.H4('Metryki zbioru testowego'),
+            justify='center',
+            style={'padding': '10px',
+                   'margin-bottom': '30px'}),
+
+    dbc.Row(id='test_set_mse_row',
+            children=[html.P('MSE: '), html.P(str(round(test_metrics['mse'], 5)), style={'text-indent': '50px'})],
+            justify='center',
+            ),
+
+    dbc.Row(id='test_set_mae_row',
+            children=[html.P('MAE: '), html.P(str(round(test_metrics['mae'], 5)), style={'text-indent': '50px'})],
+            justify='center',
+            ),
+
+    dbc.Row(id='test_set_acc_row',
+            children=[html.P('Accuracy: '), html.P(str(round(test_metrics['accuracy'], 5)), style={'text-indent': '50px'})],
+            justify='center',
+            ),
+
+    dbc.Row([
+        dcc.Graph(id='cf-matrix-test-set',
+                  figure={'data': [{'type': 'heatmap',
+                                    'x': ['True', 'False'],
+                                    'y': ['Positive', 'Negative'],
+                                    'z': test_metrics['confusion_matrix'],
+                                    'showscale': False}],
+                          'layout': {'title': 'Confusion Matrix',
+                                     'plot_bgcolor': '#D3D3D3',
+                                     'paper_bgcolor': '#D3D3D3',
+                                     'annotations': [{'x': 'True',
+                                                      'y': 'Positive',
+                                                      'text': test_metrics['confusion_matrix'][0][0],
+                                                      'showarrow': False,
+                                                      'font': {'color': 'white'}},
+                                                     {'x': 'True',
+                                                      'y': 'Negative',
+                                                      'text': test_metrics['confusion_matrix'][1][0],
+                                                      'showarrow': False,
+                                                      'font': {'color': 'white'}},
+                                                     {'x': 'False',
+                                                      'y': 'Positive',
+                                                      'text': test_metrics['confusion_matrix'][0][1],
+                                                      'showarrow': False,
+                                                      'font': {'color': 'white'}},
+                                                     {'x': 'False',
+                                                      'y': 'Negative',
+                                                      'text': test_metrics['confusion_matrix'][1][1],
+                                                      'showarrow': False,
+                                                      'font': {'color': 'white'}}]}})
+        ], justify='center', style={'padding': '10px'}),
+
+    # ==STOPKA==========================================================================================================
 
     dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href='perceptron_sgd_menu')])],
                             justify='center',

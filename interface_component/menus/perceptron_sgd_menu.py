@@ -9,6 +9,10 @@ from interface_component.raports import perceptron_sgd_rapport
 from models_component.models_controller import ModelController
 from utils.metrics_preprocessing import MetricPreprocessor
 
+
+clicks_counter = 0
+test = False
+
 model_config = {
     'model': 'perceptron_sgd',
     'data_source': 'test',
@@ -166,10 +170,12 @@ layout = dbc.Container([
     dbc.Row(html.Label(id='val_method-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
     dbc.Row(html.Label(id='k-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
     dbc.Row(html.Label(id='test_set-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
+    dbc.Row(html.Label(id='model-progress', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
+    dbc.Row(html.Label(id='model-end', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
     dbc.Row(html.Label(id='model-start', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
 
     # dbc.Row(html.Label(id='model-start1', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(dbc.Progress(id='progress'), justify='center', style={'backgroundColor': '#C0C0C0'}),
+    # dbc.Row(dbc.Progress(id='progress'), justify='center', style={'backgroundColor': '#C0C0C0'}),
 
     dbc.Row([
         html.Button(id='back', children=[dcc.Link('Wróć', href='/')])
@@ -296,54 +302,51 @@ def set_k_fold(value):
         return 'Wprowadzono nieprawidłową wartość k. Wprowadź liczbę całkowitą.'
 
 
-# @app.callback(Output('model-start', 'children'), [Input('start-button-sgd', 'n_clicks')])
-# def click_start_button(n_clicks):
-#     # controller = ModelController()
-#     # metrics_preprocessor = MetricPreprocessor()
-#     #
-#     # controller.run_model(config)
-#     #
-#     # raport_button = dbc.Row([html.Button(id='raport', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
-#     #                         justify='center',
-#     #                         style={'padding': '15px'})
-#     #
-#     # train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config']['validation_mode']['mode'],
-#     #                                                            config['model_config']['metrics'])
-#     #
-#     # perceptron_sgd_rapport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
-#     # perceptron_sgd_rapport.generate_raport()
-#     #
-#     # print('w menu: ', metrisc_sgd)
-#
-#     text_info = dbc.Row([html.P('Trwa proces uczenia')], justify='center')
-#
-#     return text_info
-
-
-# Output('model-start1', 'children'),
-
-@app.callback(Output('model-start', 'children'),
+@app.callback(Output('model-progress', 'children'),
               [Input('start-button-sgd', 'n_clicks')])
-def click_start_button(n_clicks):
-    controller = ModelController()
-    metrics_preprocessor = MetricPreprocessor()
+def model_progress_info(n_clicks):
+    progress_info = html.P(id='progress-info', children='Trwa proces ucznia')
 
-    # for i in tqdm(range(100)):
-    #     pass
-    tqdm(controller.run_model(config))
+    return progress_info
 
-    raport_button = dbc.Row([html.Button(id='raport', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
-                            justify='center',
-                            style={'padding': '15px'})
 
-    train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config']['validation_mode']['mode'],
+@app.callback([Output('model-start', 'children'), Output('model-end', 'children')],
+              [Input('progress-info', 'children')])
+def click_start_button(children):
+
+    if children == 'Trwa proces ucznia':
+
+        global test
+
+        test = False
+
+        controller = ModelController()
+        metrics_preprocessor = MetricPreprocessor()
+
+        controller.run_model(config)
+
+        raport_button = dbc.Row([html.Button(id='raport', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
+                                justify='center',
+                                style={'padding': '15px'})
+
+        train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config']['validation_mode']['mode'],
                                                                config['model_config']['metrics'])
+        # czy metrics_sgd jest mi faktycznie potrzebne?
+        perceptron_sgd_rapport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
+        perceptron_sgd_rapport.generate_raport()
 
-    perceptron_sgd_rapport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
-    perceptron_sgd_rapport.generate_raport()
+        print('w menu: ', metrisc_sgd)
 
-    # print('w menu: ', metrisc_sgd)
+        test = True
 
-    text_info = dbc.Row([html.P('')], justify='center')
-    return raport_button
+        return raport_button, html.P(id='end-text', children='Zakończono!')
+    else:
+        pass
+
+
+
+
+
+
+
 

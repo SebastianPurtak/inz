@@ -95,7 +95,7 @@ class PerceptronSGD:
 
             self.collect_metrics(0, idx, prediction, row.iloc[-1], error, model_config["metrics"])
 
-            print('row: ', idx, ', error: ', error, ', error_sum: ', error_sum)
+            print('row: ', idx, 'prediction: ', prediction, 'error: ', error, ', error_sum: ', error_sum)
 
         self.aggregate_metrics(model_config, 'data_test')
 
@@ -124,12 +124,12 @@ class PerceptronSGD:
 
                 perceptron.weights[0] += model_config['l_rate'] * error
 
-                model_config['iter'] += 1
+                # model_config['iter'] += 1
 
                 for idx, x in enumerate(row[:-1]):
                     perceptron.weights[idx + 1] += model_config['l_rate'] * error * x
 
-            print('epoch: ', epoch, 'error: ', error_sum)
+            # print('epoch: ', epoch, 'error: ', error_sum)
 
         self.aggregate_metrics(model_config, 'data_train')
 
