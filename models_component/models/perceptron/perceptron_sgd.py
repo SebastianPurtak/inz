@@ -180,6 +180,8 @@ class PerceptronSGD:
         :param model_config:
         :return:
         """
+        # UWAGA: mieszam zbiór danych i resetuje indexy, pytanie jak to wpływnie na działanie modelu
+        data = shuffle(data).reset_index(drop=True)
         kf = KFold(n_splits=model_config['validation_mode']['k'])
 
         for i, (train_index, test_index) in enumerate(kf.split(data)):
@@ -189,11 +191,11 @@ class PerceptronSGD:
             print('============================================')
 
             train_set = data.loc[train_index]
-            train_set = shuffle(train_set)
+            # train_set = shuffle(train_set)
             self.train(perceptron, train_set, model_config)
 
             test_set = data.loc[test_index]
-            test_set = shuffle(test_set)
+            # test_set = shuffle(test_set)
             self.test(perceptron, test_set, model_config)
 
     # =================================================================================================================

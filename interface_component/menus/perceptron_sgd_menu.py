@@ -330,10 +330,15 @@ def click_start_button(children):
                                 style={'padding': '15px'})
 
         train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config']['validation_mode']['mode'],
-                                                               config['model_config']['metrics'])
+                                                                   config['model_config']['metrics'],
+                                                                   config['model_config'])
         # czy metrics_sgd jest mi faktycznie potrzebne?
         perceptron_sgd_rapport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
-        perceptron_sgd_rapport.generate_raport()
+
+        if config['model_config']['validation_mode']['mode'] == 'simple_split':
+            perceptron_sgd_rapport.generate_raport()
+        elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
+            perceptron_sgd_rapport.generate_cv_raport()
 
         print('w menu: ', metrisc_sgd)
 

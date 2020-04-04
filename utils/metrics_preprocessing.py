@@ -55,29 +55,30 @@ class MetricPreprocessor:
 
         return area
 
-    def preprocess_split_sgd_metrics(self, metrics):
+    def perprocess_sgd_split_metrics(self, metrics, model_config):
+        """
+        Metoda odpowiada za obliczenie i agregację metryk dla zbioru treningowego i testowego, w procesie uczenia
+        perceptronu algorytmem stochastycznego zejścia gradientem (sgd), przy zastosowaniu walidacji za pomocą zbioru
+        testowego.
+        :param metrics: dict
+        :return: train_metrics: dict, test_metric: dict
+        """
         train_metrics = {'data': pd.DataFrame()}
-        # train_metrics_data = pd.DataFrame()
         test_metrics = {}
 
         train_data = metrics['data_train'][-1]
         test_data = metrics['data_test'][-1]
-
-        # train_metrics_data['n_epoch'] = metrics['data_train'][0]['n_epoch'].unique()
         train_metrics['data']['n_epoch'] = metrics['data_train'][-1]['n_epoch'].unique()
 
         # mse
-        # train_metrics_data['mse'] = self.calculate_mse(train_data)
         train_metrics['data']['mse'] = self.calculate_mse(train_data)
         test_metrics['mse'] = self.calculate_mse(test_data)[0]
 
         # mae
-        # train_metrics_data['mae'] = self.calculate_mae(train_data)
         train_metrics['data']['mae'] = self.calculate_mae(train_data)
         test_metrics['mae'] = self.calculate_mae(test_data)[0]
 
         # accuracy
-        # train_metrics_data['accuracy'] = self.calculate_accuracy(train_data)
         train_metrics['data']['accuracy'] = self.calculate_accuracy(train_data)
         test_metrics['accuracy'] = self.calculate_accuracy(test_data)[0]
 
@@ -85,40 +86,47 @@ class MetricPreprocessor:
         train_metrics['confusion_matrix'] = self.calculate_confusion_matrix(train_data)
         test_metrics['confusion_matrix'] = self.calculate_confusion_matrix(test_data)
 
-        # auc - narazie nie stosujemy, można się zapoznać z tą koncepcją
-        # train_metrics['data']['auc'] = self.calculate_auc(train_data)
-        # test_metrics['auc'] = self.calculate_auc(test_data)
+        return train_metrics, test_metrics
+
+    def perceptron_sgd_cv_metrics(self, metrics, model_config):
+        train_metrics = []
+        test_metrics = []
+
+        last_val_train_data = metrics['data_train'][-model_config['validation_mode']['k']:]
+        last_val_test_data = metrics['data_test'][-model_config['validation_mode']['k']:]
+
+        for i, (train_data, test_data) in enumerate(zip(last_val_train_data, last_val_test_data)):
+            k_train = {'data': pd.DataFrame()}
+            k_test = {}
+
+            k_train['data']['n_epoch'] = train_data['n_epoch'].unique()
+
+            # mse
+            k_train['data']['mse'] = self.calculate_mse(train_data)
+            k_test['mse'] = self.calculate_mse(test_data)[0]
+
+            # mae
+            k_train['data']['mae'] = self.calculate_mae(train_data)
+            k_test['mae'] = self.calculate_mae(test_data)[0]
+
+            # accuracy
+            k_train['data']['accuracy'] = self.calculate_accuracy(train_data)
+            k_test['accuracy'] = self.calculate_accuracy(test_data)[0]
+
+            # confusion matrix
+            k_train['confusion_matrix'] = self.calculate_confusion_matrix(train_data)
+            k_test['confusion_matrix'] = self.calculate_confusion_matrix(test_data)
+
+            train_metrics.append(k_train)
+            test_metrics.append(k_test)
 
         return train_metrics, test_metrics
 
-    def run_sgd(self, validation_mode, metrics):
-        mode = {'simple_split': self.preprocess_split_sgd_metrics}
+    def run_sgd(self, validation_mode, metrics, model_config):
+        mode = {'simple_split':         self.perprocess_sgd_split_metrics,
+                'cross_validation':     self.perceptron_sgd_cv_metrics}
 
-        raport_data = mode[validation_mode](metrics)
+        raport_data = mode[validation_mode](metrics, model_config)
 
         return raport_data
 
-        # train_metrics = pd.DataFrame()
-        # test_metrics = pd.DataFrame()
-        #
-        # train_metrics['n_epoch'] = metrics['data_train'][0]['n_epoch'].unique()
-        # test_metrics['n_epoch'] = metrics['data_train'][0]['n_epoch'].unique()
-        #
-        # # mse
-        # train_metrics['mse'] = self.calculate_mse(train_metrics)
-        #
-        #
-        # sgd_metrics = {}
-        # sgd_metrics = metrics['data_train'][0]
-        #
-        # m = pd.DataFrame()
-        # m['n_epoch'] = metrics['data_train'][0]['n_epoch'].unique()
-        #
-        # # metrics['data_train'][0]['n_epoch'].unique()
-        #
-        # train_metrics = metrics['data_train'][0]
-        #
-        # mse = self.calculate_mse(train_metrics)
-        #
-        # sgd_metrics['mse'] = mse
-        # return sgd_metrics
