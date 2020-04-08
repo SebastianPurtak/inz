@@ -9,24 +9,9 @@ from interface_component.raports import perceptron_sgd_rapport
 from models_component.models_controller import ModelController
 from utils.metrics_preprocessing import MetricPreprocessor
 
-
+# TODO: sprawdzić czy poniższe zmienne są faktycznie potrzebne
 clicks_counter = 0
 test = False
-
-model_config = {
-    'model': 'perceptron_sgd',
-    'data_source': 'test',
-    'model_config': {
-        'n_epoch':  0,
-        'l_rate':   0,
-        'iter':     0,
-        'validation_mode': {
-            'mode':             '',
-            'test_set_size':    0,
-            'k':                0
-        }
-    }
-}
 
 config = {'model':          'perceptron_sgd',
           'data_source':    'sonar_data',
@@ -92,6 +77,7 @@ layout = dbc.Container([
             children=[
                 dcc.Dropdown(id='data_source-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
+                             clearable=False,
                              value=data_sources[0],
                              style={'width': '200px'})],
             justify='center'),
@@ -140,6 +126,7 @@ layout = dbc.Container([
                      options=[
                          {'label': value, 'value': value} for value in validation_methods
                      ],
+                     clearable=False,
                      value=validation_methods[1],
                      style={'width': '200px'})
     ],
@@ -160,7 +147,7 @@ layout = dbc.Container([
 
     # ==PODGLĄD========================================================================================================
 
-    dbc.Row(html.Button(id='start-button-sgd',children='Start'), style={'padding': '10px'}, justify='center'),
+    dbc.Row(html.Button(id='start-button-sgd', children='Start'), style={'padding': '10px'}, justify='center'),
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
@@ -213,6 +200,7 @@ split_input = dcc.Input(id='split-input',
 
 @app.callback(Output('data_source-error', 'children'), [Input('data_source-input', 'value')])
 def set_data_source(value):
+    # Metoda walidacji wyboru źródła danych, może okazać się niepotrzebna
     try:
         if value is None:
             raise
@@ -305,6 +293,7 @@ def set_k_fold(value):
 @app.callback(Output('model-progress', 'children'),
               [Input('start-button-sgd', 'n_clicks')])
 def model_progress_info(n_clicks):
+    print('test')
     progress_info = html.P(id='progress-info', children='Trwa proces ucznia')
 
     return progress_info
@@ -316,9 +305,9 @@ def click_start_button(children):
 
     if children == 'Trwa proces ucznia':
 
-        global test
-
-        test = False
+        # global test
+        #
+        # test = False
 
         controller = ModelController()
         metrics_preprocessor = MetricPreprocessor()
@@ -342,7 +331,7 @@ def click_start_button(children):
 
         print('w menu: ', metrisc_sgd)
 
-        test = True
+        # test = True
 
         return raport_button, html.P(id='end-text', children='Zakończono!')
     else:

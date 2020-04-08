@@ -184,54 +184,54 @@ if __name__ == '__main__':
     #                 'learinig_rate': 0.01}
 
     # perceptron SGD config
-    config = {'model':          'perceptron_sgd', # perceptron_sgd
-              'data_source':    'sonar_data',   # data_source
-              'model_config':   {'n_epoch':         50,
-                                 'l_rate':          0.01,
-                                 'validation_mode':  {'mode':           'simple_split', # 'simple_split', 'cross_validation'
-                                                      'test_set_size':  0.25,
-                                                      'k':              10},
-                                 'metrics':         {'data_train':      [],
-                                                     'data_test':       [],
-                                                     'cv_data_train':   [],
-                                                     'cv_data_test':    [],
-                                                     'n_epoch':         [],
-                                                     'n_row':           [],
-                                                     'prediction':      [],
-                                                     'real_value':      [],
-                                                     'error':           []}}}
+    # config = {'model':          'perceptron_sgd', # perceptron_sgd
+    #           'data_source':    'sonar_data',   # data_source
+    #           'model_config':   {'n_epoch':         50,
+    #                              'l_rate':          0.01,
+    #                              'validation_mode':  {'mode':           'simple_split', # 'simple_split', 'cross_validation'
+    #                                                   'test_set_size':  0.25,
+    #                                                   'k':              10},
+    #                              'metrics':         {'data_train':      [],
+    #                                                  'data_test':       [],
+    #                                                  'cv_data_train':   [],
+    #                                                  'cv_data_test':    [],
+    #                                                  'n_epoch':         [],
+    #                                                  'n_row':           [],
+    #                                                  'prediction':      [],
+    #                                                  'real_value':      [],
+    #                                                  'error':           []}}}
 
 
     # perceptron GA config
 
-    # config = {'model': 'perceptron_ga',  # perceptron_sgd
-    #           'data_source': 'sonar_data',  # data_source
-    #           'model_config': {'no_generations':    50,
-    #                            'pop_size':          100,
-    #                            'select_n':          0.3,
-    #                            'mut_prob':          0.2,
-    #                            'rand_mut':          0.2,
-    #                            'mut_type':          'swap_mut', #random_mut, swap_mut
-    #                            'selection_method':  'best_selection', # simple_selection
-    #                            'parents_choice':    'sequence_parents', # random_parents, sequence_parents
-    #                            'cross_type':        'cross_uniform', # cross_uniform, cross_one_point, cross_two_point
-    #                            'evaluation_pop':     5,
-    #                            'max_fit':           0.1,
-    #                            'validation_mode': {'mode': 'cross_validation',  # 'simple_split', 'cross_validation'
-    #                                                'test_set_size': 0.25,
-    #                                                'k': 10},
-    #                            'metrics': {'data_train':    [],
-    #                                        'data_test':     [],
-    #                                        'cv_data_train': [],
-    #                                        'cv_data_test':  [],
-    #                                        'n_epoch':       [],
-    #                                        'n_row':         [],
-    #                                        'prediction':    [],
-    #                                        'real_value':    [],
-    #                                        'error':         [],
-    #                                        'generation':    [],
-    #                                        'best_fit':      [],
-    #                                        'val_fit':       []}}} # wartość funkcji dopasowania najlepszych osobników w populacji, obliczona na zbiorze testowym
+    config = {'model': 'perceptron_ga',  # perceptron_sgd
+              'data_source': 'sonar_data',  # data_source
+              'model_config': {'no_generations':    50,
+                               'pop_size':          10,
+                               'select_n':          0.3,
+                               'mut_prob':          0.2,
+                               'rand_mut':          0.1,
+                               'mut_type':          'swap_mut', #random_mut, swap_mut
+                               'selection_method':  'best_selection', # simple_selection
+                               'parents_choice':    'sequence_parents', # random_parents, sequence_parents
+                               'cross_type':        'cross_uniform', # cross_uniform, cross_one_point, cross_two_point
+                               'evaluation_pop':     5,
+                               'max_fit':           0.1,
+                               'validation_mode': {'mode': 'cross_validation',  # 'simple_split', 'cross_validation'
+                                                   'test_set_size': 0.25,
+                                                   'k': 10},
+                               'metrics': {'data_train':    [],
+                                           'data_test':     [],
+                                           'cv_data_train': [],
+                                           'cv_data_test':  [],
+                                           'n_epoch':       [],
+                                           'n_row':         [],
+                                           'prediction':    [],
+                                           'real_value':    [],
+                                           'error':         [],
+                                           'generation':    [],
+                                           'best_fit':      [],
+                                           'val_fit':       []}}} # wartość funkcji dopasowania najlepszych osobników w populacji, obliczona na zbiorze testowym
 
 
     # Simple ANN config
