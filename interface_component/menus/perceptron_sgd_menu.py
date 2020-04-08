@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 from tqdm import tqdm
 
 from interface_component.app import app
-from interface_component.raports import perceptron_sgd_rapport
+from interface_component.raports import perceptron_sgd_raport
 from models_component.models_controller import ModelController
 from utils.metrics_preprocessing import MetricPreprocessor
 
@@ -32,6 +32,7 @@ config = {'model':          'perceptron_sgd',
 
 metrisc_sgd = {}
 
+print('test odświeżania')
 
 clicks = 0
 
@@ -302,6 +303,7 @@ def model_progress_info(n_clicks):
 @app.callback([Output('model-start', 'children'), Output('model-end', 'children')],
               [Input('progress-info', 'children')])
 def click_start_button(children):
+    print('epoch: ', config['model_config']['metrics']['n_epoch'])
 
     if children == 'Trwa proces ucznia':
 
@@ -318,20 +320,16 @@ def click_start_button(children):
                                 justify='center',
                                 style={'padding': '15px'})
 
-        train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config']['validation_mode']['mode'],
-                                                                   config['model_config']['metrics'],
-                                                                   config['model_config'])
+        train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
+
         # czy metrics_sgd jest mi faktycznie potrzebne?
-        perceptron_sgd_rapport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
+        perceptron_sgd_raport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
 
         if config['model_config']['validation_mode']['mode'] == 'simple_split':
-            perceptron_sgd_rapport.generate_raport()
+            perceptron_sgd_raport.generate_raport()
         elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
-            perceptron_sgd_rapport.generate_cv_raport()
+            perceptron_sgd_raport.generate_cv_raport()
 
-        print('w menu: ', metrisc_sgd)
-
-        # test = True
 
         return raport_button, html.P(id='end-text', children='Zakończono!')
     else:

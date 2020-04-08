@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 from interface_component.app import app
-# import modułu raportowego
+from interface_component.raports import perceptron_ga_raport
 from models_component.models_controller import ModelController
 from utils.metrics_preprocessing import MetricPreprocessor
 
@@ -37,7 +37,10 @@ config = {'model': 'perceptron_ga',  # perceptron_sgd
                                            'error':         [],
                                            'generation':    [],
                                            'best_fit':      [],
+                                           'mean_fit':      [],
                                            'val_fit':       []}}} # wartość funkcji dopasowania najlepszych osobników
+
+print('Test odświeżania ga')
 
 data_sources = ['sonar_data', 'seed_data.csv']
 
@@ -345,8 +348,6 @@ def set_no_generations_pga(value):
                              color='danger')
 
         config['model_config']['no_generations'] = value
-
-        print('no generatons value: ', config['model_config']['no_generations'])
     except:
         return dbc.Alert(id='no_generations_None_alert', children='Podaj liczbę pokolej!', color='danger')
 
@@ -475,9 +476,7 @@ def set_max_fit_pga(max_fit_value):
 
 @app.callback(Output('start-model-info-row', 'children'), [Input('start-button-pga', 'n_clicks')])
 def click_start_pga_model(n_clicks):
-    print('n_clicks', n_clicks)
     if n_clicks is not None:
-        print('Odpalenie metody uruchamiającej model!')
         return dbc.Alert(id='progress-pga-info', children='Trwa proces uczenia', color='primary')
 
 
@@ -487,52 +486,21 @@ def run_pga_model(children):
     controller = ModelController()
     metrics_preprocessor = MetricPreprocessor()
 
+    print('generations: ', config['model_config']['metrics']['generation'])
+
     controller.run_model(config)
 
     raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
+        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/apps/perceptron_ga_raport')])],
         justify='center',
         style={'padding': '15px'})
 
+    train_metrics, test_metrics = metrics_preprocessor.perprocess_ga_metrics(config['model_config'])
+
+    perceptron_ga_raport.generate_raport(train_metrics, test_metrics)
+
     return dbc.Alert(id='result-pga-info', children='Zakończono!', color='primary'), raport_button
 
-
-
-# Działa ale średnio
-
-# @app.callback(Output('model-progress-pga', 'children'),
-#               [Input('start-button-pga', 'n_clicks')])
-# def model_progress_info(n_clicks):
-#     print('test', n_clicks)
-#     progress_info = html.P(id='progress-info-pga', children='Trwa proces ucznia')
-#
-#     return progress_info
-#
-#
-# @app.callback(Output('learning_info-pga', 'children'),
-#               [Input('progress-info-pga', 'children')])
-# def click_start_button(value):
-#     # print(config['model_config']['validation_mode']['test_set_size'])
-#
-#
-#     if value == 'Trwa proces ucznia':
-#         # print('n_clicks: ', n_clicks)
-#         # print('no_generations: ', config['model_config']['no_generations'])
-#         # print('model config: ', config['model_config'])
-#
-#         # yield dbc.Alert('Trwa proces uczenia', color='danger')
-#
-#         controller = ModelController()
-#         metrics_preprocessor = MetricPreprocessor()
-#         controller.run_model(config)
-#
-#         return dbc.Alert('Zakończono!', color='danger')
-#
-#     # controller = ModelController()
-#     # metrics_preprocessor = MetricPreprocessor()
-#     # controller.run_model(config)
-#
-#     # return dbc.Alert('Zakończono!', color='danger')
 
 
 

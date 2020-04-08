@@ -7,6 +7,8 @@ class MetricPreprocessor:
     def __init__(self):
         pass
 
+    # ==OBLICZANIE_METRYK===============================================================================================
+
     def calculate_mse(self, data):
         mse = []
         for epoch in data['n_epoch'].unique():
@@ -55,6 +57,8 @@ class MetricPreprocessor:
 
         return area
 
+    # ==PERCEPTRON_SGD==================================================================================================
+
     def perprocess_sgd_split_metrics(self, metrics, model_config):
         """
         Metoda odpowiada za obliczenie i agregację metryk dla zbioru treningowego i testowego, w procesie uczenia
@@ -88,7 +92,7 @@ class MetricPreprocessor:
 
         return train_metrics, test_metrics
 
-    def perceptron_sgd_cv_metrics(self, metrics, model_config):
+    def perprocess_sgd_cv_metrics(self, metrics, model_config):
         train_metrics = []
         test_metrics = []
 
@@ -122,11 +126,32 @@ class MetricPreprocessor:
 
         return train_metrics, test_metrics
 
-    def run_sgd(self, validation_mode, metrics, model_config):
+    def run_sgd(self, model_config):
         mode = {'simple_split':         self.perprocess_sgd_split_metrics,
-                'cross_validation':     self.perceptron_sgd_cv_metrics}
+                'cross_validation':     self.perprocess_sgd_cv_metrics}
 
-        raport_data = mode[validation_mode](metrics, model_config)
+        raport_data = mode[model_config['validation_mode']['mode']](model_config['metrics'], model_config)
 
         return raport_data
+
+    # ==PERCEPTRON_GA===================================================================================================
+
+    def perprocess_ga_metrics(self, model_config):
+        # train_metrics = {'data': pd.DataFrame()}
+        test_metrics = {'val_fit': sorted(model_config['metrics']['val_fit'])}
+
+        train_metrics = model_config['metrics']['data_train'][-1]
+
+        return train_metrics, test_metrics
+
+
+
+
+    # def run_sgd(self, validation_mode, metrics, model_config):
+    #     mode = {'simple_split':         self.perprocess_sgd_split_metrics,
+    #             'cross_validation':     self.perceptron_sgd_cv_metrics}
+    #
+    #     raport_data = mode[validation_mode](metrics, model_config)
+    #
+    #     return raport_data
 

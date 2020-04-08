@@ -1,4 +1,5 @@
 import random
+from statistics import mean
 
 import numpy as np
 import pandas as pd
@@ -19,7 +20,19 @@ class PerceptronGA:
     # GROMADZENIE METRYK
     # =================================================================================================================
 
-    def collect_metrics(self, model_config, best_fit, n_generation):
+    def clear_metrics(self, metrics):
+        """
+        Metoda odpowiada za czyszczenie pól konfiguracji modelu, w których zbierane są metryki przed ich agregacją.
+        Wykorzystywana jest przez metody, które uruchamiane są w sytuacji zapełnienia wspomnianych pól, a jednocześnie
+        mają za zadanie gromadzenie metryk.
+        :param metrics: dict
+        :return:
+        """
+        metrics['best_fit'] = []
+        metrics['mean_fit'] = []
+        metrics['generation'] = []
+
+    def collect_metrics(self, model_config, pop_fitness, n_generation):
         """
         Zadaniem metody jest gromadzenie danych niezbędnych do obliczenia metryk jakości modelu i przypisanie ich do
         struktury danych obejmującej konfigurację modelu.
@@ -31,7 +44,8 @@ class PerceptronGA:
         :param metrics: dict
         :return:
         """
-        model_config['metrics']['best_fit'].append(best_fit)
+        model_config['metrics']['best_fit'].append(min(pop_fitness))
+        model_config['metrics']['mean_fit'].append(mean(pop_fitness))
         model_config['metrics']['generation'].append(n_generation)
 
     def aggregate_metrics(self, model_config, data_target):
@@ -45,8 +59,11 @@ class PerceptronGA:
 
         metrics['generation'] = model_config['metrics']['generation']
         metrics['best_fit'] = model_config['metrics']['best_fit']
+        metrics['mean_fit'] = model_config['metrics']['mean_fit']
 
         model_config['metrics'][data_target].append(metrics)
+
+        self.clear_metrics(model_config['metrics'])
 
     # =================================================================================================================
     # MUTACJE
@@ -303,7 +320,7 @@ class PerceptronGA:
 
         return [population[idx] for idx in sort_index[:select_n]]
 
-    def nex_generation(self, population, pop_fitness, model_config):
+    def next_generation(self, population, pop_fitness, model_config):
         """
         Metoda tworzy nowe pokolenie:
         1. Określana jest liczba osobników, które bez zmian przejdą do nowego pokolenia i wezmą udział w krzyżowaniu;
@@ -420,8 +437,8 @@ class PerceptronGA:
         while n_generation <= model_config['no_generations'] and min(pop_fitness) > model_config['max_fit']:
             print('generation: ', n_generation)
             pop_fitness = self.get_fitness(population, data)
-            self.collect_metrics(model_config, min(pop_fitness), n_generation)
-            population = self.nex_generation(population, pop_fitness, model_config)
+            self.collect_metrics(model_config, pop_fitness, n_generation)
+            population = self.next_generation(population, pop_fitness, model_config)
             population = self.mutations(population, model_config)
             print('best fit: ', min(pop_fitness))
             print('len population: ', len(population))
