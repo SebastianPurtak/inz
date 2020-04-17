@@ -32,8 +32,6 @@ config = {'model':          'perceptron_sgd',
 
 metrisc_sgd = {}
 
-print('test odświeżania')
-
 clicks = 0
 
 colors = {
@@ -227,7 +225,7 @@ def set_data_n_epoch(value):
 
 
 @app.callback(Output('l_rate-error', 'children'), [Input('l_rate-input', 'value')])
-def set_data_l_rate(value):
+def set_l_rate(value):
     try:
         config['model_config']['l_rate'] = float(value)
         return ''

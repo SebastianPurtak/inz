@@ -1,4 +1,5 @@
 import random
+from statistics import mean
 
 import numpy as np
 import pandas as pd
@@ -20,7 +21,7 @@ class NeuralNetworkGA:
     # GROMADZENIE METRYK
     # =================================================================================================================
 
-    def collect_metrics(self, model_config, best_fit, n_generation):
+    def collect_metrics(self, model_config, pop_fitness, n_generation):
         """
         Zadaniem metody jest gromadzenie danych niezbędnych do obliczenia metryk jakości modelu i przypisanie ich do
         struktury danych obejmującej konfigurację modelu.
@@ -32,7 +33,8 @@ class NeuralNetworkGA:
         :param metrics: dict
         :return:
         """
-        model_config['metrics']['best_fit'].append(best_fit)
+        model_config['metrics']['best_fit'].append(min(pop_fitness))
+        model_config['metrics']['mean_fit'].append(mean(pop_fitness))
         model_config['metrics']['generation'].append(n_generation)
 
     def aggregate_metrics(self, model_config, data_target):
@@ -46,6 +48,7 @@ class NeuralNetworkGA:
 
         metrics['generation'] = model_config['metrics']['generation']
         metrics['best_fit'] = model_config['metrics']['best_fit']
+        metrics['mean_fit'] = model_config['metrics']['mean_fit']
 
         model_config['metrics'][data_target].append(metrics)
 
@@ -485,7 +488,7 @@ class NeuralNetworkGA:
         while n_generation <= model_config['no_generations'] and min(pop_fittnes) > model_config['max_fit']:
             print('Generation: ', n_generation)
             pop_fitnness = self.get_fitness(model, population, genom_size, train_set)
-            self.collect_metrics(model_config, min(pop_fitnness), n_generation)
+            self.collect_metrics(model_config, pop_fitnness, n_generation)
             population = self.nex_generation(population, pop_fitnness, model_config)
             population = self.mutations(population, model_config)
             print('Best fit: ', min(pop_fitnness))
