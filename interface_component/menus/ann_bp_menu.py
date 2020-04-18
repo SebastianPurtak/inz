@@ -147,7 +147,7 @@ layout = dbc.Container([
     dbc.Row(id='n_epoch-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='l_rate-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='n_hidden-ann-bp-alert', children=[], justify='center'),
-    dbc.Row(id='val_method-ann-bp-error', children=[], justify='center'),
+    # dbc.Row(id='val_method-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='test_set-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='k-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='start-model-ann-bp-info', children=[], justify='center'),
@@ -204,11 +204,15 @@ def set_n_epoch_ann_bp(value):
 @app.callback(Output('l_rate-ann-bp-alert', 'children'), [Input('l_rate-ann-bp-input', 'value')])
 def set_l_rate_ann_bp(value):
     try:
+        if float(value) <= 0:
+            return dbc.Alert(id='l_rate-ann-bp_0_alert',
+                         children='Współczynnik uczenia powinien być liczbą większą od 0.',
+                         color='danger')
         config['model_config']['l_rate'] = float(value)
         return ''
     except:
         return dbc.Alert(id='l_rate-ann-bp_None_alert',
-                         children='Współczynnik uczenia powinien być liczbą większą od 0.',
+                         children='Podaj wartość współczynnika uczenia.',
                          color='danger')
 
 
@@ -241,11 +245,15 @@ def set_val_method_ann_bp(value):
 @app.callback(Output('test_set-ann-bp-error', 'children'), [Input('split-input-ann-bp', 'value')])
 def set_test_set_ann_bp(value):
     try:
-        config['model_config']['validation_mode']['test_set_size'] = float(value)
-        return ''
+        if float(value) >= 1 or float(value) <= 0:
+            return dbc.Alert(id='test_set-ann-bp_Range_alert',
+                     children='Współczynnik podziału na zbiór testowy i treningowy powinien być liczbą całkowitą z przedziału od 0 do 1.',
+                     color='danger')
+        else:
+            config['model_config']['validation_mode']['test_set_size'] = float(value)
     except:
-        return dbc.Alert(id='test_set-ann-bp_0_alert',
-                         children='Współczynnik podziału na zbiór testowy i treningowy powinien być liczbą całkowitą z przedziału od 0 do 1.',
+        return dbc.Alert(id='test_set-ann-bp_None_alert',
+                         children='Podaj wartość współczynnika podziału na zbiór testowy i treningowy.',
                          color='danger')
 
 

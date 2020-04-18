@@ -9,9 +9,6 @@ from interface_component.raports import perceptron_sgd_raport
 from models_component.models_controller import ModelController
 from utils.metrics_preprocessing import MetricPreprocessor
 
-# TODO: sprawdzić czy poniższe zmienne są faktycznie potrzebne
-clicks_counter = 0
-test = False
 
 config = {'model':          'perceptron_sgd',
           'data_source':    'sonar_data',
@@ -134,12 +131,12 @@ layout = dbc.Container([
 
     # ==WALIDACJA_CONFIG===============================================================================================
 
-    dbc.Row(id='validation-config-label',
+    dbc.Row(id='validation-config-psgd-label',
             children=[],
             justify='center',
             style={'padding': '10px'}),
 
-    dbc.Row(id='validation-config-row',
+    dbc.Row(id='validation-config-psgd-row',
             children=[],
             justify='center',
             style={'padding': '10px'}),
@@ -150,26 +147,18 @@ layout = dbc.Container([
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
-    dbc.Row(html.Label(id='data_source-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='n_epoch-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='l_rate-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='val_method-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='k-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='test_set-error', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='model-progress', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='model-end', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    dbc.Row(html.Label(id='model-start', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
+    dbc.Row(id='data_source-psgd-alert', children=[], justify='center'),
+    dbc.Row(id='n_epoch-psgd-alert', children=[], justify='center'),
+    dbc.Row(id='l_rate-psgd-alert', children=[], justify='center'),
+    dbc.Row(id='val_method-psgd-error', children=[], justify='center'),
+    dbc.Row(id='test_set-psgd-error', children=[], justify='center'),
+    dbc.Row(id='k-psgd-error', children=[], justify='center'),
+    dbc.Row(id='start-model-psgd-info', children=[], justify='center'),
+    dbc.Row(id='end-model-psgd-info', children=[], justify='center'),
 
-    # dbc.Row(html.Label(id='model-start1', children=''), justify='center', style={'backgroundColor': '#C0C0C0'}),
-    # dbc.Row(dbc.Progress(id='progress'), justify='center', style={'backgroundColor': '#C0C0C0'}),
+    dbc.Row(id='raport-button-psgd-row', children=[], justify='center', style={'padding': '15px'}),
 
-    dbc.Row([
-        html.Button(id='back', children=[dcc.Link('Wróć', href='/')])
-    ],
-    justify='center',
-    style={
-        'padding': '15px'
-    })
+    dbc.Row([html.Button(id='back', children=[dcc.Link('Wróć', href='/')])], justify='center', style={'padding': '15px'})
 ],
     fluid=True,
     style={
@@ -197,146 +186,110 @@ split_input = dcc.Input(id='split-input',
 # ==CALLBACKS==========================================================================================================
 
 
-@app.callback(Output('data_source-error', 'children'), [Input('data_source-input', 'value')])
-def set_data_source(value):
-    # Metoda walidacji wyboru źródła danych, może okazać się niepotrzebna
+@app.callback(Output('data_source-psgd-alert', 'children'), [Input('data_source-input', 'value')])
+def set_psgd_data_source(value):
+    config['data_source'] = value
+
+
+@app.callback(Output('n_epoch-psgd-alert', 'children'), [Input('n_epoch-input', 'value')])
+def set_spgd_n_epoch(value):
     try:
-        if value is None:
-            raise
-        config['data_source'] = value
-        return ''
+        if value <= 0 or type(value) != int:
+            return dbc.Alert(id='n_epoch-psgd_0_alert',
+                             children='Liczba epok powinna być liczbą całkowitą większą od 0.',
+                             color='danger')
+
+        config['model_config']['n_epoch'] = value
+
     except:
-        return 'Należy wybrać źródło danych.'
+        return dbc.Alert(id='n_epoch-psgd_None_alert', children='Podaj liczbę epok!', color='danger')
 
 
-@app.callback(Output('n_epoch-error', 'children'), [Input('n_epoch-input', 'value')])
-def set_data_n_epoch(value):
+@app.callback(Output('l_rate-psgd-alert', 'children'), [Input('l_rate-input', 'value')])
+def set_psgd_l_rate(value):
     try:
-        n_epoch = value
+        if float(value) <= 0:
+            return dbc.Alert(id='l_rate-psgd_0_alert',
+                         children='Współczynnik uczenia powinien być liczbą większą od 0.',
+                         color='danger')
 
-        if type(n_epoch) != int:
-            raise
-
-        config['model_config']['n_epoch'] = n_epoch
-
-        return ''
-    except:
-        return 'Wprowadzono nieprawidłową liczbę epok. Wprowadź liczbę całkowitą.'
-
-
-@app.callback(Output('l_rate-error', 'children'), [Input('l_rate-input', 'value')])
-def set_l_rate(value):
-    try:
         config['model_config']['l_rate'] = float(value)
         return ''
     except:
-        return 'Wprowadzono nieprawidłową wartość wspólczynnika uczenia. Wprowadź liczbę zmiennoprzecinkową.'
+        return dbc.Alert(id='l_rate-psgd_None_alert',
+                         children='Podaj wartość współczynnika uczenia.',
+                         color='danger')
 
 
-@app.callback(Output('val_method-error', 'children'), [Input('validation-method-choice', 'value')])
-def set_val_method(value):
-    try:
-        val_method = value
-
-        if val_method == None:
-            raise
-
-        config['model_config']['validation_mode']['mode'] = val_method
-        return ''
-    except:
-        return 'Nie wybrano żadnej metody walidacji.'
-
-@app.callback([Output('validation-config-label', 'children'),
-               Output('validation-config-row', 'children')],
+@app.callback([Output('validation-config-psgd-label', 'children'),
+               Output('validation-config-psgd-row', 'children')],
               [Input('validation-method-choice', 'value')])
-def update_val_method_config(value):
-    val_config = {'cross_validation':       [k_label, k_input],
-                  'simple_split':    [split_label, split_input]}
+def set_val_method_psgd(value):
+    val_config = {'cross_validation':   [k_label, k_input],
+                  'simple_split':       [split_label, split_input]}
+
+    config['model_config']['validation_mode']['mode'] = value
+
+    return val_config[value][0], val_config[value][1]
+
+
+@app.callback(Output('test_set-psgd-error', 'children'), [Input('split-input', 'value')])
+def set_test_set_psgd(value):
     try:
-        if value == None:
-            raise
+        if float(value) >= 1 or float(value) <= 0:
+            return dbc.Alert(id='test_set-psgd_Range_alert',
+                         children='Współczynnik podziału na zbiór testowy i treningowy powinien być liczbą całkowitą z przedziału od 0 do 1.',
+                         color='danger')
+        else:
+            config['model_config']['validation_mode']['test_set_size'] = float(value)
 
-        return val_config[value][0], val_config[value][1]
     except:
-        return '', ''
+        return dbc.Alert(id='test_set-ann-bp_None_alert',
+                         children='Podaj wartość współczynnika podziału na zbiór testowy i treningowy.',
+                         color='danger')
 
 
-@app.callback(Output('test_set-error', 'children'), [Input('split-input', 'value')])
-def set_test_set_size(value):
+@app.callback(Output('k-psgd-error', 'children'), [Input('k-input', 'value')])
+def set_k_fold_psgd(value):
     try:
-        test_set_size = float(value)
-
-        if test_set_size > 1 or test_set_size < 0:
-            raise
-
-        config['model_config']['validation_mode']['test_set_size'] = test_set_size
-
-        return ''
+        if value <= 0 or type(value) != int:
+            return dbc.Alert(id='k_fold-psgd_0_alert',
+                             children='Wartość k powinna być liczbą większą od 0.',
+                             color='danger')
+        else:
+            config['model_config']['validation_mode']['k'] = value
     except:
-        return 'Wprowadzono nieprawidłowy rozmiar zbioru treningowego. Wprowadź wartość z przedziału od 0 do 1'
+        return dbc.Alert(id='k_fold-psgd_None_alert', children='Podaj wartość k.',
+                         color='danger')
 
 
-@app.callback(Output('k-error', 'children'), [Input('k-input', 'value')])
-def set_k_fold(value):
-    try:
-        if type(value) != int:
-            raise
-
-        config['model_config']['validation_mode']['k'] = value
-
-        return ''
-    except:
-        return 'Wprowadzono nieprawidłową wartość k. Wprowadź liczbę całkowitą.'
+@app.callback(Output('start-model-psgd-info', 'children'), [Input('start-button-sgd', 'n_clicks')])
+def click_start_ann_bp_model(n_clicks):
+    if n_clicks is not None:
+        return dbc.Alert(id='progress-psgd-info', children='Trwa proces uczenia', color='primary')
 
 
-@app.callback(Output('model-progress', 'children'),
-              [Input('start-button-sgd', 'n_clicks')])
-def model_progress_info(n_clicks):
-    print('test')
-    progress_info = html.P(id='progress-info', children='Trwa proces ucznia')
+@app.callback([Output('end-model-psgd-info', 'children'),
+               Output('raport-button-psgd-row', 'children')],
+              [Input('progress-psgd-info', 'children')])
+def run_ann_bp_model(children):
+    controller = ModelController()
+    metrics_preprocessor = MetricPreprocessor()
 
-    return progress_info
+    controller.run_model(config)
 
+    raport_button = dbc.Row(
+        [html.Button(id='raport-psgd', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
+        justify='center',
+        style={'padding': '15px'})
 
-@app.callback([Output('model-start', 'children'), Output('model-end', 'children')],
-              [Input('progress-info', 'children')])
-def click_start_button(children):
-    print('epoch: ', config['model_config']['metrics']['n_epoch'])
+    train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 
-    if children == 'Trwa proces ucznia':
+    perceptron_sgd_raport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
 
-        # global test
-        #
-        # test = False
+    if config['model_config']['validation_mode']['mode'] == 'simple_split':
+        perceptron_sgd_raport.generate_raport()
+    elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
+        perceptron_sgd_raport.generate_cv_raport()
 
-        controller = ModelController()
-        metrics_preprocessor = MetricPreprocessor()
-
-        controller.run_model(config)
-
-        raport_button = dbc.Row([html.Button(id='raport', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
-                                justify='center',
-                                style={'padding': '15px'})
-
-        train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
-
-        # czy metrics_sgd jest mi faktycznie potrzebne?
-        perceptron_sgd_raport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
-
-        if config['model_config']['validation_mode']['mode'] == 'simple_split':
-            perceptron_sgd_raport.generate_raport()
-        elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
-            perceptron_sgd_raport.generate_cv_raport()
-
-
-        return raport_button, html.P(id='end-text', children='Zakończono!')
-    else:
-        pass
-
-
-
-
-
-
-
-
+    return dbc.Alert(id='result-psgd-info', children='Zakończono!', color='primary'), raport_button
