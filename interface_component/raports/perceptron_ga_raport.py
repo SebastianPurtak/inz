@@ -1,12 +1,6 @@
-import pandas as pd
-
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-
-
-from interface_component.app import app
 
 layout = {}
 
@@ -70,12 +64,14 @@ def generate_raport(train_metrics, test_metrics):
                 style={'padding': '10px',
                        'margin-bottom': '30px'}),
 
-        # html.P(str(round(test_metrics['mse'], 5))
-
-        dbc.Row(id='test_pop_best_fit-pga-row',
-                children=[html.P('Najlepsze wyniki populacji testowej: '), html.P(str(test_metrics['val_fit']),
-                                                                                  style={'text-indent': '50px'})],
-                justify='center'),
+        dbc.Row(id='test_pop_best_fit-pga-row- table', children=[
+            html.Table([
+                html.Thead(html.Tr(html.Th('Najlepsze wyniki populacji testowej'))),
+                html.Tbody([
+                    html.Tr(html.Td(str(result), style={'text-align': 'center'})) for result in test_metrics['val_fit']
+                ])
+            ])
+        ], justify='center'),
 
         # ==STOPKA======================================================================================================
 

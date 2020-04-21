@@ -41,7 +41,7 @@ config = {'model': 'ann_ga',  # perceptron_sgd
                                        'mean_fit':      [],
                                        'val_fit': []}}}
 
-data_sources = ['sonar_data', 'seed_data.csv']
+data_sources = ['sonar_data', 'seed_data']
 
 validation_methods = ['simple_split', 'cross_validation']
 
