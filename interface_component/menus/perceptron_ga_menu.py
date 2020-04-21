@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 from interface_component.app import app
 from interface_component.raports import perceptron_ga_raport
 from models_component.models_controller import ModelController
-from utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.metrics_preprocessing import MetricPreprocessor
 
 # ==CONFIG==============================================================================================================
 

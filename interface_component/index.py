@@ -44,9 +44,6 @@ def load_page(pathname):
     else:
         return '404'
 
+
 def run_interface():
     app.run_server(debug=True)
-
-
-# if __name__ == '__main__':
-#     app.run_server(debug=True)

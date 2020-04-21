@@ -2,12 +2,11 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-from tqdm import tqdm
 
 from interface_component.app import app
 from interface_component.raports import perceptron_sgd_raport
 from models_component.models_controller import ModelController
-from utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.metrics_preprocessing import MetricPreprocessor
 
 
 config = {'model':          'perceptron_sgd',

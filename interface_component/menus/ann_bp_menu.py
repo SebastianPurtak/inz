@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 from interface_component.app import app
 from interface_component.raports import ann_bp_raport
 from models_component.models_controller import ModelController
-from utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.metrics_preprocessing import MetricPreprocessor
 
 config = {'model': 'ann_bp',  # perceptron_sgd
           'data_source': 'seed_data',  # seed_data
