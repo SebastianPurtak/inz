@@ -143,7 +143,11 @@ layout = dbc.Container([
 
     # ==PODGLĄD========================================================================================================
 
-    dbc.Row(html.Button(id='start-button-sgd', children='Start'), style={'padding': '10px'}, justify='center'),
+    # dbc.Row(html.Button(id='start-button-sgd', children='Start'), style={'padding': '10px'}, justify='center'),
+
+    dbc.Row([dbc.Col([dbc.Button(id='start-button-sgd', children='Start', color='secondary', size='sm',
+                                 block=True)], width=1)],
+            justify='center', style={'padding': '15px'}),
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
@@ -158,7 +162,11 @@ layout = dbc.Container([
 
     dbc.Row(id='raport-button-psgd-row', children=[], justify='center', style={'padding': '15px'}),
 
-    dbc.Row([html.Button(id='back', children=[dcc.Link('Wróć', href='/')])], justify='center', style={'padding': '15px'})
+    # dbc.Row([html.Button(id='back', children=[dcc.Link('Wróć', href='/')])], justify='center', style={'padding': '15px'})
+
+    dbc.Row([dbc.Col([dbc.Button(id='back-button-sgd', children='Wróć', color='secondary', href='/models',
+                                 size='sm', block=True)], width=1)],
+            justify='center', style={'padding': '15px'}),
 ],
     fluid=True,
     style={
@@ -279,7 +287,7 @@ def run_ann_bp_model(children):
     controller.run_model(config)
 
     raport_button = dbc.Row(
-        [html.Button(id='raport-psgd', children=[dcc.Link('Pokaż raport', href='/perceptron_sgd_raport')])],
+        [html.Button(id='raport-psgd', children=[dcc.Link('Pokaż raport', href='/models/perceptron_sgd_raport')])],
         justify='center',
         style={'padding': '15px'})
 

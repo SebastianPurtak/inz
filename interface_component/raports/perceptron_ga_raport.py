@@ -75,7 +75,8 @@ def generate_raport(train_metrics, test_metrics):
 
         # ==STOPKA======================================================================================================
 
-        dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Pokaż config', href='perceptron_ga_menu')])],
+        dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Pokaż config',
+                                                                         href='/models/perceptron_ga_menu')])],
                 justify='center',
                 style={'padding': '15px'}),
     ],

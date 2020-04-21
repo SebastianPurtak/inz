@@ -155,7 +155,7 @@ layout = dbc.Container([
 
     dbc.Row(id='raport-button-ann-bp-row', children=[], justify='center', style={'padding': '15px'}),
 
-    dbc.Row([html.Button(id='back-ann-bp', children=[dcc.Link('Wróć', href='/')])],
+    dbc.Row([html.Button(id='back-ann-bp', children=[dcc.Link('Wróć', href='/models')])],
             justify='center', style={'padding': '15px'})
 
 ],
@@ -285,7 +285,7 @@ def run_ann_bp_model(children):
     controller.run_model(config)
 
     raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/apps/ann-bp_raport')])],
+        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/ann-bp_raport')])],
         justify='center',
         style={'padding': '15px'})
 

@@ -313,7 +313,7 @@ layout = dbc.Container([
     dbc.Row(id='max_fit-pga-alert-ann-ga', children=[], justify='center'),
 
     dbc.Row(id='raport-button-row-ann-ga', children=[], justify='center', style={'padding': '15px'}),
-    dbc.Row([html.Button(id='back-ann-ga', children=[dcc.Link('Wróć', href='/')])],
+    dbc.Row([html.Button(id='back-ann-ga', children=[dcc.Link('Wróć', href='/models')])],
             justify='center',
             style={'padding': '15px'}),
 
@@ -481,7 +481,7 @@ def run_ann_ga_model(children):
     controller.run_model(config)
 
     raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/apps/ann_ga_raport')])],
+        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/ann_ga_raport')])],
         justify='center',
         style={'padding': '15px'})
 

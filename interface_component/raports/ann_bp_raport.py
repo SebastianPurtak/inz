@@ -182,7 +182,7 @@ def generate_ann_bp_split_raport():
 
         # ==STOPKA==========================================================================================================
 
-        dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href='nn_bp_menu')])],
+        dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href='/models/ann_bp_menu')])],
                 justify='center',
                 style={'padding': '15px'}),
 
@@ -469,7 +469,7 @@ def generate_ann_bp_cv_raport():
 
         # ==STOPKA==========================================================================================================
 
-        dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href='nn_bp_menu')])],
+        dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href='/models/ann_bp_menu')])],
                 justify='center',
                 style={'padding': '15px',
                        'margin-top': '30px'}),

@@ -322,7 +322,7 @@ layout = dbc.Container([
 
 
     dbc.Row(id='raport-button-row', children=[], justify='center', style={'padding': '15px'}),
-    dbc.Row([html.Button(id='back_pga', children=[dcc.Link('Wróć', href='/')])],
+    dbc.Row([html.Button(id='back_pga', children=[dcc.Link('Wróć', href='/models')])],
             justify='center',
             style={'padding': '15px'}),
 
@@ -492,7 +492,7 @@ def run_pga_model(children):
     controller.run_model(config)
 
     raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/apps/perceptron_ga_raport')])],
+        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/perceptron_ga_raport')])],
         justify='center',
         style={'padding': '15px'})
 

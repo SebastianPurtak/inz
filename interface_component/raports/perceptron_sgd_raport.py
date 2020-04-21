@@ -254,7 +254,7 @@ def generate_raport():
 
     # ==STOPKA==========================================================================================================
 
-    dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href='perceptron_sgd_menu')])],
+    dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href='/models/perceptron_sgd_menu')])],
                             justify='center',
                             style={'padding': '15px'}),
 
@@ -544,7 +544,7 @@ def generate_cv_raport():
 
     # ==STOPKA==========================================================================================================
 
-        dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href='perceptron_sgd_menu')])],
+        dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href='/models/perceptron_sgd_menu')])],
                 justify='center',
                 style={'padding': '15px',
                        'margin-top': '30px'}),

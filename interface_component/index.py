@@ -3,9 +3,11 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from interface_component.app import app
-from interface_component.menus import perceptron_sgd_menu, perceptron_ga_menu, main_menu, ann_bp_menu, ann_ga_menu
+from interface_component.menus import main_menu, models_menu, perceptron_sgd_menu, perceptron_ga_menu, ann_bp_menu, \
+    ann_ga_menu, data_menu, results_menu
 from interface_component.raports import perceptron_sgd_raport, perceptron_ga_raport, ann_bp_raport, ann_ga_raport
-# from apps import main_menu, algorithms_menu, perceptron_sgd_menu, perceptron_ga_menu, nn_bp_menu, nn_ga_menu
+from interface_component.help import main_help, perceptron_sgd_help, perceptron_ga_help, ann_bp_help, ann_ga_help, \
+    data_help, results_help
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -22,15 +24,25 @@ def load_page(pathname):
     #         '/apps/nn_bp_menu':             nn_bp_menu.layout,
     #         '/apps/nn_ga_menu':             nn_ga_menu.layout}
 
-    dest = {'/': main_menu.layout,
-            '/perceptron_sgd_menu':         perceptron_sgd_menu.layout,
-            '/perceptron_sgd_raport':       perceptron_sgd_raport.layout,
-            '/apps/perceptron_ga_menu':     perceptron_ga_menu.layout,
-            '/apps/perceptron_ga_raport':   perceptron_ga_raport.layout,
-            '/apps/nn_bp_menu':             ann_bp_menu.layout,
-            '/apps/ann-bp_raport':          ann_bp_raport.layout,
-            '/apps/nn_ga_menu':             ann_ga_menu.layout,
-            '/apps/ann_ga_raport':          ann_ga_raport.layout
+    dest = {'/':                                main_menu.layout,
+            '/models':                          models_menu.layout,
+            '/models/perceptron_sgd_menu':      perceptron_sgd_menu.layout,
+            '/models/perceptron_sgd_raport':    perceptron_sgd_raport.layout,
+            '/models/perceptron_ga_menu':       perceptron_ga_menu.layout,
+            '/models/perceptron_ga_raport':     perceptron_ga_raport.layout,
+            '/models/ann_bp_menu':              ann_bp_menu.layout,
+            '/models/ann-bp_raport':            ann_bp_raport.layout,
+            '/models/ann_ga_menu':              ann_ga_menu.layout,
+            '/models/ann_ga_raport':            ann_ga_raport.layout,
+            '/data_menu':                       data_menu.layout,
+            '/results_menu':                    results_menu.layout,
+            '/help':                            main_help.layout,
+            '/help/perceptron_sgd_help':        perceptron_sgd_help.layout,
+            '/help/perceptron_ga_help':         perceptron_ga_help.layout,
+            '/help/ann_bp_help':                ann_bp_help.layout,
+            '/help/ann_ga_help':                ann_ga_help.layout,
+            '/help/data_help':                  data_help.layout,
+            '/help/results_help':               results_help.layout,
             }
 
     if pathname in dest.keys():
