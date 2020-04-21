@@ -14,16 +14,10 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
+
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def load_page(pathname):
-    # dest = {'/apps/main_menu':              main_menu.layout,
-    #         '/apps/algorithms_menu':        algorithms_menu.layout,
-    #         '/apps/perceptron_sgd_menu':    perceptron_sgd_menu.layout,
-    #         '/apps/perceptron_ga_menu':     perceptron_ga_menu.layout,
-    #         '/apps/nn_bp_menu':             nn_bp_menu.layout,
-    #         '/apps/nn_ga_menu':             nn_ga_menu.layout}
-
     dest = {'/':                                main_menu.layout,
             '/models':                          models_menu.layout,
             '/models/perceptron_sgd_menu':      perceptron_sgd_menu.layout,
