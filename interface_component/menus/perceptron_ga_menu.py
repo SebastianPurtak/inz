@@ -5,8 +5,9 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.raports import perceptron_ga_raport
-from models_component.models_controller import ModelController
 from interface_component.utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.data_management import DataManagement
+from models_component.models_controller import ModelController
 
 # ==CONFIG==============================================================================================================
 
@@ -41,7 +42,8 @@ config = {'model': 'perceptron_ga',  # perceptron_sgd
                                            'val_fit':       []}}} # wartość funkcji dopasowania najlepszych osobników
 
 
-data_sources = ['sonar_data', 'seed_data.csv']
+data_manager = DataManagement()
+data_sources = data_manager.get_datasets_list()
 
 validation_methods = ['cross_validation', 'simple_split']
 
@@ -94,6 +96,9 @@ layout = dbc.Container([
                                      clearable=False,
                                      style={'width': '200px'})],
                     justify='center'),
+
+            dbc.Row(dbc.Col([dbc.Button(id='refresh-button-pga', children='Odświerz', color='secondary', size='sm',
+                                block=True)], width=2), justify='center', style={'padding': '10px'}),
 
             # ==LICZBA_POKOLEŃ==========================================================================================
             dbc.Row(id='no_generation-pga-label',
@@ -172,6 +177,9 @@ layout = dbc.Container([
                                   min=0,
                                   style={'width': '200px'})],
                     justify='center'),
+        ]),
+
+        dbc.Col([
 
             # ==RAND_MUT================================================================================================
 
@@ -189,10 +197,6 @@ layout = dbc.Container([
                                   style={'width': '200px'})],
                     justify='center'),
 
-
-        ]),
-
-        dbc.Col([
             # ==METODA_SELEKCJI=========================================================================================
             dbc.Row(id='selection_method-pga-label',
                     children=[html.Label(('Wybierz metodę selekcji'))],
@@ -303,10 +307,8 @@ layout = dbc.Container([
 
     dbc.Row(id='start-model-info-row', children=[], justify='center'),
     dbc.Row(id='end-model-info-row', children=[], justify='center'),
-    # Działa ale średnio
-    # dbc.Row(id='model-progress-pga', children=[], justify='center'),
-    # dbc.Row(id='learning_info-pga', children=[], justify='center'),
     dbc.Row(id='data_source-pga-alert', children=[], justify='center'),
+    dbc.Row(id='data_refresh-pga-alert', children=[], justify='center'),
     dbc.Row(id='no_generations-pga-alert', children=[], justify='center'),
     dbc.Row(id='pop_size-pga-alert', children=[], justify='center'),
     dbc.Row(id='select_n-pga-alert', children=[], justify='center'),
@@ -337,6 +339,21 @@ layout = dbc.Container([
 @app.callback(Output('data_source-pga-alert', 'children'), [Input('data_source-pga-input', 'value')])
 def set_data_source_pga(value):
     config['data_source'] = value
+
+
+@app.callback([Output('data_source-pga-choice', 'children'), Output('data_refresh-pga-alert', 'children')],
+              [Input('refresh-button-pga', 'n_clicks')])
+def set_pga_data_source(n_clicks):
+    global data_sources
+    data_sources = data_manager.get_datasets_list()
+
+    drop_menu = dcc.Dropdown(id='data_source-pga-input',
+                             options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
+                             clearable=False,
+                             value=data_sources[0],
+                             style={'width': '200px'})
+
+    return drop_menu, None
 
 
 @app.callback(Output('no_generations-pga-alert', 'children'), [Input('no_generation-pga-input', 'value')])

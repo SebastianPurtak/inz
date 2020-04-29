@@ -5,8 +5,9 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.raports import ann_bp_raport
-from models_component.models_controller import ModelController
 from interface_component.utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.data_management import DataManagement
+from models_component.models_controller import ModelController
 
 config = {'model': 'ann_bp',  # perceptron_sgd
           'data_source': 'seed_data',  # seed_data
@@ -29,7 +30,8 @@ config = {'model': 'ann_bp',  # perceptron_sgd
                                        'best_fit': [],
                                        'val_fit': []}}}
 
-data_sources = ['sonar_data', 'seed_data']
+data_manager = DataManagement()
+data_sources = data_manager.get_datasets_list()
 
 validation_methods = ['simple_split', 'cross_validation']
 
@@ -57,6 +59,9 @@ layout = dbc.Container([
                              value=data_sources[0],
                              style={'width': '200px'})],
             justify='center'),
+
+    dbc.Row(dbc.Col([dbc.Button(id='refresh-button-ann_bp', children='Odświerz', color='secondary', size='sm',
+                                block=True)], width=2), justify='center', style={'padding': '10px'}),
 
     # ==LICZBA_EPOK=====================================================================================================
 
@@ -144,6 +149,7 @@ layout = dbc.Container([
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
     dbc.Row(id='data_source-ann-bp-alert', children=[], justify='center'),
+    dbc.Row(id='data_refresh-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='n_epoch-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='l_rate-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='n_hidden-ann-bp-alert', children=[], justify='center'),
@@ -186,6 +192,22 @@ split_input = dcc.Input(id='split-input-ann-bp',
 @app.callback(Output('data_source-ann-bp-alert', 'children'), [Input('data_source-ann-bp-input', 'value')])
 def set_data_source_ann_bp(value):
     config['data_source'] = value
+
+
+@app.callback([Output('data_source-ann-bp-choice', 'children'), Output('data_refresh-ann-bp-alert', 'children')],
+              [Input('refresh-button-ann_bp', 'n_clicks')])
+def set_ann_bp_data_source(n_clicks):
+    data_manager = DataManagement()
+    global data_sources
+    data_sources = data_manager.get_datasets_list()
+
+    drop_menu = dcc.Dropdown(id='data_source-ann_bp-input',
+                             options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
+                             clearable=False,
+                             value=data_sources[0],
+                             style={'width': '200px'})
+
+    return drop_menu, None
 
 
 @app.callback(Output('n_epoch-ann-bp-alert', 'children'), [Input('n_epoch-ann-bp-input', 'value')])
@@ -275,6 +297,7 @@ def set_k_fold_ann_bp(value):
 def click_start_ann_bp_model(n_clicks):
     if n_clicks is not None:
         return dbc.Alert(id='progress-ann-bp-info', children='Trwa proces uczenia', color='primary')
+
 
 @app.callback([Output('end-model-ann-bp-info', 'children'), Output('raport-button-ann-bp-row', 'children')],
               [Input('progress-ann-bp-info', 'children')])

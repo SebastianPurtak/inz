@@ -7,7 +7,9 @@ from interface_component.app import app
 from interface_component.raports import perceptron_sgd_raport
 from models_component.models_controller import ModelController
 from interface_component.utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.data_management import DataManagement
 
+data_manager = DataManagement()
 
 config = {'model':          'perceptron_sgd',
           'data_source':    'sonar_data',
@@ -34,7 +36,9 @@ colors = {
     'background': '#D3D3D3',
 }
 
-data_sources = ['sonar_data', 'seed_data.csv']
+# data_sources = ['sonar_data', 'seed_data']
+data_sources = data_manager.get_datasets_list()
+# data_sources = data_manager.datasets
 
 validation_methods = ['cross_validation', 'simple_split']
 
@@ -76,6 +80,9 @@ layout = dbc.Container([
                              value=data_sources[0],
                              style={'width': '200px'})],
             justify='center'),
+
+    dbc.Row(dbc.Col([dbc.Button(id='refresh-button-psgd', children='Odświerz', color='secondary', size='sm',
+                                block=True)], width=2), justify='center', style={'padding': '10px'}),
 
     # ==LICZBA_EPOK====================================================================================================
 
@@ -151,6 +158,7 @@ layout = dbc.Container([
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
     dbc.Row(id='data_source-psgd-alert', children=[], justify='center'),
+    dbc.Row(id='data_refresh-psgd-alert', children=[], justify='center'),
     dbc.Row(id='n_epoch-psgd-alert', children=[], justify='center'),
     dbc.Row(id='l_rate-psgd-alert', children=[], justify='center'),
     dbc.Row(id='val_method-psgd-error', children=[], justify='center'),
@@ -195,7 +203,24 @@ split_input = dcc.Input(id='split-input',
 
 @app.callback(Output('data_source-psgd-alert', 'children'), [Input('data_source-input', 'value')])
 def set_psgd_data_source(value):
+    global data_sources
+    data_sources = data_manager.get_datasets_list()
     config['data_source'] = value
+
+
+@app.callback([Output('data_source-choice', 'children'), Output('data_refresh-psgd-alert', 'children')],
+              [Input('refresh-button-psgd', 'n_clicks')])
+def set_psgd_data_source(n_clicks):
+    global data_sources
+    data_sources = data_manager.get_datasets_list()
+
+    drop_menu = dcc.Dropdown(id='data_source-input',
+                             options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
+                             clearable=False,
+                             value=data_sources[0],
+                             style={'width': '200px'})
+
+    return drop_menu, None
 
 
 @app.callback(Output('n_epoch-psgd-alert', 'children'), [Input('n_epoch-input', 'value')])

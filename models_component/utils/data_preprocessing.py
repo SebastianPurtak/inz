@@ -3,20 +3,15 @@ import os
 import pandas as pd
 from sklearn.preprocessing import normalize
 
-"""
-zastanowić się czy nie należy dodać klasy która będzie generyczna i będzie w stanie przyjmowac dane w określonym 
-formacie, aby dalej umożliwić na nich prace reszty oprogramowania
-"""
+
 class DataPreprocessing:
 
     def __init__(self):
         pass
 
     def get_data(self, data_name):
-        path = os.path.join(os.getcwd() + '/models_component/data/' + data_name + '.csv')
-        data = pd.read_csv(path, header=None)
-
-        data.rename(columns={data.columns[-1]: 'Answer'}, inplace=True)
+        path = os.path.join(os.getcwd() + '/models_component/data/' + data_name)
+        data = pd.read_csv(path, header=0)
 
         return data
 
@@ -26,36 +21,13 @@ class DataPreprocessing:
 
         return norm_data
 
+    def label_encoding(self, data):
+        data['Answer'] = data['Answer'].astype('category')
+        data['Answer'] = data['Answer'].cat.codes
+        return data
+
     def run_preprocessing(self, data_name):
         data = self.get_data(data_name)
         data = self.data_normalization(data)
 
         return data
-
-
-class SonarDataPreprocessing:
-
-    def __init__(self):
-        print()
-
-    def get_data(self):
-        # TODO: przemyśleć czy można rozwiązać dodawanie danych w sposób bardziej generyczny
-        data_path = os.path.join(os.getcwd() + '/models_component/data/sonar.all-data.csv')
-        columns = [nr for nr in range(60)]
-        columns.append('Type')
-        data = pd.read_csv(data_path, names=columns)
-        return data
-
-    def label_encoding(self, data):
-        data['Type'] = data['Type'].astype('category')
-        data['Type'] = data['Type'].cat.codes
-        return data
-
-    def run_preprocessing(self, _):
-        data = self.get_data()
-        data = self.label_encoding(data)
-        return data
-
-
-    def test_run(self):
-        print('Preprocessing test run')

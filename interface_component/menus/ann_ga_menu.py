@@ -5,8 +5,9 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.raports import ann_ga_raport
-from models_component.models_controller import ModelController
 from interface_component.utils.metrics_preprocessing import MetricPreprocessor
+from interface_component.utils.data_management import DataManagement
+from models_component.models_controller import ModelController
 
 # ==CONFIG==============================================================================================================
 
@@ -41,7 +42,9 @@ config = {'model': 'ann_ga',  # perceptron_sgd
                                        'mean_fit':      [],
                                        'val_fit': []}}}
 
-data_sources = ['sonar_data', 'seed_data']
+
+data_manager = DataManagement()
+data_sources = data_manager.get_datasets_list()
 
 validation_methods = ['simple_split', 'cross_validation']
 
@@ -93,6 +96,9 @@ layout = dbc.Container([
                                      clearable=False,
                                      style={'width': '200px'})],
                     justify='center'),
+
+            dbc.Row(dbc.Col([dbc.Button(id='refresh-button-ann_ga', children='Odświerz', color='secondary', size='sm',
+                                block=True)], width=2), justify='center', style={'padding': '10px'}),
 
             # ==LICZBA_POKOLEŃ==========================================================================================
             dbc.Row(id='no_generation-ann-ga-label',
@@ -172,6 +178,10 @@ layout = dbc.Container([
                                   style={'width': '200px'})],
                     justify='center'),
 
+        ]),
+
+        dbc.Col([
+
             # ==RAND_MUT================================================================================================
 
             dbc.Row(id='rand_mut-ann-ga-label',
@@ -188,9 +198,6 @@ layout = dbc.Container([
                                   style={'width': '200px'})],
                     justify='center'),
 
-        ]),
-
-        dbc.Col([
             # ==METODA_SELEKCJI=========================================================================================
             dbc.Row(id='selection_method-ann-ga-label',
                     children=[html.Label(('Wybierz metodę selekcji'))],
@@ -299,6 +306,7 @@ layout = dbc.Container([
     dbc.Row(id='start-model-info-row-ann-ga', children=[], justify='center'),
     dbc.Row(id='end-model-info-row-ann-ga', children=[], justify='center'),
     dbc.Row(id='data_source-pga-alert-ann-ga', children=[], justify='center'),
+    dbc.Row(id='data_refresh-pga-alert-ann-ga', children=[], justify='center'),
     dbc.Row(id='no_generations-pga-alert-ann-ga', children=[], justify='center'),
     dbc.Row(id='pop_size-pga-alert-ann-ga', children=[], justify='center'),
     dbc.Row(id='select_n-pga-alert-ann-ga', children=[], justify='center'),
@@ -326,6 +334,21 @@ layout = dbc.Container([
 @app.callback(Output('data_source-pga-alert-ann-ga', 'children'), [Input('data_source-ann-ga-input', 'value')])
 def set_data_source_ann_ga(value):
     config['data_source'] = value
+
+
+@app.callback([Output('data_source-ann-ga-choice', 'children'), Output('data_refresh-pga-alert-ann-ga', 'children')],
+              [Input('refresh-button-ann_ga', 'n_clicks')])
+def set_ann_ga_data_source(n_clicks):
+    global data_sources
+    data_sources = data_manager.get_datasets_list()
+
+    drop_menu = dcc.Dropdown(id='data_source-ann_ga-input',
+                             options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
+                             clearable=False,
+                             value=data_sources[0],
+                             style={'width': '200px'})
+
+    return drop_menu, None
 
 
 @app.callback(Output('no_generations-pga-alert-ann-ga', 'children'), [Input('no_generation-ann-ga-input', 'value')])
