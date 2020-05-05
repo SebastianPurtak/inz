@@ -317,7 +317,7 @@ def run_ann_bp_model(children):
 
     train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 
-    perceptron_sgd_raport.set_metrics(metrisc_sgd, train_metrics, test_metrics)
+    perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
 
     if config['model_config']['validation_mode']['mode'] == 'simple_split':
         perceptron_sgd_raport.generate_raport()
