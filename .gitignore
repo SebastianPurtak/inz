@@ -136,4 +136,4 @@ dmypy.json
 # test_mine.py
 
 # data dir
-./models_component/data/*
+./models_component/data/*.csv

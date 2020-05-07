@@ -53,7 +53,7 @@ layout = dbc.Container([
 
     dbc.Row(id='data_source-ann-bp-choice',
             children=[
-                dcc.Dropdown(id='data_source-ann-bp-input',
+                dcc.Dropdown(id='data_source-ann_bp-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
@@ -189,9 +189,14 @@ split_input = dcc.Input(id='split-input-ann-bp',
 # ==CALLBACKS===========================================================================================================
 
 
-@app.callback(Output('data_source-ann-bp-alert', 'children'), [Input('data_source-ann-bp-input', 'value')])
+@app.callback(Output('data_source-ann-bp-alert', 'children'), [Input('data_source-ann_bp-input', 'value')])
 def set_data_source_ann_bp(value):
     config['data_source'] = value
+
+# @app.callback(Output('data_source-ann-bp-alert', 'children'), [Input('data_source-ann-bp-input', 'value')])
+# def set_data_source_ann_bp(value):
+#     config['data_source'] = value
+#     print()
 
 
 @app.callback([Output('data_source-ann-bp-choice', 'children'), Output('data_refresh-ann-bp-alert', 'children')],

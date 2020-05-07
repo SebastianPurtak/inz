@@ -12,6 +12,8 @@ from interface_component.utils.data_management import DataManagement
 
 data_manager = DataManagement()
 
+filename = ''
+
 
 layout = dbc.Container([
 
@@ -95,6 +97,7 @@ layout = dbc.Container([
     dbc.Row(id='data-label_encoding-error', children=[], justify='center'),
     dbc.Row(id='data-shuffle_encoding-error', children=[], justify='center'),
     dbc.Row(id='save-error', children=[], justify='center'),
+    dbc.Row(id='filename-error', children=[], justify='center'),
 
 
 
@@ -139,34 +142,11 @@ def upload_file(data, filename, last_modified):
                                    children='Wystąpił problem z wczytaniem danych.',
                                    color='danger')
 
+    else:
+        return None, None
+
 
 # preprocessing
-
-
-@app.callback(Output('processed-data-preview', 'children'),
-              [Input('normalization-button', 'n_clicks'), Input('label-encoding-button', 'n_clicks'),
-               Input('label-shuffle-button', 'n_clicks')])
-def preprocess_data(normalization_click, label_encoding_click, shuffle_clicks):
-    if normalization_click is not None or label_encoding_click is not None or shuffle_clicks is not None:
-        data_preview = data_manager.get_data()
-
-        data_table = dash_table.DataTable(columns=[{'name': i, 'id': i} for i in data_preview.columns],
-                                          data=data_preview.to_dict('records'),
-                                          style_data={'whiteSpace': 'normal',
-                                                      'height': 'auto'},
-                                          style_table={'overflowY': 'scroll',
-                                                       'overflowX': 'scroll',
-                                                       'maxHeight': '500px'},
-                                          style_cell={'backgroundColor': 'rgb(100, 100, 100)',
-                                                      'color': 'white',
-                                                      'width': '100px'},
-                                          style_header={'backgroundColor': 'rgb(30, 30, 30)'},
-                                          style_data_conditional=[{'if': {'column_id': 'Answer'},
-                                                                   'backgroundColor': 'rgb(30, 30, 30)',
-                                                                   'color': 'white'}])
-
-        return data_table
-
 
 @app.callback(Output('data-normalization-error', 'children'),
               [Input('normalization-button', 'n_clicks')])
@@ -195,15 +175,40 @@ def shuffle_data(shuffle_click):
         return None
 
 
-@app.callback(Output('save-error', 'children'), [Input('filename_input', 'value'), Input('save-button', 'n_clicks')])
-def save_file(filename, save_click):
-    if save_click is not None and filename is None:
-        return dbc.Alert(id='save-data_alert', children='Wprowadź nazwę pliku.', color='danger')
+@app.callback(Output('processed-data-preview', 'children'),
+              [Input('normalization-button', 'n_clicks'), Input('label-encoding-button', 'n_clicks'),
+               Input('label-shuffle-button', 'n_clicks')])
+def preprocess_data(normalization_click, label_encoding_click, shuffle_clicks):
+    if normalization_click is not None or label_encoding_click is not None or shuffle_clicks is not None:
+        data_preview = data_manager.get_data()
 
-    if save_click is not None and filename is not None:
-        data_manager.save_data(filename)
+        data_table = dash_table.DataTable(columns=[{'name': i, 'id': i} for i in data_preview.columns],
+                                          data=data_preview.to_dict('records'),
+                                          style_data={'whiteSpace': 'normal',
+                                                      'height': 'auto'},
+                                          style_table={'overflowY': 'scroll',
+                                                       'overflowX': 'scroll',
+                                                       'maxHeight': '500px'},
+                                          style_cell={'backgroundColor': 'rgb(100, 100, 100)',
+                                                      'color': 'white',
+                                                      'width': '100px'},
+                                          style_header={'backgroundColor': 'rgb(30, 30, 30)'},
+                                          style_data_conditional=[{'if': {'column_id': 'Answer'},
+                                                                   'backgroundColor': 'rgb(30, 30, 30)',
+                                                                   'color': 'white'}])
 
-        return dbc.Alert(id='save-data_success', children='Zapisano plik.', color='success')
+        return data_table
+
+
+# @app.callback(Output('save-error', 'children'), [Input('filename_input', 'value'), Input('save-button', 'n_clicks')])
+# def save_file(filename, save_click):
+#     if save_click is not None and filename is None:
+#         return dbc.Alert(id='save-data_alert', children='Wprowadź nazwę pliku.', color='danger')
+#
+#     if save_click is not None and filename is not None:
+#         data_manager.save_data(filename)
+#
+#         return dbc.Alert(id='save-data_success', children='Zapisano plik.', color='success')
 
 
 @app.callback(Output('datasets_preview', 'children'), [Input('refresh-button', 'n_clicks')])
@@ -219,6 +224,26 @@ def datasets_preview(n_clicks):
     ], justify='center'),
 
     return table
+
+
+# ==Nowa wersja zapisu plików==
+
+@app.callback(Output('filename-error', 'children'), [Input('filename_input', 'value')])
+def set_filename(name):
+    global filename
+    filename = name
+
+
+@app.callback(Output('save-error', 'children'), [Input('save-button', 'n_clicks')])
+def save_file(save_click):
+    global filename
+    if save_click is not None and filename is None:
+        return dbc.Alert(id='save-data_alert', children='Wprowadź nazwę pliku.', color='danger')
+
+    if save_click is not None and filename is not None:
+        data_manager.save_data(filename)
+
+        return dbc.Alert(id='save-data_success', children='Zapisano plik.', color='success')
 
 
 

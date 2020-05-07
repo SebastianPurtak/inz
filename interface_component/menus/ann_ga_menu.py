@@ -90,7 +90,7 @@ layout = dbc.Container([
 
             dbc.Row(id='data_source-ann-ga-choice',
                     children=[
-                        dcc.Dropdown(id='data_source-ann-ga-input',
+                        dcc.Dropdown(id='data_source-ann_ga-input',
                                      options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                                      value=data_sources[0],
                                      clearable=False,
@@ -331,7 +331,7 @@ layout = dbc.Container([
 # ==CALLBACKS===========================================================================================================
 
 
-@app.callback(Output('data_source-pga-alert-ann-ga', 'children'), [Input('data_source-ann-ga-input', 'value')])
+@app.callback(Output('data_source-pga-alert-ann-ga', 'children'), [Input('data_source-ann_ga-input', 'value')])
 def set_data_source_ann_ga(value):
     config['data_source'] = value
 

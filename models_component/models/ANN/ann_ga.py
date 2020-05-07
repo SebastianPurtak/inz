@@ -21,6 +21,18 @@ class NeuralNetworkGA:
     # GROMADZENIE METRYK
     # =================================================================================================================
 
+    def clear_metrics(self, metrics):
+        """
+        Metoda odpowiada za czyszczenie pól konfiguracji modelu, w których zbierane są metryki przed ich agregacją.
+        Wykorzystywana jest przez metody, które uruchamiane są w sytuacji zapełnienia wspomnianych pól, a jednocześnie
+        mają za zadanie gromadzenie metryk.
+        :param metrics:
+        :return:
+        """
+        metrics['best_fit'] = []
+        metrics['mean_fit'] = []
+        metrics['generation'] = []
+
     def collect_metrics(self, model_config, pop_fitness, n_generation):
         """
         Zadaniem metody jest gromadzenie danych niezbędnych do obliczenia metryk jakości modelu i przypisanie ich do
@@ -51,6 +63,7 @@ class NeuralNetworkGA:
         metrics['mean_fit'] = model_config['metrics']['mean_fit']
 
         model_config['metrics'][data_target].append(metrics)
+        self.clear_metrics(model_config['metrics'])
 
     # =================================================================================================================
     # MUTACJE

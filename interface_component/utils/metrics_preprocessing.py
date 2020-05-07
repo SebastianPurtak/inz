@@ -40,10 +40,13 @@ class MetricPreprocessor:
 
         return accuracy
 
+
     def calculate_confusion_matrix(self, data):
-        tn, fp, fn, tp = confusion_matrix(data['real_value'], data['prediction']).ravel()
-        # return [[tp, tn], [fp, fn]]
+        # TODO: Confusion matrix zwraca różną ilość wartości i należy to ograć
+        # tn, fp, fn, tp = confusion_matrix(data['real_value'], data['prediction']).ravel()
+        tn, fp, fn, tp = 0, 0, 0, 0
         return [[tp, fp], [tn, fn]]
+
 
     def calculate_auc(self, data):
         area = []

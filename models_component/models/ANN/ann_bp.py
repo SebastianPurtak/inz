@@ -79,6 +79,7 @@ class NeuralNetworkBP:
             metrics[column] = all_metrics[idx]
 
         model_config['metrics'][data_target].append(metrics)
+        self.clear_metrics(model_config['metrics'])
 
     # =================================================================================================================
     # WALIDACJA MODELU
@@ -99,7 +100,7 @@ class NeuralNetworkBP:
         :return:
         """
         answers = []
-        self.clear_metrics(model_config['metrics'])
+        # self.clear_metrics(model_config['metrics'])
 
         for idx, row in test_set.iterrows():
             outputs = model.feed_forward(row[:-1])
