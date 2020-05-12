@@ -85,7 +85,7 @@ class DBFacade:
 
     def gradient_data_parser(self, document):
         test_metrics = document['test_metrics']
-        train_metrics = None
+        # train_metrics = None
 
         if isinstance(document['train_metrics'], list):
             train_metrics = self.parse_list_data(document['train_metrics'])
@@ -93,7 +93,6 @@ class DBFacade:
             train_metrics = {}
             train_metrics['data'] = pd.DataFrame.from_dict(document['train_metrics']['data'])
             train_metrics['confusion_matrix'] = document['train_metrics']['confusion_matrix']
-
 
         return test_metrics, train_metrics
 
@@ -105,7 +104,8 @@ class DBFacade:
         # print()
 
     def save_raport(self, type, train_metrics, test_metrics):
-        model_collection = {'perceptron_sgd':   self.perceptron_sgd_collection}
+        model_collection = {'perceptron_sgd':   self.perceptron_sgd_collection,
+                            'ann_bp':           self.ann_bp_collection}
 
         raport = self.gradient_data_serializer(type, train_metrics, test_metrics)
 
@@ -118,7 +118,8 @@ class DBFacade:
         return collection_list
 
     def get_raport_list(self, type):
-        model_collection = {'perceptron_sgd_collection': self.perceptron_sgd_collection}
+        model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
+                            'ann_bp_collection':            self.ann_bp_collection,}
         self.collection_name = type
 
         documents = model_collection[self.collection_name].find({})
@@ -127,7 +128,8 @@ class DBFacade:
         return name_list
 
     def get_raport_data(self, raport_name):
-        model_collection = {'perceptron_sgd_collection': self.perceptron_sgd_collection}
+        model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
+                            'ann_bp_collection':           self.ann_bp_collection,}
         self.raport_name = raport_name
 
         documents = model_collection[self.collection_name].find({'name': raport_name})
@@ -139,7 +141,8 @@ class DBFacade:
 
     # ==USÓWANIE========================================================================================================
     def delete_raport(self):
-        model_collection = {'perceptron_sgd_collection': self.perceptron_sgd_collection}
+        model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
+                            'ann_bp_collection':            self.ann_bp_collection,}
 
         model_collection[self.collection_name].delete_one({'name': self.raport_name})
 

@@ -322,9 +322,9 @@ def run_ann_bp_model(children):
     ann_bp_raport.set_metrics(train_metrics, test_metrics)
 
     if config['model_config']['validation_mode']['mode'] == 'simple_split':
-        ann_bp_raport.generate_ann_bp_split_raport()
+        ann_bp_raport.generate_ann_bp_split_raport('/models/ann_bp_menu')
     elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
-        ann_bp_raport.generate_ann_bp_cv_raport()
+        ann_bp_raport.generate_ann_bp_cv_raport('/models/ann_bp_menu')
 
     return dbc.Alert(id='result-ann-bp-info', children='Zakończono!', color='primary'), raport_button
 

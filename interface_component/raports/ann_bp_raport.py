@@ -6,11 +6,13 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 from interface_component.app import app
+from interface_component.utils.db_facade import DBFacade
 
 layout = {}
 
 train_metrics = pd.DataFrame()
 test_metrics = {}
+
 
 def set_metrics(train_data, test_data):
     global train_metrics
@@ -19,7 +21,8 @@ def set_metrics(train_data, test_data):
     train_metrics = train_data
     test_metrics = test_data
 
-def generate_ann_bp_split_raport():
+
+def generate_ann_bp_split_raport(back_link):
     global layout
 
     raport = dbc.Container([
@@ -182,7 +185,13 @@ def generate_ann_bp_split_raport():
 
         # ==STOPKA==========================================================================================================
 
-        dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href='/models/ann_bp_menu')])],
+        dbc.Row(dbc.Col(
+            children=[dbc.Button(id='save-raport-ann-bp-button', children='Zapisz raport', color='secondary', size='lg',
+                                 block=True)], width=4), justify='center', style={'padding': '10px'}),
+
+        dbc.Row(id='save-raport-ann-bp-alert', children=[], justify='center'),
+
+        dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
                 style={'padding': '15px'}),
 
@@ -192,12 +201,19 @@ def generate_ann_bp_split_raport():
 
     layout = raport
 
+
+@app.callback(Output('save-raport-ann-bp-alert', 'children'), [Input('save-raport-ann-bp-button', 'n_clicks')])
+def save_raport(n_clicks):
+    if n_clicks is not None:
+        db_facade = DBFacade()
+        db_facade.save_raport('ann_bp', train_metrics, test_metrics)
+
 # ==CROSS_VALIDATION_RAPORT=============================================================================================
 
 def get_folds_labels():
     return ['fold ' + str(idx) for idx in range(len(train_metrics))]
 
-def generate_ann_bp_cv_raport():
+def generate_ann_bp_cv_raport(back_link):
     global layout
 
     folds_labels = get_folds_labels()
@@ -469,7 +485,13 @@ def generate_ann_bp_cv_raport():
 
         # ==STOPKA==========================================================================================================
 
-        dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href='/models/ann_bp_menu')])],
+        dbc.Row(dbc.Col(
+            children=[dbc.Button(id='save-raport-ann-bp-cv-button', children='Zapisz raport', color='secondary',
+                                 size='lg', block=True)], width=4), justify='center', style={'padding': '10px'}),
+
+        dbc.Row(id='save-raport-ann-bp-cv-alert', children=[], justify='center'),
+
+        dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
                 style={'padding': '15px',
                        'margin-top': '30px'}),
@@ -646,3 +668,10 @@ def update_cf_cv_graph(value):
                                           'font': {'color': 'white'}}]}}
 
     return figure
+
+
+@app.callback(Output('save-raport-ann-bp-cv-alert', 'children'), [Input('save-raport-ann-bp-cv-button', 'n_clicks')])
+def save_raport(n_clicks):
+    if n_clicks is not None:
+        db_facade = DBFacade()
+        db_facade.save_raport('ann_bp', train_metrics, test_metrics)

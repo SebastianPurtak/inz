@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
-from interface_component.raports import perceptron_sgd_raport
+from interface_component.raports import perceptron_sgd_raport, ann_bp_raport
 
 db_facade = DBFacade()
 collections_list = db_facade.get_collections_list()
@@ -34,22 +34,6 @@ layout = dbc.Container([
     # ==OPCJE_PODGLĄDU_WYNIKÓW==========================================================================================
 
     dbc.Row(html.H4('Wybierz model'), justify='center'),
-
-    # Wersja z przyciskami
-
-    # dbc.Row([
-    #     dbc.Col([dbc.Button(id='perceptron-sgd-show-raports', children='Perceptron sgd', color='secondary', size='lg',
-    #                              block=True)], width=3),
-    #     dbc.Col([dbc.Button(id='perceptron-ga-show-raports', children='Perceptron ga', color='secondary', size='lg',
-    #                              block=True)], width=3),], justify='center', style={'padding': '15px'}),
-    #
-    # dbc.Row([
-    #     dbc.Col([dbc.Button(id='ann-bp-show-raports', children='Sieć neuronowa bp', color='secondary', size='lg',
-    #                              block=True)], width=3),
-    #     dbc.Col([dbc.Button(id='ann-ga-show-raports', children='Sieć neuronowa ga', color='secondary', size='lg',
-    #                              block=True)], width=3),], justify='center', style={'padding': '15px'}),
-
-    # Werska z listą rozwijaną
 
     dbc.Row(id='raports-list-choice-row', children=[
         dcc.Dropdown(id='raports-list-choice',
@@ -88,8 +72,6 @@ layout = dbc.Container([
     dbc.Row(id='read-raport-alert', children=[], justify='center'),
     dbc.Row(id='choice-raport-alert', children=[], justify='center'),
     dbc.Row(id='delete-raport-alert', children=[], justify='center'),
-
-    # html.DIV(id='raport_name', children=None),
 
     dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/',
                                          size='lg', block=True)], width=4)],
@@ -138,6 +120,18 @@ def choice_raport(value):
 
         return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
                                         size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
+
+    elif 'ann_bp' in value:
+        test_metrics, train_metrics = db_facade.get_raport_data(value)
+
+        ann_bp_raport.set_metrics(train_metrics, test_metrics)
+        if isinstance(train_metrics, list):
+            ann_bp_raport.generate_ann_bp_cv_raport('/results_menu')
+        else:
+            ann_bp_raport.generate_ann_bp_split_raport('/results_menu')
+
+        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                            size='lg', block=True, href='/models/ann-bp_raport')], width=4)
 
 
 @app.callback(Output('delete-raport-alert', 'children'), [Input('delete-raport-button', 'n_clicks')])
