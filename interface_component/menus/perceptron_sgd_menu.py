@@ -320,8 +320,8 @@ def run_ann_bp_model(children):
     perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
 
     if config['model_config']['validation_mode']['mode'] == 'simple_split':
-        perceptron_sgd_raport.generate_raport()
+        perceptron_sgd_raport.generate_raport('/models/perceptron_sgd_menu')
     elif config['model_config']['validation_mode']['mode'] == 'cross_validation':
-        perceptron_sgd_raport.generate_cv_raport()
+        perceptron_sgd_raport.generate_cv_raport('/models/perceptron_sgd_menu')
 
     return dbc.Alert(id='result-psgd-info', children='Zakończono!', color='primary'), raport_button
