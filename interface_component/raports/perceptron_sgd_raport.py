@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+# from interface_component.utils.db_facade import db_facade
 
 train_metrics = pd.DataFrame()
 test_metrics = {}
@@ -187,11 +188,12 @@ def generate_raport(back_link):
     dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport', color='secondary',size='lg',
                                          block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+    dbc.Row(id='save-raport-psgd-alert', children=[], justify='center'),
+
     dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Powrót', href=back_link)])],
                             justify='center',
                             style={'padding': '15px'}),
 
-    dbc.Row(id='save-raport-psgd-alert', children=[], justify='center'),
 
     dbc.Row(id='config_test',
             children=[
@@ -208,8 +210,10 @@ def generate_raport(back_link):
 def save_psgd_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
-
+        if db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='succes')
+        else:
+            return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
 
 
 
@@ -677,6 +681,11 @@ def update_cf_cv_graph(value):
 def save_psgd_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
+        # db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
+
+        if db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
+        else:
+            return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
 
 

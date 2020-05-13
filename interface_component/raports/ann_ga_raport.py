@@ -5,12 +5,13 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+# from interface_component.utils.db_facade import db_facade
 
 
 layout = {}
 train_metrics = None
 test_metrics = None
-db_facade = DBFacade()
+# db_facade = DBFacade()
 
 
 def generate_raport(back_link, train_data, test_data):
@@ -109,4 +110,9 @@ def generate_raport(back_link, train_data, test_data):
 def save_ann_ga_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        db_facade.save_raport('ann_ga', {'data': train_metrics}, test_metrics)
+        # db_facade.save_raport('ann_ga', {'data': train_metrics}, test_metrics)
+
+        if db_facade.save_raport('ann_ga', {'data': train_metrics}, test_metrics):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
+        else:
+            return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')

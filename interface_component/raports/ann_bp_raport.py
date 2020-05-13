@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+# from interface_component.utils.db_facade import db_facade
 
 layout = {}
 
@@ -206,7 +207,12 @@ def generate_ann_bp_split_raport(back_link):
 def save_ann_bp_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        db_facade.save_raport('ann_bp', train_metrics, test_metrics)
+        # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
+
+        if db_facade.save_raport('ann_bp', train_metrics, test_metrics):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
+        else:
+            return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
 
 # ==CROSS_VALIDATION_RAPORT=============================================================================================
 
@@ -674,4 +680,9 @@ def update_cf_cv_graph(value):
 def save_ann_bp_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        db_facade.save_raport('ann_bp', train_metrics, test_metrics)
+        # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
+
+        if db_facade.save_raport('ann_bp', train_metrics, test_metrics):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
+        else:
+            return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')

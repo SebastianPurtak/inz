@@ -10,6 +10,11 @@ from interface_component.raports import perceptron_sgd_raport, perceptron_ga_rap
 db_facade = DBFacade()
 collections_list = db_facade.get_collections_list()
 
+# def get_collection_list():
+#     db_facade = DBFacade()
+#     collections_list = db_facade.get_collections_list()
+#     return collections_list
+
 layout = dbc.Container([
 
     # ==NAGŁÓWEK========================================================================================================
@@ -72,6 +77,7 @@ layout = dbc.Container([
     dbc.Row(id='read-raport-alert', children=[], justify='center'),
     dbc.Row(id='choice-raport-alert', children=[], justify='center'),
     dbc.Row(id='delete-raport-alert', children=[], justify='center'),
+    dbc.Row(id='load-raport-alert', children=[], justify='center'),
 
     dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/',
                                          size='lg', block=True)], width=4)],
@@ -85,6 +91,11 @@ layout = dbc.Container([
 @app.callback([Output('raports-preview', 'children'), Output('raports_list-psgd', 'children')],
               [Input('raports-list-choice', 'value')])
 def show_collections_list(collection_name):
+    # db_facade = DBFacade()
+    # print(collection_name)
+    if collection_name is None:
+        collection_name = db_facade.get_collections_list()[0]
+        # print(db_facade.get_collections_list()[0])
     raports_list = db_facade.get_raport_list(collection_name)
 
     table = dbc.Row(id='collections-list-table', children=[
@@ -107,9 +118,12 @@ def show_collections_list(collection_name):
     return table, itable
 
 
-@app.callback(Output('load_button_row', 'children'), [Input('raports-choice', 'value')])
+@app.callback(Output('load_button_row', 'children'),
+              [Input('raports-choice', 'value')])
 def choice_raport(value):
+    # db_facade = DBFacade()
     if 'perceptron_sgd' in value:
+        print(value)
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
         perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
@@ -148,11 +162,18 @@ def choice_raport(value):
         return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
                                             size='lg', block=True, href='/models/ann_ga_raport')], width=4)
 
+    # else:
+    #     return None, dbc.Alert(id='load-error', children='Brak zapisanych raportów', color='danger')
+
 
 @app.callback(Output('delete-raport-alert', 'children'), [Input('delete-raport-button', 'n_clicks')])
 def delete_raport(n_clicks):
+    # db_facade = DBFacade()
     if n_clicks is not None:
         raport_name = db_facade.delete_raport()
 
-        return dbc.Alert(id='delete-info', children=f'Usunięto {raport_name}', color='danger')
+        if raport_name != 'Brak połączenia z bazą danych':
+            return dbc.Alert(id='delete-info', children=f'Usunięto {raport_name}', color='danger')
+        else:
+            return dbc.Alert(id='delete-info', children=f'{raport_name}', color='danger')
 

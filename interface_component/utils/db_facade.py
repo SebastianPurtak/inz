@@ -1,27 +1,55 @@
 import datetime
 
 import pandas as pd
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 
 
 class DBFacade:
+    # Old
+    # def __init__(self):
+    #     self.db_name = 'test_db'
+    #     self.client = MongoClient()
+    #     self.db = getattr(self.client, self.db_name)
+    #     self.collection_name = None
+    #     self.raport_name = None
+    #
+    #     # inicjalizacja baz danych
+    #     self.perceptron_sgd_collection = self.db.perceptron_sgd_collection
+    #     self.perceptron_ga_collection = self.db.perceptron_ga_collection
+    #     self.ann_bp_collection = self.db.ann_bp_collection
+    #     self.ann_ga_collection = self.db.ann_ga_collection
+
     def __init__(self):
         self.db_name = 'test_db'
-        self.client = MongoClient()
-        self.db = getattr(self.client, self.db_name)
-        self.collection_name = None
-        self.raport_name = None
+        self.client = self.db_connect()
+        if self.client is not None:
+            self.db = getattr(self.client, self.db_name)
+            self.collection_name = None
+            self.raport_name = None
 
-        self.perceptron_simple_raports = self.db.perceptron_simple_raports
-        # inicjalizacja baz danych
-        self.perceptron_sgd_collection = self.db.perceptron_sgd_collection
-        self.perceptron_ga_collection = self.db.perceptron_ga_collection
-        self.ann_bp_collection = self.db.ann_bp_collection
-        self.ann_ga_collection = self.db.ann_ga_collection
+            # inicjalizacja baz danych
+            self.perceptron_sgd_collection = self.db.perceptron_sgd_collection
+            self.perceptron_ga_collection = self.db.perceptron_ga_collection
+            self.ann_bp_collection = self.db.ann_bp_collection
+            self.ann_ga_collection = self.db.ann_ga_collection
+        else:
+            self.db = None
+            self.collection_name = None
+            self.raport_name = None
 
-    # def db_connect(self):
-    #     db_list = self.client.list_database_names()
-    #     print('Active databases: ', db_list)
+            # inicjalizacja baz danych
+            self.perceptron_sgd_collection = None
+            self.perceptron_ga_collection = None
+            self.ann_bp_collection = None
+            self.ann_ga_collection = None
+
+    def db_connect(self):
+        try:
+            client = MongoClient(serverSelectionTimeoutMS=2000)
+            client.server_info()
+            return client
+        except:
+            return None
 
     # ==SERIALIZERY=====================================================================================================
 
@@ -112,14 +140,28 @@ class DBFacade:
                             'ann_bp':           self.ann_bp_collection,
                             'ann_ga':           self.ann_ga_collection}
 
-        raport = self.gradient_data_serializer(type, train_metrics, test_metrics)
+        if self.db is not None:
+            raport = self.gradient_data_serializer(type, train_metrics, test_metrics)
 
-        model_collection[type].insert_one(raport)
+            model_collection[type].insert_one(raport)
+
+            return True
+        else:
+            return False
 
     # ==WCZYTYWANIE=====================================================================================================
     def get_collections_list(self):
-        collection_list = self.db.list_collection_names()
-        return collection_list
+        # if self.db is not None:
+        #     collection_list = self.db.list_collection_names()
+        #     return collection_list
+        # else:
+        #     return ['Brak połączenia z bazą danych']
+        try:
+            collection_list = self.db.list_collection_names()
+            return collection_list
+        except:
+            return ['Brak połączenia z bazą danych']
+
 
     def get_raport_list(self, type):
         model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
@@ -128,10 +170,16 @@ class DBFacade:
                             'ann_ga_collection':            self.ann_ga_collection}
         self.collection_name = type
 
-        documents = model_collection[self.collection_name].find({})
-        name_list = [document['name'] for document in documents]
+        if self.db is not None:
+            documents = model_collection[self.collection_name].find({})
+            name_list = [document['name'] for document in documents]
 
-        return name_list
+            if len(name_list) == 0:
+                name_list = ['Brak zapisanych raportów']
+
+            return name_list
+        else:
+            return ['Brak połączenia z bazą danych']
 
     def get_raport_data(self, raport_name):
         model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
@@ -159,6 +207,11 @@ class DBFacade:
                             'ann_bp_collection':            self.ann_bp_collection,
                             'ann_ga_collection':            self.ann_ga_collection}
 
-        model_collection[self.collection_name].delete_one({'name': self.raport_name})
+        if self.db is not None:
+            model_collection[self.collection_name].delete_one({'name': self.raport_name})
 
-        return self.raport_name
+            return self.raport_name
+        else:
+            return 'Brak połączenia z bazą danych'
+
+# db_facade = DBFacade()
