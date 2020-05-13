@@ -510,7 +510,7 @@ def run_ann_ga_model(children):
 
     train_metrics, test_metrics = metrics_preprocessor.perprocess_ga_metrics(config['model_config'])
 
-    ann_ga_raport.generate_raport(train_metrics, test_metrics)
+    ann_ga_raport.generate_raport('/models/ann_ga_menu', train_metrics, test_metrics)
     # perceptron_ga_raport.generate_raport(train_metrics, test_metrics)
 
     return dbc.Alert(id='result-ann-ga-info', children='Zakończono!', color='primary'), raport_button

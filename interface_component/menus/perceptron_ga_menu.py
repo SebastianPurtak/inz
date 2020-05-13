@@ -515,7 +515,7 @@ def run_pga_model(children):
 
     train_metrics, test_metrics = metrics_preprocessor.perprocess_ga_metrics(config['model_config'])
 
-    perceptron_ga_raport.generate_raport(train_metrics, test_metrics)
+    perceptron_ga_raport.generate_raport('/models/perceptron_ga_menu', train_metrics, test_metrics)
 
     return dbc.Alert(id='result-pga-info', children='Zakończono!', color='primary'), raport_button
 

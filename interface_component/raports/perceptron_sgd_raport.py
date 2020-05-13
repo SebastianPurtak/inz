@@ -184,19 +184,14 @@ def generate_raport(back_link):
 
     # ==STOPKA==========================================================================================================
 
-    # dbc.Row(id='raport-name-psgd-choice',
-    #         children=[dcc.Input(id='raport-name-psgd-input', value='Nazwa raportu', type='text', style={'width': '200px'})],
-    #         justify='center'),
-
-    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-button', children='Zapisz raport', color='secondary',size='lg',
+    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport', color='secondary',size='lg',
                                          block=True)], width=4), justify='center', style={'padding': '10px'}),
 
     dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Powrót', href=back_link)])],
                             justify='center',
                             style={'padding': '15px'}),
 
-    dbc.Row(id='save-raport-alert', children=[], justify='center'),
-    # dbc.Row(id='raport-name-alert', children=[], justify='center'),
+    dbc.Row(id='save-raport-psgd-alert', children=[], justify='center'),
 
     dbc.Row(id='config_test',
             children=[
@@ -208,27 +203,9 @@ def generate_raport(back_link):
 
     layout = raport
 
-# ZAPISWYWANIE WERSJA Z NAZWĄ
 
-
-# @app.callback(Output('save-raport-alert', 'children'), [Input('save-raport-button', 'n_clicks')])
-# def save_raport(n_clicks):
-#     global raport_name
-#     if n_clicks is not None:
-#         db_facade = DBFacade()
-#         # db_facade.test_save(train_metrics, test_metrics)
-#         db_facade.save_gradient_simple_raport(raport_name, train_metrics, test_metrics)
-#
-#
-# @app.callback(Output('raport-name-alert', 'children'), [Input('raport-name-psgd-input', 'value')])
-# def set_raport_name(name):
-#     global raport_name
-#     raport_name = name
-
-# ZAPISYWANIE BEZ NAZWY
-
-@app.callback(Output('save-raport-alert', 'children'), [Input('save-raport-button', 'n_clicks')])
-def save_raport(n_clicks):
+@app.callback(Output('save-raport-psgd-alert', 'children'), [Input('save-raport-psgd-button', 'n_clicks')])
+def save_psgd_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
         db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
@@ -658,6 +635,7 @@ def update_ts_histogram(value):
 
     return figure
 
+
 @app.callback(Output('cf-matrix-cv-test-set', 'figure'), [Input('cf-cv-ts-fold-select', 'value')])
 def update_cf_cv_graph(value):
     folds_labels = get_folds_labels()
@@ -694,8 +672,9 @@ def update_cf_cv_graph(value):
 
     return figure
 
+
 @app.callback(Output('save-raport-cv-alert', 'children'), [Input('save-raport-cv-button', 'n_clicks')])
-def save_cv_raport(n_clicks):
+def save_psgd_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
         db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)

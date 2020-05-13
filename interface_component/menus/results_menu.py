@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
-from interface_component.raports import perceptron_sgd_raport, ann_bp_raport
+from interface_component.raports import perceptron_sgd_raport, perceptron_ga_raport, ann_bp_raport, ann_ga_raport
 
 db_facade = DBFacade()
 collections_list = db_facade.get_collections_list()
@@ -121,6 +121,13 @@ def choice_raport(value):
         return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
                                         size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
 
+    elif 'perceptron_ga' in value:
+        test_metrics, train_metrics = db_facade.get_raport_data(value)
+        perceptron_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+
+        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                            size='lg', block=True, href='/models/perceptron_ga_raport')], width=4)
+
     elif 'ann_bp' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
@@ -132,6 +139,14 @@ def choice_raport(value):
 
         return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
                                             size='lg', block=True, href='/models/ann-bp_raport')], width=4)
+
+    elif 'ann_ga' in value:
+        test_metrics, train_metrics = db_facade.get_raport_data(value)
+
+        ann_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+
+        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                            size='lg', block=True, href='/models/ann_ga_raport')], width=4)
 
 
 @app.callback(Output('delete-raport-alert', 'children'), [Input('delete-raport-button', 'n_clicks')])

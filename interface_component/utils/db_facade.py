@@ -65,9 +65,6 @@ class DBFacade:
         else:
             train_metrics = self.simple_data_aggregator(train_metrics)
 
-        # train_metrics['data'].index = train_metrics['data'].index.astype(str)
-        # data_dict = pd.DataFrame.to_dict(train_metrics['data'])
-        # train_metrics['data'] = data_dict
         raport['train_metrics'] = train_metrics
 
         return raport
@@ -96,6 +93,12 @@ class DBFacade:
 
         return test_metrics, train_metrics
 
+    def genetic_data_parser(self, document):
+        train_metrics = pd.DataFrame.from_dict(document['train_metrics']['data'])
+
+        return document['test_metrics'], train_metrics
+
+
     # ==ZAPISYWANIE=====================================================================================================
 
     def save_gradient_simple_raport(self, raport_name, train_metrics, test_metrics):
@@ -105,12 +108,13 @@ class DBFacade:
 
     def save_raport(self, type, train_metrics, test_metrics):
         model_collection = {'perceptron_sgd':   self.perceptron_sgd_collection,
-                            'ann_bp':           self.ann_bp_collection}
+                            'perceptron_ga':    self.perceptron_ga_collection,
+                            'ann_bp':           self.ann_bp_collection,
+                            'ann_ga':           self.ann_ga_collection}
 
         raport = self.gradient_data_serializer(type, train_metrics, test_metrics)
 
         model_collection[type].insert_one(raport)
-        # print()
 
     # ==WCZYTYWANIE=====================================================================================================
     def get_collections_list(self):
@@ -119,7 +123,9 @@ class DBFacade:
 
     def get_raport_list(self, type):
         model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
-                            'ann_bp_collection':            self.ann_bp_collection,}
+                            'perceptron_ga_collection':     self.perceptron_ga_collection,
+                            'ann_bp_collection':            self.ann_bp_collection,
+                            'ann_ga_collection':            self.ann_ga_collection}
         self.collection_name = type
 
         documents = model_collection[self.collection_name].find({})
@@ -129,20 +135,29 @@ class DBFacade:
 
     def get_raport_data(self, raport_name):
         model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
-                            'ann_bp_collection':           self.ann_bp_collection,}
+                            'perceptron_ga_collection':     self.perceptron_ga_collection,
+                            'ann_bp_collection':            self.ann_bp_collection,
+                            'ann_ga_collection':            self.ann_ga_collection}
+        data_parser = {'perceptron_sgd_collection':     self.gradient_data_parser,
+                       'ann_bp_collection':             self.gradient_data_parser,
+                       'perceptron_ga_collection':      self.genetic_data_parser,
+                       'ann_ga_collection':             self.genetic_data_parser}
         self.raport_name = raport_name
 
         documents = model_collection[self.collection_name].find({'name': raport_name})
         document = [document for document in documents][0]
 
-        test_metrics, train_metrics = self.gradient_data_parser(document)
+        # test_metrics, train_metrics = self.gradient_data_parser(document)
+        test_metrics, train_metrics = data_parser[self.collection_name](document)
 
         return test_metrics, train_metrics
 
     # ==USÓWANIE========================================================================================================
     def delete_raport(self):
         model_collection = {'perceptron_sgd_collection':    self.perceptron_sgd_collection,
-                            'ann_bp_collection':            self.ann_bp_collection,}
+                            'perceptron_ga_collection':     self.perceptron_ga_collection,
+                            'ann_bp_collection':            self.ann_bp_collection,
+                            'ann_ga_collection':            self.ann_ga_collection}
 
         model_collection[self.collection_name].delete_one({'name': self.raport_name})
 

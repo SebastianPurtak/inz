@@ -203,7 +203,7 @@ def generate_ann_bp_split_raport(back_link):
 
 
 @app.callback(Output('save-raport-ann-bp-alert', 'children'), [Input('save-raport-ann-bp-button', 'n_clicks')])
-def save_raport(n_clicks):
+def save_ann_bp_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
         db_facade.save_raport('ann_bp', train_metrics, test_metrics)
@@ -671,7 +671,7 @@ def update_cf_cv_graph(value):
 
 
 @app.callback(Output('save-raport-ann-bp-cv-alert', 'children'), [Input('save-raport-ann-bp-cv-button', 'n_clicks')])
-def save_raport(n_clicks):
+def save_ann_bp_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
         db_facade.save_raport('ann_bp', train_metrics, test_metrics)

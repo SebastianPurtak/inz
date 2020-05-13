@@ -1,11 +1,25 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output
+
+from interface_component.app import app
+from interface_component.utils.db_facade import DBFacade
+
+db_facade = DBFacade()
 
 layout = {}
+train_metrics = None
+test_metrics = None
 
-def generate_raport(train_metrics, test_metrics):
+
+def generate_raport(back_link, train_data, test_data):
     global layout
+    global train_metrics
+    global test_metrics
+
+    train_metrics = train_data
+    test_metrics = test_data
 
     raport = dbc.Container([
 
@@ -75,8 +89,14 @@ def generate_raport(train_metrics, test_metrics):
 
         # ==STOPKA======================================================================================================
 
-        dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Pokaż config',
-                                                                         href='/models/perceptron_ga_menu')])],
+        dbc.Row(dbc.Col(
+            children=[dbc.Button(id='save-raport-pga-button', children='Zapisz raport', color='secondary', size='lg',
+                                 block=True)], width=4), justify='center', style={'padding': '10px'}),
+
+        dbc.Row(id='save-raport-pga-alert', children=[], justify='center'),
+
+        dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Powrót',
+                                                                         href=back_link)])],
                 justify='center',
                 style={'padding': '15px'}),
     ],
@@ -84,3 +104,10 @@ def generate_raport(train_metrics, test_metrics):
     style={'backgroundColor': '#D3D3D3'})
 
     layout = raport
+
+
+@app.callback(Output('save-raport-pga-alert', 'children'), [Input('save-raport-pga-button', 'n_clicks')])
+def save_pga_raport(n_clicks):
+    if n_clicks is not None:
+        db_facade = DBFacade()
+        db_facade.save_raport('perceptron_ga', {'data': train_metrics}, test_metrics)
