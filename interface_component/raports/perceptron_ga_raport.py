@@ -1,3 +1,5 @@
+import copy
+
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -5,6 +7,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+from interface_component.utils.raport_exporter import RaportExporter
 # from interface_component.utils.db_facade import db_facade
 
 # db_facade = DBFacade()
@@ -94,7 +97,13 @@ def generate_raport(back_link, train_data, test_data):
             children=[dbc.Button(id='save-raport-pga-button', children='Zapisz raport', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+        dbc.Row(
+            dbc.Col(children=[dbc.Button(id='save-raport-pga-json-button', children='Zapisz raport do pliku json',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
         dbc.Row(id='save-raport-pga-alert', children=[], justify='center'),
+        dbc.Row(id='save-raport-json-alert', children=[], justify='center'),
 
         dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Powrót',
                                                                          href=back_link)])],
@@ -111,9 +120,17 @@ def generate_raport(back_link, train_data, test_data):
 def save_pga_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        # db_facade.save_raport('perceptron_ga', {'data': train_metrics}, test_metrics)
 
-        if db_facade.save_raport('perceptron_ga', {'data': train_metrics}, test_metrics):
+        if db_facade.save_raport('perceptron_ga', {'data': train_metrics}, copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
+
+
+@app.callback(Output('save-raport-json-alert', 'children'), [Input('save-raport-pga-json-button', 'n_clicks')])
+def save_psga_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('perceptron_ga', {'data': train_metrics}, copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')

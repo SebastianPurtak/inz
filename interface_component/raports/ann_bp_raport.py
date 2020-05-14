@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 
 import dash_core_components as dcc
@@ -7,7 +9,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
-# from interface_component.utils.db_facade import db_facade
+from interface_component.utils.raport_exporter import RaportExporter
 
 layout = {}
 
@@ -190,7 +192,13 @@ def generate_ann_bp_split_raport(back_link):
             children=[dbc.Button(id='save-raport-ann-bp-button', children='Zapisz raport', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+        dbc.Row(
+            dbc.Col(children=[dbc.Button(id='save-raport-ann-bp-json-button', children='Zapisz raport do pliku json',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
         dbc.Row(id='save-raport-ann-bp-alert', children=[], justify='center'),
+        dbc.Row(id='save-raport-ann-bp-json-alert', children=[], justify='center'),
 
         dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
@@ -209,10 +217,19 @@ def save_ann_bp_raport(n_clicks):
         db_facade = DBFacade()
         # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
 
-        if db_facade.save_raport('ann_bp', train_metrics, test_metrics):
+        if db_facade.save_raport('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
+
+
+@app.callback(Output('save-raport-ann-bp-json-alert', 'children'), [Input('save-raport-ann-bp-json-button', 'n_clicks')])
+def save_ann_bp_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')
 
 # ==CROSS_VALIDATION_RAPORT=============================================================================================
 
@@ -495,7 +512,13 @@ def generate_ann_bp_cv_raport(back_link):
             children=[dbc.Button(id='save-raport-ann-bp-cv-button', children='Zapisz raport', color='secondary',
                                  size='lg', block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+        dbc.Row(
+            dbc.Col(children=[dbc.Button(id='save-raport-ann-bp-cv-json-button', children='Zapisz raport do pliku json',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
         dbc.Row(id='save-raport-ann-bp-cv-alert', children=[], justify='center'),
+        dbc.Row(id='save-raport-ann-bp-cv-json-alert', children=[], justify='center'),
 
         dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
@@ -682,7 +705,16 @@ def save_ann_bp_cv_raport(n_clicks):
         db_facade = DBFacade()
         # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
 
-        if db_facade.save_raport('ann_bp', train_metrics, test_metrics):
+        if db_facade.save_raport('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
+
+
+@app.callback(Output('save-raport-ann-bp-cv-json-alert', 'children'), [Input('save-raport-ann-bp-cv-json-button', 'n_clicks')])
+def save_ann_bp_cv_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')

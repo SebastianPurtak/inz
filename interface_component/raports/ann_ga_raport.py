@@ -1,3 +1,5 @@
+import copy
+
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -5,6 +7,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+from interface_component.utils.raport_exporter import RaportExporter
 # from interface_component.utils.db_facade import db_facade
 
 
@@ -94,7 +97,13 @@ def generate_raport(back_link, train_data, test_data):
             children=[dbc.Button(id='save-raport-ann_ga-button', children='Zapisz raport', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+        dbc.Row(
+            dbc.Col(children=[dbc.Button(id='save-raport-ann-ga-json-button', children='Zapisz raport do pliku json',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
         dbc.Row(id='save-raport-ann_ga-alert', children=[], justify='center'),
+        dbc.Row(id='save-raport-ann_ga-json-alert', children=[], justify='center'),
 
         dbc.Row([html.Button(id='back_to_config-ann-ga', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
@@ -110,9 +119,17 @@ def generate_raport(back_link, train_data, test_data):
 def save_ann_ga_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        # db_facade.save_raport('ann_ga', {'data': train_metrics}, test_metrics)
 
-        if db_facade.save_raport('ann_ga', {'data': train_metrics}, test_metrics):
+        if db_facade.save_raport('ann_ga', {'data': train_metrics}, copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
+
+
+@app.callback(Output('save-raport-ann_ga-json-alert', 'children'), [Input('save-raport-ann-ga-json-button', 'n_clicks')])
+def save_ann_ga_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('ann_ga', {'data': train_metrics}, copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')

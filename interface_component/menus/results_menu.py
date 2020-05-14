@@ -1,19 +1,16 @@
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
+from interface_component.utils.raport_exporter import RaportExporter
 from interface_component.raports import perceptron_sgd_raport, perceptron_ga_raport, ann_bp_raport, ann_ga_raport
 
 db_facade = DBFacade()
 collections_list = db_facade.get_collections_list()
 
-# def get_collection_list():
-#     db_facade = DBFacade()
-#     collections_list = db_facade.get_collections_list()
-#     return collections_list
 
 layout = dbc.Container([
 
@@ -37,6 +34,8 @@ layout = dbc.Container([
             }),
 
     # ==OPCJE_PODGLĄDU_WYNIKÓW==========================================================================================
+
+    dbc.Row(html.H3('Wczytaj raport z bazy danych'), justify='center'),
 
     dbc.Row(html.H4('Wybierz model'), justify='center'),
 
@@ -67,6 +66,20 @@ layout = dbc.Container([
     dbc.Row(dbc.Col(children=[dbc.Button(id='delete-raport-button', children='Usuń raport', color='secondary',
                                          size='lg', block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+    # ==WCZYTYWANIE_Z_JSON==============================================================================================
+
+    dbc.Row(html.H3('Wczytaj raport z pliku json'), justify='center'),
+
+    dbc.Row(dbc.Col([dcc.Upload(id='upload-json-data', children=html.Div(['Przeciągnij albo ', html.A('wskaż plik')]),
+                                style={'width': '100%',
+                                       'height': '60px',
+                                       'lineHeight': '60px',
+                                       'borderWidth': '1px',
+                                       'borderStyle': 'dashed',
+                                       'borderRadius': '5px',
+                                       'textAlign': 'center',
+                                       'margin': '10px'})], width=4), justify='center'),
+
 
     # ==KOMUNIKATY_BŁĘDÓW===============================================================================================
 
@@ -88,14 +101,22 @@ layout = dbc.Container([
     style={'backgroundColor': '#D3D3D3'})
 
 
+# @app.callback(Output('load-json-alert', 'children'), [Input('upload-json-data', 'contents')],
+#               [State('upload-json-data', 'filename'), State('upload-json-data', 'last_modified')])
+# def upload_json_raport(data, filename, filetime):
+#     print()
+#     if data is not None:
+#         exporter = RaportExporter()
+#         exporter.from_json(data)
+
+
+# ==ZAPISYWANIE W BAZIE=================================================================================================
+
 @app.callback([Output('raports-preview', 'children'), Output('raports_list-psgd', 'children')],
               [Input('raports-list-choice', 'value')])
 def show_collections_list(collection_name):
-    # db_facade = DBFacade()
-    # print(collection_name)
     if collection_name is None:
         collection_name = db_facade.get_collections_list()[0]
-        # print(db_facade.get_collections_list()[0])
     raports_list = db_facade.get_raport_list(collection_name)
 
     table = dbc.Row(id='collections-list-table', children=[
@@ -121,54 +142,65 @@ def show_collections_list(collection_name):
 @app.callback(Output('load_button_row', 'children'),
               [Input('raports-choice', 'value')])
 def choice_raport(value):
-    # db_facade = DBFacade()
     if 'perceptron_sgd' in value:
-        print(value)
+        # print(value)
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
-        perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
-        if isinstance(train_metrics, list):
-            perceptron_sgd_raport.generate_cv_raport('/results_menu')
-        else:
-            perceptron_sgd_raport.generate_raport('/results_menu')
+        button = generate_perceptron_sgd_raport(train_metrics, test_metrics)
 
-        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-                                        size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
+        return button
+
+        # perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
+        # if isinstance(train_metrics, list):
+        #     perceptron_sgd_raport.generate_cv_raport('/results_menu')
+        # else:
+        #     perceptron_sgd_raport.generate_raport('/results_menu')
+        #
+        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+        #                                 size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
 
     elif 'perceptron_ga' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
-        perceptron_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
 
-        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-                                            size='lg', block=True, href='/models/perceptron_ga_raport')], width=4)
+        button = generate_perceptron_ga_raport(train_metrics, test_metrics)
+
+        return button
+
+
+        # perceptron_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+        #
+        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+        #                                     size='lg', block=True, href='/models/perceptron_ga_raport')], width=4)
 
     elif 'ann_bp' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
-        ann_bp_raport.set_metrics(train_metrics, test_metrics)
-        if isinstance(train_metrics, list):
-            ann_bp_raport.generate_ann_bp_cv_raport('/results_menu')
-        else:
-            ann_bp_raport.generate_ann_bp_split_raport('/results_menu')
+        button = generate_ann_bp_raport(train_metrics, test_metrics)
+        return button
 
-        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-                                            size='lg', block=True, href='/models/ann-bp_raport')], width=4)
+        # ann_bp_raport.set_metrics(train_metrics, test_metrics)
+        # if isinstance(train_metrics, list):
+        #     ann_bp_raport.generate_ann_bp_cv_raport('/results_menu')
+        # else:
+        #     ann_bp_raport.generate_ann_bp_split_raport('/results_menu')
+        #
+        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+        #                                     size='lg', block=True, href='/models/ann-bp_raport')], width=4)
 
     elif 'ann_ga' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
-        ann_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+        button = generate_ann_ga_raport(train_metrics, test_metrics)
+        return button
 
-        return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-                                            size='lg', block=True, href='/models/ann_ga_raport')], width=4)
-
-    # else:
-    #     return None, dbc.Alert(id='load-error', children='Brak zapisanych raportów', color='danger')
+        # ann_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+        #
+        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+        #                                     size='lg', block=True, href='/models/ann_ga_raport')], width=4)
 
 
 @app.callback(Output('delete-raport-alert', 'children'), [Input('delete-raport-button', 'n_clicks')])
 def delete_raport(n_clicks):
-    # db_facade = DBFacade()
     if n_clicks is not None:
         raport_name = db_facade.delete_raport()
 
@@ -177,3 +209,61 @@ def delete_raport(n_clicks):
         else:
             return dbc.Alert(id='delete-info', children=f'{raport_name}', color='danger')
 
+
+# ==ZAPISYWANIE W JSON==================================================================================================
+
+@app.callback(Output('load-raport-alert', 'children'), [Input('upload-json-data', 'contents')],
+              [State('upload-json-data', 'filename'), State('upload-json-data', 'last_modified')])
+def upload_json_file(data, list_of_names, list_of_dates):
+    if data is not None:
+        exporter = RaportExporter()
+        try:
+            raport_type, test_metrics, train_metrics = exporter.from_json(data)
+        except:
+            return dbc.Alert(id='delete-info', children='Nie udało się wczytać pliku', color='danger')
+
+        # Wybierz typ generowania raportów
+        raport_generator = {'perceptron_sgd':   generate_perceptron_sgd_raport,
+                            'perceptron_ga':    generate_perceptron_ga_raport,
+                            'ann_bp':           generate_ann_bp_raport,
+                            'ann_ga':           generate_ann_ga_raport}
+
+        button = raport_generator[raport_type](train_metrics, test_metrics)
+
+        return button
+
+
+def generate_perceptron_sgd_raport(train_metrics, test_metrics):
+    perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
+    if isinstance(train_metrics, list):
+        perceptron_sgd_raport.generate_cv_raport('/results_menu')
+    else:
+        perceptron_sgd_raport.generate_raport('/results_menu')
+
+    return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                        size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
+
+
+def generate_perceptron_ga_raport(train_metrics, test_metrics):
+    perceptron_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+
+    return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                        size='lg', block=True, href='/models/perceptron_ga_raport')], width=4)
+
+
+def generate_ann_bp_raport(train_metrics, test_metrics):
+    ann_bp_raport.set_metrics(train_metrics, test_metrics)
+    if isinstance(train_metrics, list):
+        ann_bp_raport.generate_ann_bp_cv_raport('/results_menu')
+    else:
+        ann_bp_raport.generate_ann_bp_split_raport('/results_menu')
+
+    return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                        size='lg', block=True, href='/models/ann-bp_raport')], width=4)
+
+
+def generate_ann_ga_raport(train_metrics, test_metrics):
+    ann_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
+
+    return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
+                                        size='lg', block=True, href='/models/ann_ga_raport')], width=4)

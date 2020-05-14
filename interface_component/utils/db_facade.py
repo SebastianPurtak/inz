@@ -53,16 +53,16 @@ class DBFacade:
 
     # ==SERIALIZERY=====================================================================================================
 
-    def parse_gradient_simple_data(self, raport_name, train_metrics, test_metrics):
-        raport = {}
-        raport['date'] = datetime.datetime.now()
-        raport['name'] = raport_name
-        raport['test_metrics'] = test_metrics
-        train_metrics['data'].index = train_metrics['data'].index.astype(str)
-        data_dict = pd.DataFrame.to_dict(train_metrics['data'])
-        train_metrics['data'] = data_dict
-        raport['train_metrics'] = train_metrics
-        return raport
+    # def parse_gradient_simple_data(self, raport_name, train_metrics, test_metrics):
+    #     raport = {}
+    #     raport['date'] = datetime.datetime.now()
+    #     raport['name'] = raport_name
+    #     raport['test_metrics'] = test_metrics
+    #     train_metrics['data'].index = train_metrics['data'].index.astype(str)
+    #     data_dict = pd.DataFrame.to_dict(train_metrics['data'])
+    #     train_metrics['data'] = data_dict
+    #     raport['train_metrics'] = train_metrics
+    #     return raport
 
     def cv_data_aggregator(self, train_metrics):
         new_data = []
@@ -81,8 +81,7 @@ class DBFacade:
 
         return train_metrics
 
-
-    def gradient_data_serializer(self, type, train_metrics, test_metrics):
+    def raport_data_serializer(self, type, train_metrics, test_metrics):
         raport = {}
         raport['date'] = datetime.datetime.now()
         raport['name'] = type + " " + raport['date'].strftime("%Y-%m-%d %H:%M:%S")
@@ -129,9 +128,9 @@ class DBFacade:
 
     # ==ZAPISYWANIE=====================================================================================================
 
-    def save_gradient_simple_raport(self, raport_name, train_metrics, test_metrics):
-        raport = self.parse_gradient_simple_data(raport_name, train_metrics, test_metrics)
-        self.perceptron_simple_raports.insert_one(raport)
+    # def save_gradient_simple_raport(self, raport_name, train_metrics, test_metrics):
+    #     raport = self.parse_gradient_simple_data(raport_name, train_metrics, test_metrics)
+    #     self.perceptron_simple_raports.insert_one(raport)
         # print()
 
     def save_raport(self, type, train_metrics, test_metrics):
@@ -141,7 +140,7 @@ class DBFacade:
                             'ann_ga':           self.ann_ga_collection}
 
         if self.db is not None:
-            raport = self.gradient_data_serializer(type, train_metrics, test_metrics)
+            raport = self.raport_data_serializer(type, train_metrics, test_metrics)
 
             model_collection[type].insert_one(raport)
 

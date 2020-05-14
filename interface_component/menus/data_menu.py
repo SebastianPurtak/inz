@@ -1,5 +1,3 @@
-# import datetime
-
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
@@ -146,8 +144,6 @@ def upload_file(data, filename, last_modified):
         return None, None
 
 
-# preprocessing
-
 @app.callback(Output('data-normalization-error', 'children'),
               [Input('normalization-button', 'n_clicks')])
 def normalization_data(normalization_click):
@@ -200,17 +196,6 @@ def preprocess_data(normalization_click, label_encoding_click, shuffle_clicks):
         return data_table
 
 
-# @app.callback(Output('save-error', 'children'), [Input('filename_input', 'value'), Input('save-button', 'n_clicks')])
-# def save_file(filename, save_click):
-#     if save_click is not None and filename is None:
-#         return dbc.Alert(id='save-data_alert', children='Wprowadź nazwę pliku.', color='danger')
-#
-#     if save_click is not None and filename is not None:
-#         data_manager.save_data(filename)
-#
-#         return dbc.Alert(id='save-data_success', children='Zapisano plik.', color='success')
-
-
 @app.callback(Output('datasets_preview', 'children'), [Input('refresh-button', 'n_clicks')])
 def datasets_preview(n_clicks):
     datasets = data_manager.get_datasets_list()
@@ -225,8 +210,6 @@ def datasets_preview(n_clicks):
 
     return table
 
-
-# ==Nowa wersja zapisu plików==
 
 @app.callback(Output('filename-error', 'children'), [Input('filename_input', 'value')])
 def set_filename(name):

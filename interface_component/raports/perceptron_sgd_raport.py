@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 
 import dash_core_components as dcc
@@ -7,7 +9,7 @@ from dash.dependencies import Input, Output
 
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
-# from interface_component.utils.db_facade import db_facade
+from interface_component.utils.raport_exporter import RaportExporter
 
 train_metrics = pd.DataFrame()
 test_metrics = {}
@@ -185,10 +187,17 @@ def generate_raport(back_link):
 
     # ==STOPKA==========================================================================================================
 
-    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport', color='secondary',size='lg',
-                                         block=True)], width=4), justify='center', style={'padding': '10px'}),
+    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport do bazy danych',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
+    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-csv-button', children='Zapisz raport do pliku csv',
+                                         color='secondary', size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px'}),
+
 
     dbc.Row(id='save-raport-psgd-alert', children=[], justify='center'),
+    dbc.Row(id='save-raport-psgd-csv-alert', children=[], justify='center'),
 
     dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Powrót', href=back_link)])],
                             justify='center',
@@ -210,10 +219,19 @@ def generate_raport(back_link):
 def save_psgd_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        if db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics):
-            return dbc.Alert(id='save-info', children='Zapisano raport', color='succes')
+        if db_facade.save_raport('perceptron_sgd', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
+            return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
+
+
+@app.callback(Output('save-raport-psgd-csv-alert', 'children'), [Input('save-raport-psgd-csv-button', 'n_clicks')])
+def save_psgd_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('perceptron_sgd', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')
 
 
 
@@ -496,7 +514,12 @@ def generate_cv_raport(back_link):
             children=[dbc.Button(id='save-raport-cv-button', children='Zapisz raport', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
+        dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-cv-json-button', children='Zapisz raport do pliku json',
+                                             color='secondary', size='lg', block=True)], width=4), justify='center',
+                style={'padding': '10px'}),
+
         dbc.Row(id='save-raport-cv-alert', children=[], justify='center'),
+        dbc.Row(id='save-raport-cv-json-alert', children=[], justify='center'),
 
         dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href=back_link)])],
                 justify='center',
@@ -683,9 +706,17 @@ def save_psgd_cv_raport(n_clicks):
         db_facade = DBFacade()
         # db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
 
-        if db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics):
+        if db_facade.save_raport('perceptron_sgd', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
         else:
             return dbc.Alert(id='save-info', children='Nie udało się zapisać raportu', color='danger')
 
+
+@app.callback(Output('save-raport-cv-json-alert', 'children'), [Input('save-raport-psgd-cv-json-button', 'n_clicks')])
+def save_psgdcv_json_raport(n_clicks):
+    if n_clicks is not None:
+        raport_exporter = RaportExporter()
+        raport_exporter.to_json('perceptron_sgd', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics))
+
+        return dbc.Alert(id='save-info', children='Raport zapisano w zapisane_raporty', color='success')
 

@@ -58,7 +58,7 @@ class DataManagement:
     def save_data(self, filename):
         filepath = os.path.join(os.getcwd() + '/models_component/data/' + filename + '.csv')
 
-        self.data.to_csv(filepath, index=False)
+        self.data.to_json(filepath, index=False)
 
     def get_datasets_list(self):
         data_path = os.path.join(os.getcwd() + '/models_component/data/')
