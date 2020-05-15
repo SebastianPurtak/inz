@@ -28,17 +28,7 @@ config = {'model':          'perceptron_sgd',
                                                  'real_value':      [],
                                                  'error':           []}}}
 
-metrisc_sgd = {}
-
-clicks = 0
-
-colors = {
-    'background': '#D3D3D3',
-}
-
-# data_sources = ['sonar_data', 'seed_data']
 data_sources = data_manager.get_datasets_list()
-# data_sources = data_manager.datasets
 
 validation_methods = ['cross_validation', 'simple_split']
 
@@ -48,80 +38,77 @@ layout = dbc.Container([
 
     # ==NAGŁÓWEK=======================================================================================================
 
-    dbc.Row(id='header',
+    dbc.Row(id='header-psgd-menu',
             children=[
                 dbc.Col([
                     html.Div([
-                        html.H1('Perceptron SGD')],
+                        html.H1('PERCEPTRON SGD')],
                         style={
                             'position': 'relative',
                             'top': '20%',
-                            'textAlign': 'center'
+                            'textAlign': 'center',
+                            'margin-bottom': '75px'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==ŹRÓDŁO_DANYCH==================================================================================================
 
-    dbc.Row(id='data_source-label',
-            children=[html.Label('Wybierz źródło danych')],
+    dbc.Row(id='data_source-psgd-label',
+            children=[html.H5(children='Wybierz źródło danych')],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-top': '10px'}),
 
-    dbc.Row(id='data_source-choice',
+    dbc.Row(id='data_source-psgd-choice',
             children=[
-                dcc.Dropdown(id='data_source-input',
+                dcc.Dropdown(id='data_source-psgd-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})],
+                             style={'width': '200px', 'color': '#000000'})],
             justify='center'),
 
+
     dbc.Row(dbc.Col([dbc.Button(id='refresh-button-psgd', children='Odświerz', color='secondary', size='sm',
-                                block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                block=True)], width=2), justify='center',
+            style={'padding': '10px', 'margin-bottom': '35px'}),
 
     # ==LICZBA_EPOK====================================================================================================
 
-    dbc.Row(id='n_epoch-label',
-            children=[html.Label(('Wybierz liczbę epok'))],
-            justify="center",
-            style={'padding': '10px'}),
+    dbc.Row(id='n_epoch-psgd-label',
+            children=[html.H5(children='Wybierz liczbę epok')],
+            justify="center"),
 
-    dbc.Row(id='n_epoch-choice',
+    dbc.Row(id='n_epoch-psgd-choice',
             children=[
-                dcc.Input(id='n_epoch-input',
+                dcc.Input(id='n_epoch-psgd-input',
                           value=10,
                           type='number',
                           min=0,
                           style={'width': '200px'})],
-            justify="center"),
+            justify="center", style={'margin-bottom': '40px'}),
 
     # ==WSPÓŁCZYNNIK_UCZENIA===========================================================================================
 
-    dbc.Row(id='l_rate-label',
-            children=[html.Label(('Wybierz wartość współczynnika uczenia'))],
-            justify="center",
-            style={'padding': '10px'}),
 
-    dbc.Row(id='l_rate-choice',
+    dbc.Row(id='l_rate-psgd-label',
+            children=[html.H5(children='Wybierz wartość współczynnika uczenia')],
+            justify="center"),
+
+    dbc.Row(id='l_rate-psgd-choice',
             children=[
-                dcc.Input(id='l_rate-input',
+                dcc.Input(id='l_rate-psgd-input',
                           value=0.01,
                           type='text',
                           min=0,
                           style={'width': '200px'})],
-            justify='center'),
+            justify='center', style={'margin-bottom': '40px'}),
 
     # ==WALIDACJA======================================================================================================
 
-    dbc.Row(id='validation-label-row',
-            children=[html.Label('Wybierz metodę walidacji')],
-            justify='center',
-            style={'padding': '10px'}),
+    dbc.Row(id='validation-label-psgd-row',
+                children=[html.H5(children='Wybierz metodę walidacji')],
+                justify='center'),
 
     dbc.Row(id='validation-choice-row', children=[
         dcc.Dropdown(id='validation-method-choice',
@@ -130,32 +117,30 @@ layout = dbc.Container([
                      ],
                      clearable=False,
                      value=validation_methods[1],
-                     style={'width': '200px'})
+                     style={'width': '200px', 'color': '#000000'})
     ],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-bottom': '40px'}),
 
     # ==WALIDACJA_CONFIG===============================================================================================
 
     dbc.Row(id='validation-config-psgd-label',
             children=[],
-            justify='center',
-            style={'padding': '10px'}),
+            justify='center'),
+
 
     dbc.Row(id='validation-config-psgd-row',
             children=[],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-bottom': '40px'}),
 
     # ==PODGLĄD========================================================================================================
 
-    # dbc.Row(html.Button(id='start-button-sgd', children='Start'), style={'padding': '10px'}, justify='center'),
-
     dbc.Row([dbc.Col([dbc.Button(id='start-button-sgd', children='Start', color='secondary', size='sm',
-                                 block=True)], width=1)],
+                                 block=True)], width=2)],
             justify='center', style={'padding': '15px'}),
 
-    dbc.Row(html.Label('Komunikaty:'), justify='center'),
+    dbc.Row(html.H5('Komunikaty:'), justify='center'),
 
     dbc.Row(id='data_source-psgd-alert', children=[], justify='center'),
     dbc.Row(id='data_refresh-psgd-alert', children=[], justify='center'),
@@ -169,20 +154,15 @@ layout = dbc.Container([
 
     dbc.Row(id='raport-button-psgd-row', children=[], justify='center', style={'padding': '15px'}),
 
-    # dbc.Row([html.Button(id='back', children=[dcc.Link('Wróć', href='/')])], justify='center', style={'padding': '15px'})
-
     dbc.Row([dbc.Col([dbc.Button(id='back-button-sgd', children='Wróć', color='secondary', href='/models',
-                                 size='sm', block=True)], width=1)],
-            justify='center', style={'padding': '15px'}),
+                                 size='sm', block=True)], width=2)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 ],
-    fluid=True,
-    style={
-        'backgroundColor': '#D3D3D3'
-    })
+    fluid=True)
 
 # ==VAL_CONFIG=========================================================================================================
 
-k_label = html.Label('k zbiorów')
+k_label = html.H5('k zbiorów')
 
 k_input = dcc.Input(id='k-input',
                     value=10,
@@ -190,7 +170,7 @@ k_input = dcc.Input(id='k-input',
                     min=0,
                     style={'width': '200px'})
 
-split_label = html.Label('Współczynnik podziału na zbiór treningowy i testowy')
+split_label = html.H5('Współczynnik podziału na zbiór treningowy i testowy')
 
 split_input = dcc.Input(id='split-input',
                         value=0.25,
@@ -201,30 +181,31 @@ split_input = dcc.Input(id='split-input',
 # ==CALLBACKS==========================================================================================================
 
 
-@app.callback(Output('data_source-psgd-alert', 'children'), [Input('data_source-input', 'value')])
+@app.callback(Output('data_source-psgd-alert', 'children'), [Input('data_source-psgd-input', 'value')])
 def set_psgd_data_source(value):
     global data_sources
     data_sources = data_manager.get_datasets_list()
     config['data_source'] = value
 
 
-@app.callback([Output('data_source-choice', 'children'), Output('data_refresh-psgd-alert', 'children')],
+@app.callback([Output('data_source-psgd-choice', 'children'), Output('data_refresh-psgd-alert', 'children')],
               [Input('refresh-button-psgd', 'n_clicks')])
 def set_psgd_data_source(n_clicks):
     global data_sources
     data_sources = data_manager.get_datasets_list()
+    data_sources.remove('.gitkeep')
 
-    drop_menu = dcc.Dropdown(id='data_source-input',
+    drop_menu = dcc.Dropdown(id='data_source-psgd-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})
+                             style={'width': '200px', 'color': '#000000'})
 
     return drop_menu, None
 
 
-@app.callback(Output('n_epoch-psgd-alert', 'children'), [Input('n_epoch-input', 'value')])
-def set_spgd_n_epoch(value):
+@app.callback(Output('n_epoch-psgd-alert', 'children'), [Input('n_epoch-psgd-input', 'value')])
+def set_psgd_n_epoch(value):
     try:
         if value <= 0 or type(value) != int:
             return dbc.Alert(id='n_epoch-psgd_0_alert',
@@ -237,7 +218,7 @@ def set_spgd_n_epoch(value):
         return dbc.Alert(id='n_epoch-psgd_None_alert', children='Podaj liczbę epok!', color='danger')
 
 
-@app.callback(Output('l_rate-psgd-alert', 'children'), [Input('l_rate-input', 'value')])
+@app.callback(Output('l_rate-psgd-alert', 'children'), [Input('l_rate-psgd-input', 'value')])
 def set_psgd_l_rate(value):
     try:
         if float(value) <= 0:
@@ -310,10 +291,9 @@ def run_ann_bp_model(children):
 
     controller.run_model(config)
 
-    raport_button = dbc.Row(
-        [html.Button(id='raport-psgd', children=[dcc.Link('Pokaż raport', href='/models/perceptron_sgd_raport')])],
-        justify='center',
-        style={'padding': '15px'})
+    raport_button = dbc.Col([dbc.Button(id='raport-psgd', children='Pokaż raport', color='secondary',
+                                                 href='/models/perceptron_sgd_raport', size='sm', block=True)],
+                                     width=2)
 
     train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 

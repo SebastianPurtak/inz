@@ -18,10 +18,10 @@ layout = dbc.Container([
                         })
                 ])
             ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            style={'position': 'relative',
+                   'top': '20%',
+                   'textAlign': 'center',
+                   'margin-bottom': '100px'}),
 
     # ==OPCJE_POMOCY====================================================================================================
 
@@ -29,8 +29,7 @@ layout = dbc.Container([
 
     dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/help',
                                          size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+            justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
 
-], fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+], fluid=True)

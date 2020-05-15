@@ -9,26 +9,26 @@ from interface_component.utils.metrics_preprocessing import MetricPreprocessor
 from interface_component.utils.data_management import DataManagement
 from models_component.models_controller import ModelController
 
-config = {'model': 'ann_bp',  # perceptron_sgd
-          'data_source': 'seed_data',  # seed_data
-          'model_config': {'n_epoch':       100,
-                           'l_rate':        0.3,
-                           'n_hidden':      [5],
-                           'validation_mode': {'mode': 'simple_split',  # 'simple_split', 'cross_validation'
-                                               'test_set_size': 0.25,
-                                               'k': 10},
-                           'metrics': {'data_train': [],
-                                       'data_test': [],
-                                       'cv_data_train': [],
-                                       'cv_data_test': [],
-                                       'n_epoch': [],
-                                       'n_row': [],
-                                       'prediction': [],
-                                       'real_value': [],
-                                       'error': [],
-                                       'generation': [],
-                                       'best_fit': [],
-                                       'val_fit': []}}}
+config = {'model':          'ann_bp',
+          'data_source':    'seed_data',
+          'model_config':   {'n_epoch':       100,
+                            'l_rate':        0.3,
+                            'n_hidden':      [5],
+                           'validation_mode': {'mode':          'simple_split',
+                                               'test_set_size':     0.25,
+                                               'k':                 10},
+                           'metrics': {'data_train':        [],
+                                       'data_test':         [],
+                                       'cv_data_train':     [],
+                                       'cv_data_test':      [],
+                                       'n_epoch':           [],
+                                       'n_row':             [],
+                                       'prediction':        [],
+                                       'real_value':        [],
+                                       'error':             [],
+                                       'generation':        [],
+                                       'best_fit':          [],
+                                       'val_fit':           []}}}
 
 data_manager = DataManagement()
 data_sources = data_manager.get_datasets_list()
@@ -41,15 +41,17 @@ layout = dbc.Container([
 
     dbc.Row(id='header-ann-bp',
             children=[dbc.Col([html.Div([html.H1('Śieć Neuronowa BP')],
-                                        style={'position': 'relative', 'top': '20%', 'textAlign': 'center'})])],
-            style={'height': '100px', 'backgroundColor': '#C0C0C0', }),
+                                        style={'position': 'relative',
+                                               'top': '20%',
+                                               'textAlign': 'center',
+                                               'margin-bottom': '75px'})])]),
 
     # ==ŹRUDŁO_DANYCH===================================================================================================
 
     dbc.Row(id='data_source-ann-bp-label',
             children=[html.Label('Wybierz źródło danych')],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-top': '10px'}),
 
     dbc.Row(id='data_source-ann-bp-choice',
             children=[
@@ -57,18 +59,18 @@ layout = dbc.Container([
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})],
+                             style={'width': '200px', 'color': '#000000'})],
             justify='center'),
 
     dbc.Row(dbc.Col([dbc.Button(id='refresh-button-ann_bp', children='Odświerz', color='secondary', size='sm',
-                                block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                block=True)], width=2), justify='center',
+            style={'padding': '10px', 'margin-bottom': '35px'}),
 
     # ==LICZBA_EPOK=====================================================================================================
 
     dbc.Row(id='n_epoch-ann-bp-label',
             children=[html.Label(('Wybierz liczbę epok'))],
-            justify="center",
-            style={'padding': '10px'}),
+            justify="center"),
 
     dbc.Row(id='n_epoch-ann-bp-choice',
             children=[
@@ -77,14 +79,13 @@ layout = dbc.Container([
                           type='number',
                           min=0,
                           style={'width': '200px'})],
-            justify="center"),
+            justify="center", style={'margin-bottom': '40px'}),
 
     # ==WSPÓŁCZYNNIK_UCZENIA===========================================================================================
 
     dbc.Row(id='l_rate-ann-bp-label',
             children=[html.Label(('Wybierz wartość współczynnika uczenia'))],
-            justify="center",
-            style={'padding': '10px'}),
+            justify="center"),
 
     dbc.Row(id='l_rate-ann-bp-choice',
             children=[
@@ -93,14 +94,13 @@ layout = dbc.Container([
                           type='text',
                           min=0,
                           style={'width': '200px'})],
-            justify='center'),
+            justify='center', style={'margin-bottom': '40px'}),
 
     # ==NEURONY_UKRYTE==================================================================================================
 
     dbc.Row(id='n_hidden-bp-label',
             children=[html.Label(('Wprowadź liczbę neuronów w warstwie ukrytej'))],
-            justify="center",
-            style={'padding': '10px'}),
+            justify="center"),
 
     dbc.Row(id='n_hidden-bp-choice',
             children=[
@@ -109,14 +109,13 @@ layout = dbc.Container([
                           type='number',
                           min=0,
                           style={'width': '200px'})],
-            justify='center'),
+            justify='center', style={'margin-bottom': '40px'}),
 
     # ==WALIDACJA=======================================================================================================
 
     dbc.Row(id='validation-ann-bp-label-row',
             children=[html.Label('Wybierz metodę walidacji')],
-            justify='center',
-            style={'padding': '10px'}),
+            justify='center'),
 
     dbc.Row(id='validation-choice-ann-bp-row', children=[
         dcc.Dropdown(id='validation-method-ann-bp-choice',
@@ -125,26 +124,27 @@ layout = dbc.Container([
                      ],
                      clearable=False,
                      value=validation_methods[0],
-                     style={'width': '200px'})
+                     style={'width': '200px', 'color': '#000000'})
     ],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-bottom': '40px'}),
 
     # ==WALIDACJA_CONFIG================================================================================================
 
     dbc.Row(id='validation-config-ann-bp-label',
             children=[],
-            justify='center',
-            style={'padding': '10px'}),
+            justify='center'),
 
     dbc.Row(id='validation-config-ann-bp-row',
             children=[],
             justify='center',
-            style={'padding': '10px'}),
+            style={'margin-bottom': '40px'}),
 
     # ==PODGLĄD=========================================================================================================
 
-    dbc.Row(html.Button(id='start-button-ann-bp', children='Start'), style={'padding': '10px'}, justify='center'),
+    dbc.Row([dbc.Col([dbc.Button(id='start-button-ann-bp', children='Start', color='secondary', size='sm',
+                                 block=True)], width=2)],
+            justify='center', style={'padding': '15px'}),
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
@@ -153,7 +153,6 @@ layout = dbc.Container([
     dbc.Row(id='n_epoch-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='l_rate-ann-bp-alert', children=[], justify='center'),
     dbc.Row(id='n_hidden-ann-bp-alert', children=[], justify='center'),
-    # dbc.Row(id='val_method-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='test_set-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='k-ann-bp-error', children=[], justify='center'),
     dbc.Row(id='start-model-ann-bp-info', children=[], justify='center'),
@@ -161,12 +160,12 @@ layout = dbc.Container([
 
     dbc.Row(id='raport-button-ann-bp-row', children=[], justify='center', style={'padding': '15px'}),
 
-    dbc.Row([html.Button(id='back-ann-bp', children=[dcc.Link('Wróć', href='/models')])],
-            justify='center', style={'padding': '15px'})
+    dbc.Row([dbc.Col([dbc.Button(id='back-ann-bp', children='Wróć', color='secondary', href='/models',
+                                 size='sm', block=True)], width=2)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
 ],
-    fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+    fluid=True)
 
 # ==VAL_CONFIG=========================================================================================================
 
@@ -193,11 +192,6 @@ split_input = dcc.Input(id='split-input-ann-bp',
 def set_data_source_ann_bp(value):
     config['data_source'] = value
 
-# @app.callback(Output('data_source-ann-bp-alert', 'children'), [Input('data_source-ann-bp-input', 'value')])
-# def set_data_source_ann_bp(value):
-#     config['data_source'] = value
-#     print()
-
 
 @app.callback([Output('data_source-ann-bp-choice', 'children'), Output('data_refresh-ann-bp-alert', 'children')],
               [Input('refresh-button-ann_bp', 'n_clicks')])
@@ -205,12 +199,13 @@ def set_ann_bp_data_source(n_clicks):
     data_manager = DataManagement()
     global data_sources
     data_sources = data_manager.get_datasets_list()
+    data_sources.remove('.gitkeep')
 
     drop_menu = dcc.Dropdown(id='data_source-ann_bp-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})
+                             style={'width': '200px', 'color': '#000000'})
 
     return drop_menu, None
 
@@ -312,10 +307,9 @@ def run_ann_bp_model(children):
 
     controller.run_model(config)
 
-    raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/ann-bp_raport')])],
-        justify='center',
-        style={'padding': '15px'})
+    raport_button = dbc.Col([dbc.Button(id='raport-ann_bp', children='Pokaż raport', color='secondary',
+                                        href='/models/ann-bp_raport', size='sm', block=True)],
+                            width=2)
 
     train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 

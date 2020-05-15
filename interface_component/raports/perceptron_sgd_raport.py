@@ -46,7 +46,6 @@ def generate_raport(back_link):
             ],
             style={
                 'height': '100px',
-                'backgroundColor': '#C0C0C0',
             }),
 
     dbc.Row(id='train_metrics_header',
@@ -61,11 +60,12 @@ def generate_raport(back_link):
         dcc.Graph(id='mse-graph',
                   figure={'data': [{'x': train_metrics['data']['n_epoch'], 'y': train_metrics['data']['mse']}],
                           'layout': {'title': 'Mean Squared Error',
-                                     'xaxis': {'title': 'Epoki',
-                                               },
+                                     'xaxis': {'title': 'Epoki'},
                                      'yaxis': {'title': 'MSE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}})
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}
+                                     }})
     ], justify='center', style={'padding': '10px', }),
 
     # ==ŚREDINA_BŁĘDÓW_ABSOLUTNYCH======================================================================================
@@ -74,12 +74,11 @@ def generate_raport(back_link):
         dcc.Graph(id='mea-graph',
                   figure={'data': [{'x': train_metrics['data']['n_epoch'], 'y': train_metrics['data']['mae']}],
                           'layout': {'title': 'Mean Absolute Error',
-                                     'xaxis': {'title': 'Epoki',
-                                               'tick0': 0,
-                                               'dtick': 1},
+                                     'xaxis': {'title': 'Epoki'},
                                      'yaxis': {'title': 'MAE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}})
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}})
     ], justify='center', style={'padding': '10px'}),
 
     # ==ACCURACY========================================================================================================
@@ -88,12 +87,11 @@ def generate_raport(back_link):
         dcc.Graph(id='acc-graph',
                   figure={'data': [{'x': train_metrics['data']['n_epoch'], 'y': train_metrics['data']['accuracy']}],
                           'layout': {'title': 'Accuracy',
-                                     'xaxis': {'title': 'Epoki',
-                                               'tick0': 0,
-                                               'dtick': 1},
+                                     'xaxis': {'title': 'Epoki'},
                                      'yaxis': {'title': 'ACC'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}})
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
     # ==CONFUSION_MATRIX================================================================================================
@@ -106,8 +104,9 @@ def generate_raport(back_link):
                                     'z': train_metrics['confusion_matrix'],
                                     'showscale': False}],
                           'layout': {'title': 'Confusion Matrix',
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3',
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'},
                                      'annotations':[{'x': 'True',
                                                      'y': 'Positive',
                                                      'text': train_metrics['confusion_matrix'][0][0],
@@ -161,8 +160,9 @@ def generate_raport(back_link):
                                     'z': test_metrics['confusion_matrix'],
                                     'showscale': False}],
                           'layout': {'title': 'Confusion Matrix',
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3',
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'},
                                      'annotations': [{'x': 'True',
                                                       'y': 'Positive',
                                                       'text': test_metrics['confusion_matrix'][0][0],
@@ -187,7 +187,7 @@ def generate_raport(back_link):
 
     # ==STOPKA==========================================================================================================
 
-    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport do bazy danych',
+    dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-button', children='Zapisz raport w bazie danych',
                                          color='secondary', size='lg', block=True)], width=4), justify='center',
             style={'padding': '10px'}),
 
@@ -199,18 +199,16 @@ def generate_raport(back_link):
     dbc.Row(id='save-raport-psgd-alert', children=[], justify='center'),
     dbc.Row(id='save-raport-psgd-csv-alert', children=[], justify='center'),
 
-    dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Powrót', href=back_link)])],
-                            justify='center',
-                            style={'padding': '15px'}),
-
+    dbc.Row(dbc.Col(children=[dbc.Button(id='back_to_config', children='Powrót', color='secondary', size='lg',
+                                         block=True, href=back_link)], width=4), justify='center',
+                style={'padding': '10px'}),
 
     dbc.Row(id='config_test',
             children=[
                 html.Div(id='config-test-div')
             ])
 ],
-    fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+    fluid=True)
 
     layout = raport
 
@@ -265,7 +263,6 @@ def generate_cv_raport(back_link):
                 ],
                 style={
                     'height': '100px',
-                    'backgroundColor': '#C0C0C0',
                 }),
 
         dbc.Row(id='train_metrics_header',
@@ -282,8 +279,9 @@ def generate_cv_raport(back_link):
                               'layout': {'title': 'Mean Squared Error',
                                          'xaxis': {'title': 'Epoki'},
                                          'yaxis': {'title': 'MSE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px', }),
 
         dbc.Row(id='mse-fold-choice-label',
@@ -295,7 +293,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==ŚREDINA_BŁĘDÓW_ABSOLUTNYCH======================================================================================
@@ -306,8 +304,9 @@ def generate_cv_raport(back_link):
                               'layout': {'title': 'Mean Absolute Error',
                                          'xaxis': {'title': 'Epoki'},
                                          'yaxis': {'title': 'MAE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         dbc.Row(id='mae-fold-choice-label',
@@ -319,7 +318,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==ACCURACY========================================================================================================
@@ -333,8 +332,9 @@ def generate_cv_raport(back_link):
                                                    'tick0': 0,
                                                    'dtick': 1},
                                          'yaxis': {'title': 'ACC'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         dbc.Row(id='acc-fold-choice-label',
@@ -346,7 +346,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==FOLDS_HISTOGRAM=================================================================================================
@@ -362,8 +362,9 @@ def generate_cv_raport(back_link):
                                               'tick0': 0,
                                               'dtick': 1},
                                     'yaxis': {'title': 'MSE'},
-                                    'plot_bgcolor': '#D3D3D3',
-                                    'paper_bgcolor': '#D3D3D3'}
+                                    'plot_bgcolor': 'rgba(0,0,0,0)',
+                                    'paper_bgcolor': 'rgba(0,0,0,0)',
+                                    'font': {'color': '#FFFFFF'}}
                      })
         ], justify='center'),
 
@@ -376,7 +377,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in metrics_labels],
                          value='MSE',
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==CONFUSION_MATRIX================================================================================================
@@ -389,8 +390,9 @@ def generate_cv_raport(back_link):
                                         'z': train_metrics[0]['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': train_metrics[0]['confusion_matrix'][0][0],
@@ -422,7 +424,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==TEST_SET_HISTOGRAM==============================================================================================
@@ -445,8 +447,9 @@ def generate_cv_raport(back_link):
                                                'tick0': 0,
                                                'dtick': 1},
                                      'yaxis': {'title': 'MSE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}
                       })
         ], justify='center'),
 
@@ -459,7 +462,7 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in metrics_labels],
                          value='MSE',
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
     # ==TS_CONFUSION_MATRIX=============================================================================================
@@ -472,8 +475,9 @@ def generate_cv_raport(back_link):
                                         'z': test_metrics[0]['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': test_metrics[0]['confusion_matrix'][0][0],
@@ -505,13 +509,13 @@ def generate_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
-        ], justify='center'),
+                         style={'width': '200px', 'color': '#000000'})
+        ], justify='center', style={'margin-bottom': '40px'}),
 
     # ==STOPKA==========================================================================================================
 
         dbc.Row(dbc.Col(
-            children=[dbc.Button(id='save-raport-cv-button', children='Zapisz raport', color='secondary', size='lg',
+            children=[dbc.Button(id='save-raport-cv-button', children='Zapisz raport w bazie danych', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
         dbc.Row(dbc.Col(children=[dbc.Button(id='save-raport-psgd-cv-json-button', children='Zapisz raport do pliku json',
@@ -521,14 +525,12 @@ def generate_cv_raport(back_link):
         dbc.Row(id='save-raport-cv-alert', children=[], justify='center'),
         dbc.Row(id='save-raport-cv-json-alert', children=[], justify='center'),
 
-        dbc.Row([html.Button(id='back_to_config', children=[dcc.Link('Pokaż config', href=back_link)])],
-                justify='center',
-                style={'padding': '15px',
-                       'margin-top': '30px'}),
+        dbc.Row(dbc.Col(children=[dbc.Button(id='back_to_config', children='Powrót', color='secondary', size='lg',
+                                             block=True, href=back_link)], width=4), justify='center',
+                style={'padding': '10px'}),
 
     ],
-        fluid=True,
-        style={'backgroundColor': '#D3D3D3'})
+        fluid=True)
 
     layout = raport
 
@@ -542,8 +544,9 @@ def update_mse_graph(value):
                               'layout': {'title': 'Mean Squared Error',
                                          'xaxis': {'title': 'Epoki'},
                                          'yaxis': {'title': 'MSE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}}
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -558,8 +561,9 @@ def update_mae_graph(value):
               'layout': {'title': 'Mean Absolute Error',
                          'xaxis': {'title': 'Epoki'},
                          'yaxis': {'title': 'MAE'},
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3'}}
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -576,8 +580,9 @@ def update_acc_graph(value):
                                    'tick0': 0,
                                    'dtick': 1},
                          'yaxis': {'title': 'ACC'},
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3'}}
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -593,8 +598,9 @@ def update_cf_graph(value):
                         'z': train_metrics[fold_index]['confusion_matrix'],
                         'showscale': False}],
               'layout': {'title': 'Confusion Matrix',
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3',
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'},
                          'annotations': [{'x': 'True',
                                           'y': 'Positive',
                                           'text': train_metrics[fold_index]['confusion_matrix'][0][0],
@@ -634,8 +640,9 @@ def update_histogram(value):
                              'tick0': 0,
                              'dtick': 1},
                    'yaxis': {'title': value},
-                   'plot_bgcolor': '#D3D3D3',
-                   'paper_bgcolor': '#D3D3D3'}
+                   'plot_bgcolor': 'rgba(0,0,0,0)',
+                   'paper_bgcolor': 'rgba(0,0,0,0)',
+                   'font': {'color': '#FFFFFF'}}
     }
 
     return figure
@@ -656,8 +663,9 @@ def update_ts_histogram(value):
                              'tick0': 0,
                              'dtick': 1},
                    'yaxis': {'title': value},
-                   'plot_bgcolor': '#D3D3D3',
-                   'paper_bgcolor': '#D3D3D3'}
+                   'plot_bgcolor': 'rgba(0,0,0,0)',
+                   'paper_bgcolor': 'rgba(0,0,0,0)',
+                   'font': {'color': '#FFFFFF'}}
     }
 
     return figure
@@ -674,8 +682,9 @@ def update_cf_cv_graph(value):
                         'z': test_metrics[fold_index]['confusion_matrix'],
                         'showscale': False}],
               'layout': {'title': 'Confusion Matrix',
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3',
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'},
                          'annotations': [{'x': 'True',
                                           'y': 'Positive',
                                           'text': test_metrics[fold_index]['confusion_matrix'][0][0],
@@ -704,7 +713,6 @@ def update_cf_cv_graph(value):
 def save_psgd_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        # db_facade.save_raport('perceptron_sgd', train_metrics, test_metrics)
 
         if db_facade.save_raport('perceptron_sgd', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')

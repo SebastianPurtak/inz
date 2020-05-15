@@ -8,9 +8,6 @@ from dash.dependencies import Input, Output
 from interface_component.app import app
 from interface_component.utils.db_facade import DBFacade
 from interface_component.utils.raport_exporter import RaportExporter
-# from interface_component.utils.db_facade import db_facade
-
-# db_facade = DBFacade()
 
 layout = {}
 train_metrics = None
@@ -42,8 +39,7 @@ def generate_raport(back_link, train_data, test_data):
                 ])
             ],
             style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
+                'height': '100px'
             }),
 
         dbc.Row(id='train-metrics-pga-header',
@@ -60,8 +56,9 @@ def generate_raport(back_link, train_data, test_data):
                               'layout': {'title': 'Best Fitness',
                                          'xaxis': {'title': 'Pokolenia'},
                                          'yaxis': {'title': 'Best Fitness'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}}),
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}}),
         justify='center', style={'padding': '10px'}),
 
         dbc.Row(
@@ -70,8 +67,9 @@ def generate_raport(back_link, train_data, test_data):
                               'layout': {'title': 'Mean Fitness',
                                          'xaxis': {'title': 'Pokolenia'},
                                          'yaxis': {'title': 'Mean Fitness'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}}),
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}}),
             justify='center', style={'padding': '10px'}),
 
         # ==METRYKI_ZBIORU_TESTOWEGO====================================================================================
@@ -89,12 +87,12 @@ def generate_raport(back_link, train_data, test_data):
                     html.Tr(html.Td(str(result), style={'text-align': 'center'})) for result in test_metrics['val_fit']
                 ])
             ])
-        ], justify='center'),
+        ], justify='center', style={'margin-bottom': '30px'}),
 
         # ==STOPKA======================================================================================================
 
         dbc.Row(dbc.Col(
-            children=[dbc.Button(id='save-raport-pga-button', children='Zapisz raport', color='secondary', size='lg',
+            children=[dbc.Button(id='save-raport-pga-button', children='Zapisz raport w bazie danych', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
         dbc.Row(
@@ -105,13 +103,11 @@ def generate_raport(back_link, train_data, test_data):
         dbc.Row(id='save-raport-pga-alert', children=[], justify='center'),
         dbc.Row(id='save-raport-json-alert', children=[], justify='center'),
 
-        dbc.Row([html.Button(id='back_to_config-pga', children=[dcc.Link('Powrót',
-                                                                         href=back_link)])],
-                justify='center',
-                style={'padding': '15px'}),
+        dbc.Row(dbc.Col(children=[dbc.Button(id='back_to_config-pga', children='Powrót', color='secondary', size='lg',
+                                             block=True, href=back_link)], width=4), justify='center',
+                style={'padding': '10px'}),
     ],
-    fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+    fluid=True)
 
     layout = raport
 

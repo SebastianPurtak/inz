@@ -19,9 +19,10 @@ layout = dbc.Container([
                 ])
             ],
             style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+                'position': 'relative',
+                'top': '20%',
+                'textAlign': 'center',
+                'margin-bottom': '100px'}),
 
     # ==OPCJE_POMOCY====================================================================================================
 

@@ -25,14 +25,11 @@ layout = dbc.Container([
                         style={
                             'position': 'relative',
                             'top': '20%',
-                            'textAlign': 'center'
+                            'textAlign': 'center',
+                            'margin-bottom': '100px'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==OPCJE_WYBORU====================================================================================================
 
@@ -42,23 +39,23 @@ layout = dbc.Container([
         dbc.Col([
 
             dbc.Row([dbc.Col([dbc.Button('Perceptron SGD', color='secondary', href='/models/perceptron_sgd_menu',
-                                         size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+                                         size='lg', block=True)], width=5)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
             dbc.Row([dbc.Col([dbc.Button('Perceptron GA', color='secondary', href='/models/perceptron_ga_menu',
-                                         size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+                                         size='lg', block=True)], width=5)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
             dbc.Row([dbc.Col([dbc.Button('Sieć Neuronowa BP', color='secondary', href='/models/ann_bp_menu',
-                                         size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+                                         size='lg', block=True)], width=5)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
             dbc.Row([dbc.Col([dbc.Button('Sieć Neuronowa GA', color='secondary', href='/models/ann_ga_menu',
-                                         size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+                                         size='lg', block=True)], width=5)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
             dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/',
-                                         size='lg', block=True)], width=4)],
+                                         size='lg', block=True)], width=5)],
             justify='center', style={'padding': '15px'}),
 
         ]),
@@ -66,12 +63,20 @@ layout = dbc.Container([
         # ==OPIS_MODELI================================================================================================
         dbc.Col([
 
-            html.H3('Tekst pomocy', style={'padding': 40}),
+            # html.H3('Tekst pomocy', style={'padding': 40}),
 
-            html.Div(dcc.Markdown(children=help_text), style={'textAlign': 'left', 'margin': 15})
+            # html.Div(dcc.Markdown(children=help_text), style={'textAlign': 'left', 'margin': 15})
+
+            html.H5('PERCEPTRON SGD - pojedyńczy neuron uczony za pomocą algorytmu stochastic gradient descent (sgd).',
+                    style={'padding': '15px', 'margin-bottom': '20px'}),
+            html.H5('PERCEPTRON GA  - pojedyńczy neuron uczony za pomocą algorytmu genetycznego (ga).',
+                    style={'padding': '15px', 'margin-bottom': '20px'}),
+            html.H5('SIEĆ NEURONOWA BP - Sieć neuronowa uczona za pomocą algorytmu wstecznej propagacji błędu (bp).',
+                    style={'padding': '15px', 'margin-bottom': '20px'}),
+            html.H5('SIEĆ NEURONOWA GA - Sieć neuronowa uczona za pomocą algorytmu genetycznego (ga).',
+                    style={'padding': '15px', 'margin-bottom': '20px'})
         ])
 
     ], justify='center'),
 
-], fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+], fluid=True)

@@ -11,14 +11,14 @@ from models_component.models_controller import ModelController
 
 # ==CONFIG==============================================================================================================
 
-config = {'model': 'ann_ga',  # perceptron_sgd
-          'data_source': 'seed_data',  # seed_data
+config = {'model': 'ann_ga',
+          'data_source': 'seed_data',
           'model_config': {'no_generations':        50,
                            'pop_size':              100,
                            'select_n':              0.3,
                            'mut_prob':              0.2,
                            'rand_mut':              0.5,
-                           'mut_type':              'node_mut', # random_add
+                           'mut_type':              'node_mut',
                            'n_hidden':              [5],
                            'selection_method':      'best_selection',
                            'parents_choice':        'random_parents',  # random_parents, sequence_parents
@@ -73,11 +73,7 @@ layout = dbc.Container([
                             'textAlign': 'center'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==OPCJE_KONFIGURACJI==============================================================================================
     dbc.Row([
@@ -94,11 +90,12 @@ layout = dbc.Container([
                                      options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                                      value=data_sources[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
+                                     style={'width': '200px', 'color': '#000000'})],
                     justify='center'),
 
             dbc.Row(dbc.Col([dbc.Button(id='refresh-button-ann_ga', children='Odświerz', color='secondary', size='sm',
-                                block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                block=True)], width=2), justify='center',
+                    style={'padding': '10px', 'margin-bottom': '15px'}),
 
             # ==LICZBA_POKOLEŃ==========================================================================================
             dbc.Row(id='no_generation-ann-ga-label',
@@ -113,7 +110,7 @@ layout = dbc.Container([
                                   type='number',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify="center"),
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==WIELKOŚĆ_POPULACJI======================================================================================
             dbc.Row(id='pop_size-ann-ga-label',
@@ -128,7 +125,7 @@ layout = dbc.Container([
                                   type='number',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify="center"),
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==SELECT_N================================================================================================
 
@@ -144,7 +141,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MUT_TYPE================================================================================================
 
@@ -159,8 +156,8 @@ layout = dbc.Container([
                                      options=[{'label': mut_type, 'value': mut_type} for mut_type in mutation_type],
                                      value=mutation_type[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MUT_PROB================================================================================================
 
@@ -176,7 +173,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
 
         ]),
 
@@ -196,7 +193,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '65px'}),
 
             # ==METODA_SELEKCJI=========================================================================================
             dbc.Row(id='selection_method-ann-ga-label',
@@ -211,8 +208,8 @@ layout = dbc.Container([
                                               for select_meth in selection_methods],
                                      value=selection_methods[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==PARENTS_CHOICE==========================================================================================
             dbc.Row(id='parents_choice-ann-ga-label',
@@ -226,8 +223,8 @@ layout = dbc.Container([
                                      options=[{'label': p_choice, 'value': p_choice} for p_choice in parents_choice],
                                      value=parents_choice[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==CROSS_TYPE==============================================================================================
 
@@ -242,8 +239,8 @@ layout = dbc.Container([
                                      options=[{'label': c_type, 'value': c_type} for c_type in cross_type],
                                      value=cross_type[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==EVELUATION_POP==========================================================================================
 
@@ -259,7 +256,7 @@ layout = dbc.Container([
                                   type='number',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify="center"),
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==TEST_SET_SIZE===========================================================================================
 
@@ -275,7 +272,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MAX_FIT=================================================================================================
 
@@ -291,15 +288,19 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
         ])
 
     ], justify='center'),
 
     # ==PODGLĄD=========================================================================================================
 
-    dbc.Row(id='start-button-ann-ga-row', children=html.Button(id='start-button-ann-ga', children='Start'),
-            style={'padding': '10px'}, justify='center'),
+    # dbc.Row(id='start-button-ann-ga-row', children=html.Button(id='start-button-ann-ga', children='Start'),
+    #         style={'padding': '10px'}, justify='center'),
+
+    dbc.Row([dbc.Col([dbc.Button(id='start-button-ann-ga', children='Start', color='secondary', size='sm',
+                                 block=True)], width=2)],
+            justify='center', style={'padding': '15px'}),
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
@@ -321,12 +322,15 @@ layout = dbc.Container([
     dbc.Row(id='max_fit-pga-alert-ann-ga', children=[], justify='center'),
 
     dbc.Row(id='raport-button-row-ann-ga', children=[], justify='center', style={'padding': '15px'}),
-    dbc.Row([html.Button(id='back-ann-ga', children=[dcc.Link('Wróć', href='/models')])],
-            justify='center',
-            style={'padding': '15px'}),
+    # dbc.Row([html.Button(id='back-ann-ga', children=[dcc.Link('Wróć', href='/models')])],
+    #         justify='center',
+    #         style={'padding': '15px'}),
 
-], fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+    dbc.Row([dbc.Col([dbc.Button(id='back-ann-ga', children='Wróć', color='secondary', href='/models',
+                                 size='sm', block=True)], width=2)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
+
+], fluid=True)
 
 # ==CALLBACKS===========================================================================================================
 
@@ -341,12 +345,13 @@ def set_data_source_ann_ga(value):
 def set_ann_ga_data_source(n_clicks):
     global data_sources
     data_sources = data_manager.get_datasets_list()
+    data_sources.remove('.gitkeep')
 
     drop_menu = dcc.Dropdown(id='data_source-ann_ga-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})
+                             style={'width': '200px', 'color': '#000000'})
 
     return drop_menu, None
 
@@ -499,18 +504,19 @@ def run_ann_ga_model(children):
     controller = ModelController()
     metrics_preprocessor = MetricPreprocessor()
 
-    # print('generations: ', config['model_config']['metrics']['generation'])
-
     controller.run_model(config)
 
-    raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/ann_ga_raport')])],
-        justify='center',
-        style={'padding': '15px'})
+    # raport_button = dbc.Row(
+    #     [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/ann_ga_raport')])],
+    #     justify='center',
+    #     style={'padding': '15px'})
+
+    raport_button = dbc.Col([dbc.Button(id='raport-pga', children='Pokaż raport', color='secondary',
+                                        href='/models/ann_ga_raport', size='sm', block=True)],
+                            width=2)
 
     train_metrics, test_metrics = metrics_preprocessor.perprocess_ga_metrics(config['model_config'])
 
     ann_ga_raport.generate_raport('/models/ann_ga_menu', train_metrics, test_metrics)
-    # perceptron_ga_raport.generate_raport(train_metrics, test_metrics)
 
     return dbc.Alert(id='result-ann-ga-info', children='Zakończono!', color='primary'), raport_button

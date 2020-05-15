@@ -25,14 +25,11 @@ layout = dbc.Container([
                         style={
                             'position': 'relative',
                             'top': '20%',
-                            'textAlign': 'center'
+                            'textAlign': 'center',
+                            'margin-bottom': '100px'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==WCZYTYWANIE_PLIKU===============================================================================================
 
@@ -40,7 +37,8 @@ layout = dbc.Container([
                 children=html.H4('Wczytaj nowy plik z danymi'),
                 justify='center',
                 style={'padding': '10px',
-                       'margin-top': '30px'}),
+                       'margin-top': '30px',
+                       'margin-bottom': '10px'}),
 
     dbc.Row(dbc.Col([dcc.Upload(id='upload-data', children=html.Div(['Przeciągnij albo ', html.A('wskaż plik')]),
                                 style={'width': '100%',
@@ -50,11 +48,13 @@ layout = dbc.Container([
                                        'borderStyle': 'dashed',
                                        'borderRadius': '5px',
                                        'textAlign': 'center',
-                                       'margin': '10px'})], width=4), justify='center'),
+                                       'margin': '10px'})], width=4), justify='center',
+            style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(html.H4('Wprowadzone dane:'), justify='center'),
+    dbc.Row(html.H4('Wprowadzone dane:'), justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(dbc.Col(id='upload-data-preview', children=[], width=8), justify='center'),
+    dbc.Row(dbc.Col(id='upload-data-preview', children=[], width=8), justify='center',
+            style={'padding': '15px', 'margin-bottom': '10px'}),
 
     # ==OPCJE_PRZETWARZANIA_DANYCH======================================================================================
 
@@ -64,30 +64,32 @@ layout = dbc.Container([
         dbc.Col([dbc.Button(id='label-encoding-button', children='Label Encoding', color='secondary', size='lg',
                                  block=True)], width=2),
         dbc.Col([dbc.Button(id='label-shuffle-button', children='Mieszaj', color='secondary', size='lg',
-                            block=True)], width=2)], justify='center', style={'padding': '15px'}),
+                            block=True)], width=2)], justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(html.H4('Przetworzone dane:'), justify='center'),
+    dbc.Row(html.H4('Przetworzone dane:'), justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(dbc.Col(id='processed-data-preview', children=[], width=8), justify='center'),
+    dbc.Row(dbc.Col(id='processed-data-preview', children=[], width=8), justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
     # ==PODGLĄD_DOSTĘPNYCH_DANYCH=======================================================================================
 
-    dbc.Row(html.H4('Dostępne zbiory danych:'), justify='center'),
+    dbc.Row(html.H4('Dostępne zbiory danych:'), justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(id='datasets_preview', children=[], justify='center'),
+    dbc.Row(id='datasets_preview', children=[], justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
     dbc.Row(dbc.Col([dbc.Button(id='refresh-button', children='Odświerz', color='secondary', size='lg',
-                                block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                block=True)], width=4), justify='center',
+            style={'padding': '10px', 'margin-bottom': '10px'}),
 
     # ==KOMUNIKATY_BŁĘDÓW===============================================================================================
 
     dbc.Row(dbc.Col([dbc.Input(id='filename_input', placeholder='Podaj nazwę pliku', type='text')], width=4),
-            style={'padding': '10px'}, justify='center'),
+            style={'padding': '10px', 'margin-bottom': '10px'}, justify='center'),
 
     dbc.Row(dbc.Col([dbc.Button(id='save-button', children='Zapisz', color='secondary', size='lg',
-                                 block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                 block=True)], width=4), justify='center',
+            style={'padding': '10px', 'margin-bottom': '10px'}),
 
-    dbc.Row(html.P('Komunikaty'), justify='center'),
+    dbc.Row(html.P('Komunikaty'), justify='center', style={'padding': '10px', 'margin-bottom': '10px'}),
 
     dbc.Row(id='data-read-error', children=[], justify='center'),
     dbc.Row(id='data-preprocess-error', children=[], justify='center'),
@@ -101,11 +103,10 @@ layout = dbc.Container([
 
     dbc.Row([dbc.Col([dbc.Button(id='Back', children='Wróć', color='secondary', href='/',
                                          size='lg', block=True)], width=4)],
-            justify='center', style={'padding': '15px'}),
+            justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
 
-], fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+], fluid=True)
 
 
 @app.callback([Output('upload-data-preview', 'children'), Output('data-read-error', 'children')],
@@ -199,6 +200,7 @@ def preprocess_data(normalization_click, label_encoding_click, shuffle_clicks):
 @app.callback(Output('datasets_preview', 'children'), [Input('refresh-button', 'n_clicks')])
 def datasets_preview(n_clicks):
     datasets = data_manager.get_datasets_list()
+    datasets.remove('.gitkeep')
 
     table = dbc.Row(id='datasets-list-table', children=[
         html.Table([

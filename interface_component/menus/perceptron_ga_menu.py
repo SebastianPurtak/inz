@@ -11,19 +11,19 @@ from models_component.models_controller import ModelController
 
 # ==CONFIG==============================================================================================================
 
-config = {'model': 'perceptron_ga',  # perceptron_sgd
-              'data_source': 'sonar_data',  # data_source       +
-              'model_config': {'no_generations':    50, #int     +
-                               'pop_size':          10, #int     +
-                               'select_n':          0.3, #float   +
-                               'mut_prob':          0.2, #float   +
-                               'rand_mut':          0.1, #float   +
-                               'mut_type':          'swap_mut', #random_mut, swap_mut   +
-                               'selection_method':  'simple_selection', # simple_selection, best_selection  +
-                               'parents_choice':    'sequence_parents', # random_parents, sequence_parents  +
-                               'cross_type':        'cross_uniform', # cross_uniform, cross_one_point, cross_two_point   +
-                               'evaluation_pop':     5, #ilość osobników w populacji przeznaczonej na testy +
-                               'max_fit':           0.1, # float
+config = {'model': 'perceptron_ga',
+              'data_source': 'sonar_data',
+              'model_config': {'no_generations':    50,
+                               'pop_size':          10,
+                               'select_n':          0.3,
+                               'mut_prob':          0.2,
+                               'rand_mut':          0.1,
+                               'mut_type':          'swap_mut',
+                               'selection_method':  'simple_selection',
+                               'parents_choice':    'sequence_parents',
+                               'cross_type':        'cross_uniform',
+                               'evaluation_pop':     5,
+                               'max_fit':           0.1,
                                'validation_mode': {'mode': 'simple_split',
                                                    'test_set_size': 0.25,
                                                    'k': 0},
@@ -39,7 +39,7 @@ config = {'model': 'perceptron_ga',  # perceptron_sgd
                                            'generation':    [],
                                            'best_fit':      [],
                                            'mean_fit':      [],
-                                           'val_fit':       []}}} # wartość funkcji dopasowania najlepszych osobników
+                                           'val_fit':       []}}}
 
 
 data_manager = DataManagement()
@@ -69,14 +69,11 @@ layout = dbc.Container([
                         style={
                             'position': 'relative',
                             'top': '20%',
-                            'textAlign': 'center'
+                            'textAlign': 'center',
+                            'margin-bottom': '75px'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==OPCJE_KONFIGURACJI==============================================================================================
 
@@ -94,11 +91,12 @@ layout = dbc.Container([
                                      options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                                      value=data_sources[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
+                                     style={'width': '200px', 'color': '#000000'})],
                     justify='center'),
 
             dbc.Row(dbc.Col([dbc.Button(id='refresh-button-pga', children='Odświerz', color='secondary', size='sm',
-                                block=True)], width=2), justify='center', style={'padding': '10px'}),
+                                block=True)], width=2), justify='center',
+                    style={'padding': '10px', 'margin-bottom': '15px'}),
 
             # ==LICZBA_POKOLEŃ==========================================================================================
             dbc.Row(id='no_generation-pga-label',
@@ -113,7 +111,7 @@ layout = dbc.Container([
                                   type='number',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify="center"),
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==WIELKOŚĆ_POPULACJI======================================================================================
             dbc.Row(id='pop_size-pga-label',
@@ -128,7 +126,7 @@ layout = dbc.Container([
                                   type='number',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify="center"),
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==SELECT_N================================================================================================
 
@@ -144,7 +142,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MUT_TYPE================================================================================================
 
@@ -159,8 +157,8 @@ layout = dbc.Container([
                                      options=[{'label': mut_type, 'value': mut_type} for mut_type in mutation_type],
                                      value=mutation_type[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MUT_PROB================================================================================================
 
@@ -176,7 +174,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
         ]),
 
         dbc.Col([
@@ -195,7 +193,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '65px'}),
 
             # ==METODA_SELEKCJI=========================================================================================
             dbc.Row(id='selection_method-pga-label',
@@ -210,8 +208,8 @@ layout = dbc.Container([
                                               for select_meth in selection_methods],
                                      value=selection_methods[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==PARENTS_CHOICE==========================================================================================
             dbc.Row(id='parents_choice-pga-label',
@@ -225,8 +223,8 @@ layout = dbc.Container([
                                      options=[{'label': p_choice, 'value': p_choice} for p_choice in parents_choice],
                                      value=parents_choice[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==CROSS_TYPE==============================================================================================
 
@@ -241,8 +239,8 @@ layout = dbc.Container([
                                      options=[{'label': c_type, 'value': c_type} for c_type in cross_type],
                                      value=cross_type[0],
                                      clearable=False,
-                                     style={'width': '200px'})],
-                    justify='center'),
+                                     style={'width': '200px', 'color': '#000000'})],
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==EVELUATION_POP==========================================================================================
 
@@ -257,8 +255,8 @@ layout = dbc.Container([
                                   value=5,
                                   type='number',
                                   min=0,
-                                  style={'width': '200px'})],
-                    justify="center"),
+                                  style={'width': '200px', 'color': '#000000'})],
+                    justify="center", style={'margin-bottom': '40px'}),
 
             # ==TEST_SET_SIZE===========================================================================================
 
@@ -274,7 +272,7 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
 
             # ==MAX_FIT=================================================================================================
 
@@ -290,18 +288,16 @@ layout = dbc.Container([
                                   type='text',
                                   min=0,
                                   style={'width': '200px'})],
-                    justify='center'),
+                    justify='center', style={'margin-bottom': '40px'}),
         ])
 
     ], justify='center'),
 
     # ==PODGLĄD=========================================================================================================
 
-    dbc.Row(id='start-button-pga-row', children=html.Button(id='start-button-pga', children='Start'),
-            style={'padding': '10px'}, justify='center'),
-
-    # Działa ale średnio
-    # dbc.Row(html.Button(id='start-button-pga', children='Start'), style={'padding': '10px'}, justify='center'),
+    dbc.Row([dbc.Col([dbc.Button(id='start-button-pga', children='Start', color='secondary', size='sm',
+                                 block=True)], width=2)],
+            justify='center', style={'padding': '15px'}),
 
     dbc.Row(html.Label('Komunikaty:'), justify='center'),
 
@@ -324,13 +320,13 @@ layout = dbc.Container([
 
 
     dbc.Row(id='raport-button-row', children=[], justify='center', style={'padding': '15px'}),
-    dbc.Row([html.Button(id='back_pga', children=[dcc.Link('Wróć', href='/models')])],
-            justify='center',
-            style={'padding': '15px'}),
+
+    dbc.Row([dbc.Col([dbc.Button(id='back_pga', children='Wróć', color='secondary', href='/models',
+                                 size='sm', block=True)], width=2)],
+            justify='center', style={'padding': '15px', 'margin-bottom': '20px'}),
 
 ],
-    fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
+    fluid=True)
 
 
 # ==CALLBACKS===========================================================================================================
@@ -346,12 +342,13 @@ def set_data_source_pga(value):
 def set_pga_data_source(n_clicks):
     global data_sources
     data_sources = data_manager.get_datasets_list()
+    data_sources.remove('.gitkeep')
 
     drop_menu = dcc.Dropdown(id='data_source-pga-input',
                              options=[{'label': data_name, 'value': data_name} for data_name in data_sources],
                              clearable=False,
                              value=data_sources[0],
-                             style={'width': '200px'})
+                             style={'width': '200px', 'color': '#000000'})
 
     return drop_menu, None
 
@@ -465,7 +462,6 @@ def set_test_set_size_pga(test_set_size_value):
                 justify='center')
 
         config['model_config']['validation_mode']['test_set_size'] = float(test_set_size_value)
-        # print('config value: ', type(config['model_config']['validation_mode']['test_set_size']))
 
     except:
         return dbc.Row(
@@ -504,14 +500,11 @@ def run_pga_model(children):
     controller = ModelController()
     metrics_preprocessor = MetricPreprocessor()
 
-    # print('generations: ', config['model_config']['metrics']['generation'])
-
     controller.run_model(config)
 
-    raport_button = dbc.Row(
-        [html.Button(id='raport-pga', children=[dcc.Link('Pokaż raport', href='/models/perceptron_ga_raport')])],
-        justify='center',
-        style={'padding': '15px'})
+    raport_button = dbc.Col([dbc.Button(id='raport-psgd', children='Pokaż raport', color='secondary',
+                                        href='/models/perceptron_ga_raport', size='sm', block=True)],
+                            width=2)
 
     train_metrics, test_metrics = metrics_preprocessor.perprocess_ga_metrics(config['model_config'])
 

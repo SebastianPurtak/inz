@@ -45,9 +45,7 @@ def generate_ann_bp_split_raport(back_link):
                     ])
                 ],
                 style={
-                    'height': '100px',
-                    'backgroundColor': '#C0C0C0',
-                }),
+                    'height': '100px'}),
 
         dbc.Row(id='train_metrics-ann-bp-header',
                 children=html.H4('Metryki procesu uczenia'),
@@ -64,8 +62,9 @@ def generate_ann_bp_split_raport(back_link):
                                          'xaxis': {'title': 'Epoki',
                                                    },
                                          'yaxis': {'title': 'MSE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px', }),
 
         # ==ŚREDINA_BŁĘDÓW_ABSOLUTNYCH======================================================================================
@@ -78,8 +77,9 @@ def generate_ann_bp_split_raport(back_link):
                                                    'tick0': 0,
                                                    'dtick': 1},
                                          'yaxis': {'title': 'MAE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         # ==ACCURACY========================================================================================================
@@ -92,8 +92,9 @@ def generate_ann_bp_split_raport(back_link):
                                                    'tick0': 0,
                                                    'dtick': 1},
                                          'yaxis': {'title': 'ACC'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         # ==CONFUSION_MATRIX================================================================================================
@@ -106,8 +107,9 @@ def generate_ann_bp_split_raport(back_link):
                                         'z': train_metrics['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': train_metrics['confusion_matrix'][0][0],
@@ -162,8 +164,9 @@ def generate_ann_bp_split_raport(back_link):
                                         'z': test_metrics['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': test_metrics['confusion_matrix'][0][0],
@@ -189,7 +192,7 @@ def generate_ann_bp_split_raport(back_link):
         # ==STOPKA==========================================================================================================
 
         dbc.Row(dbc.Col(
-            children=[dbc.Button(id='save-raport-ann-bp-button', children='Zapisz raport', color='secondary', size='lg',
+            children=[dbc.Button(id='save-raport-ann-bp-button', children='Zapisz raport w bazie danych', color='secondary', size='lg',
                                  block=True)], width=4), justify='center', style={'padding': '10px'}),
 
         dbc.Row(
@@ -200,13 +203,12 @@ def generate_ann_bp_split_raport(back_link):
         dbc.Row(id='save-raport-ann-bp-alert', children=[], justify='center'),
         dbc.Row(id='save-raport-ann-bp-json-alert', children=[], justify='center'),
 
-        dbc.Row([html.Button(id='back_to_config-ann-bp', children=[dcc.Link('Pokaż config', href=back_link)])],
-                justify='center',
-                style={'padding': '15px'}),
+        dbc.Row(dbc.Col(children=[dbc.Button(id='back_to_config-ann-bp', children='Powrót', color='secondary',
+                                             size='lg', block=True, href=back_link)], width=4), justify='center',
+                style={'padding': '10px'}),
 
     ],
-        fluid=True,
-        style={'backgroundColor': '#D3D3D3'})
+        fluid=True)
 
     layout = raport
 
@@ -215,7 +217,6 @@ def generate_ann_bp_split_raport(back_link):
 def save_ann_bp_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
 
         if db_facade.save_raport('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')
@@ -261,7 +262,6 @@ def generate_ann_bp_cv_raport(back_link):
                 ],
                 style={
                     'height': '100px',
-                    'backgroundColor': '#C0C0C0',
                 }),
 
         dbc.Row(id='train_metrics-ann-bp-header',
@@ -279,8 +279,9 @@ def generate_ann_bp_cv_raport(back_link):
                           'layout': {'title': 'Mean Squared Error',
                                      'xaxis': {'title': 'Epoki'},
                                      'yaxis': {'title': 'MSE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}})
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px', }),
 
         dbc.Row(id='mse-ann-bp-fold-choice-label',
@@ -292,7 +293,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==ŚREDINA_BŁĘDÓW_ABSOLUTNYCH======================================================================================
@@ -304,8 +305,9 @@ def generate_ann_bp_cv_raport(back_link):
                           'layout': {'title': 'Mean Absolute Error',
                                      'xaxis': {'title': 'Epoki'},
                                      'yaxis': {'title': 'MAE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}})
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         dbc.Row(id='mae-ann-bp-fold-choice-label',
@@ -317,7 +319,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==ACCURACY========================================================================================================
@@ -331,8 +333,9 @@ def generate_ann_bp_cv_raport(back_link):
                                                    'tick0': 0,
                                                    'dtick': 1},
                                          'yaxis': {'title': 'ACC'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}})
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}})
         ], justify='center', style={'padding': '10px'}),
 
         dbc.Row(id='acc-ann-bp-fold-choice-label',
@@ -344,7 +347,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==FOLDS_HISTOGRAM=================================================================================================
@@ -360,8 +363,9 @@ def generate_ann_bp_cv_raport(back_link):
                                                'tick0': 0,
                                                'dtick': 1},
                                      'yaxis': {'title': 'MSE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}
                       })
         ], justify='center'),
 
@@ -374,7 +378,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in metrics_labels],
                          value='MSE',
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==CONFUSION_MATRIX================================================================================================
@@ -387,8 +391,9 @@ def generate_ann_bp_cv_raport(back_link):
                                         'z': train_metrics[0]['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': train_metrics[0]['confusion_matrix'][0][0],
@@ -420,7 +425,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==TEST_SET_HISTOGRAM==============================================================================================
@@ -443,8 +448,9 @@ def generate_ann_bp_cv_raport(back_link):
                                                'tick0': 0,
                                                'dtick': 1},
                                      'yaxis': {'title': 'MSE'},
-                                     'plot_bgcolor': '#D3D3D3',
-                                     'paper_bgcolor': '#D3D3D3'}
+                                     'plot_bgcolor': 'rgba(0,0,0,0)',
+                                     'paper_bgcolor': 'rgba(0,0,0,0)',
+                                     'font': {'color': '#FFFFFF'}}
                       })
         ], justify='center'),
 
@@ -457,7 +463,7 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in metrics_labels],
                          value='MSE',
                          clearable=False,
-                         style={'width': '200px'})
+                         style={'width': '200px', 'color': '#000000'})
         ], justify='center'),
 
         # ==TS_CONFUSION_MATRIX=============================================================================================
@@ -470,8 +476,9 @@ def generate_ann_bp_cv_raport(back_link):
                                         'z': test_metrics[0]['confusion_matrix'],
                                         'showscale': False}],
                               'layout': {'title': 'Confusion Matrix',
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
                                          'annotations': [{'x': 'True',
                                                           'y': 'Positive',
                                                           'text': test_metrics[0]['confusion_matrix'][0][0],
@@ -503,13 +510,13 @@ def generate_ann_bp_cv_raport(back_link):
                          options=[{'label': value, 'value': value} for value in folds_labels],
                          value=folds_labels[0],
                          clearable=False,
-                         style={'width': '200px'})
-        ], justify='center'),
+                         style={'width': '200px', 'color': '#000000'})
+        ], justify='center', style={'margin-bottom': '30px'}),
 
         # ==STOPKA==========================================================================================================
 
         dbc.Row(dbc.Col(
-            children=[dbc.Button(id='save-raport-ann-bp-cv-button', children='Zapisz raport', color='secondary',
+            children=[dbc.Button(id='save-raport-ann-bp-cv-button', children='Zapisz raport w bazie danych', color='secondary',
                                  size='lg', block=True)], width=4), justify='center', style={'padding': '10px'}),
 
         dbc.Row(
@@ -520,14 +527,12 @@ def generate_ann_bp_cv_raport(back_link):
         dbc.Row(id='save-raport-ann-bp-cv-alert', children=[], justify='center'),
         dbc.Row(id='save-raport-ann-bp-cv-json-alert', children=[], justify='center'),
 
-        dbc.Row([html.Button(id='ann-bp-back_to_config', children=[dcc.Link('Pokaż config', href=back_link)])],
-                justify='center',
-                style={'padding': '15px',
-                       'margin-top': '30px'}),
+        dbc.Row(dbc.Col(children=[dbc.Button(id='ann-bp-back_to_config', children='Powrót', color='secondary',
+                                             size='lg', block=True, href=back_link)], width=4), justify='center',
+                style={'padding': '10px'}),
 
     ],
-        fluid=True,
-        style={'backgroundColor': '#D3D3D3'})
+        fluid=True)
 
     layout = raport
 
@@ -541,8 +546,9 @@ def update_ann_bp_mse_graph(value):
                               'layout': {'title': 'Mean Squared Error',
                                          'xaxis': {'title': 'Epoki'},
                                          'yaxis': {'title': 'MSE'},
-                                         'plot_bgcolor': '#D3D3D3',
-                                         'paper_bgcolor': '#D3D3D3'}}
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -557,8 +563,9 @@ def update_ann_bp_mae_graph(value):
               'layout': {'title': 'Mean Absolute Error',
                          'xaxis': {'title': 'Epoki'},
                          'yaxis': {'title': 'MAE'},
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3'}}
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -575,8 +582,9 @@ def update_ann_bp_acc_graph(value):
                                    'tick0': 0,
                                    'dtick': 1},
                          'yaxis': {'title': 'ACC'},
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3'}}
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'}}}
 
     return figure
 
@@ -592,8 +600,9 @@ def update_cf_graph(value):
                         'z': train_metrics[fold_index]['confusion_matrix'],
                         'showscale': False}],
               'layout': {'title': 'Confusion Matrix',
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3',
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'},
                          'annotations': [{'x': 'True',
                                           'y': 'Positive',
                                           'text': train_metrics[fold_index]['confusion_matrix'][0][0],
@@ -633,8 +642,9 @@ def update_histogram(value):
                              'tick0': 0,
                              'dtick': 1},
                    'yaxis': {'title': value},
-                   'plot_bgcolor': '#D3D3D3',
-                   'paper_bgcolor': '#D3D3D3'}
+                   'plot_bgcolor': 'rgba(0,0,0,0)',
+                   'paper_bgcolor': 'rgba(0,0,0,0)',
+                   'font': {'color': '#FFFFFF'}}
     }
 
     return figure
@@ -655,8 +665,9 @@ def update_ts_histogram(value):
                              'tick0': 0,
                              'dtick': 1},
                    'yaxis': {'title': value},
-                   'plot_bgcolor': '#D3D3D3',
-                   'paper_bgcolor': '#D3D3D3'}
+                   'plot_bgcolor': 'rgba(0,0,0,0)',
+                   'paper_bgcolor': 'rgba(0,0,0,0)',
+                   'font': {'color': '#FFFFFF'}}
     }
 
     return figure
@@ -673,8 +684,9 @@ def update_cf_cv_graph(value):
                         'z': test_metrics[fold_index]['confusion_matrix'],
                         'showscale': False}],
               'layout': {'title': 'Confusion Matrix',
-                         'plot_bgcolor': '#D3D3D3',
-                         'paper_bgcolor': '#D3D3D3',
+                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                         'font': {'color': '#FFFFFF'},
                          'annotations': [{'x': 'True',
                                           'y': 'Positive',
                                           'text': test_metrics[fold_index]['confusion_matrix'][0][0],
@@ -703,7 +715,6 @@ def update_cf_cv_graph(value):
 def save_ann_bp_cv_raport(n_clicks):
     if n_clicks is not None:
         db_facade = DBFacade()
-        # db_facade.save_raport('ann_bp', train_metrics, test_metrics)
 
         if db_facade.save_raport('ann_bp', copy.deepcopy(train_metrics), copy.deepcopy(test_metrics)):
             return dbc.Alert(id='save-info', children='Zapisano raport', color='success')

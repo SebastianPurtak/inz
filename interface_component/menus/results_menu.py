@@ -24,20 +24,18 @@ layout = dbc.Container([
                         style={
                             'position': 'relative',
                             'top': '20%',
-                            'textAlign': 'center'
+                            'textAlign': 'center',
+                            'margin-bottom': '100px'
                         })
                 ])
-            ],
-            style={
-                'height': '100px',
-                'backgroundColor': '#C0C0C0',
-            }),
+            ]),
 
     # ==OPCJE_PODGLĄDU_WYNIKÓW==========================================================================================
 
-    dbc.Row(html.H3('Wczytaj raport z bazy danych'), justify='center'),
+    dbc.Row(html.H3('Wczytaj raport z bazy danych'), justify='center',
+            style={'padding': '15px', 'margin-bottom': '10px'}),
 
-    dbc.Row(html.H4('Wybierz model'), justify='center'),
+    dbc.Row(html.H4('Wybierz model'), justify='center', style={'padding': '15px', 'margin-bottom': '10px'}),
 
     dbc.Row(id='raports-list-choice-row', children=[
         dcc.Dropdown(id='raports-list-choice',
@@ -46,29 +44,35 @@ layout = dbc.Container([
                      ],
                      clearable=False,
                      value=collections_list[0],
-                     style={'width': '300px'})
+                     style={'width': '300px', 'color': '#000000'})
     ],
             justify='center',
-            style={'padding': '10px'}),
+            style={'padding': '10px', 'margin-bottom': '10px'}),
 
 
-    dbc.Row(html.H4('Zapisane raporty:'), justify='center'),
-    dbc.Row(dbc.Col(id='raports-preview', children=[], width=8), justify='center'),
-    dbc.Row(html.H4('Wybierz raport:'), justify='center'),
+    dbc.Row(html.H4('Zapisane raporty:'), justify='center', style={'padding': '10px', 'margin-bottom': '10px'}),
+
+    dbc.Row(dbc.Col(id='raports-preview', children=[], width=8), justify='center',
+            style={'padding': '10px', 'margin-bottom': '10px'}),
+
+    dbc.Row(html.H4('Wybierz raport:'), justify='center', style={'padding': '10px', 'margin-bottom': '10px'}),
+
     dbc.Row(id='raports_list-psgd', children=[dcc.Dropdown(id='raports-choice',
                      options=[{'label': value, 'value': value} for value in {'enpty': 'enpty'}],
                      clearable=False,
                      value='empty',
-                     style={'width': '300px'})], justify='center'),
+                     style={'width': '300px', 'color': '#000000'})], justify='center',
+            style={'padding': '10px', 'margin-bottom': '10px'}),
 
-    dbc.Row(id='load_button_row', children=[], justify='center', style={'padding': '10px'}),
+    dbc.Row(id='load_button_row', children=[], justify='center', style={'padding': '10px', 'margin-bottom': '10px'}),
 
     dbc.Row(dbc.Col(children=[dbc.Button(id='delete-raport-button', children='Usuń raport', color='secondary',
-                                         size='lg', block=True)], width=4), justify='center', style={'padding': '10px'}),
+                                         size='lg', block=True)], width=4), justify='center',
+            style={'padding': '10px', 'margin-bottom': '20px'}),
 
     # ==WCZYTYWANIE_Z_JSON==============================================================================================
 
-    dbc.Row(html.H3('Wczytaj raport z pliku json'), justify='center'),
+    dbc.Row(html.H3('Wczytaj raport z pliku json'), justify='center', style={'padding': '10px', 'margin-bottom': '20px'}),
 
     dbc.Row(dbc.Col([dcc.Upload(id='upload-json-data', children=html.Div(['Przeciągnij albo ', html.A('wskaż plik')]),
                                 style={'width': '100%',
@@ -78,7 +82,8 @@ layout = dbc.Container([
                                        'borderStyle': 'dashed',
                                        'borderRadius': '5px',
                                        'textAlign': 'center',
-                                       'margin': '10px'})], width=4), justify='center'),
+                                       'margin': '10px'})], width=4), justify='center',
+            style={'padding': '10px', 'margin-bottom': '20px'}),
 
 
     # ==KOMUNIKATY_BŁĘDÓW===============================================================================================
@@ -97,17 +102,7 @@ layout = dbc.Container([
             justify='center', style={'padding': '15px'}),
 
 
-], fluid=True,
-    style={'backgroundColor': '#D3D3D3'})
-
-
-# @app.callback(Output('load-json-alert', 'children'), [Input('upload-json-data', 'contents')],
-#               [State('upload-json-data', 'filename'), State('upload-json-data', 'last_modified')])
-# def upload_json_raport(data, filename, filetime):
-#     print()
-#     if data is not None:
-#         exporter = RaportExporter()
-#         exporter.from_json(data)
+], fluid=True)
 
 
 # ==ZAPISYWANIE W BAZIE=================================================================================================
@@ -134,7 +129,7 @@ def show_collections_list(collection_name):
                      value=raports_list[0],
                      style={'width': '300px'})],
                      justify='center',
-                     style={'padding': '10px'}),
+                     style={'padding': '10px', 'color': '#000000'}),
 
     return table, itable
 
