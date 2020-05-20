@@ -295,6 +295,7 @@ def run_ann_bp_model(children):
                                                  href='/models/perceptron_sgd_raport', size='sm', block=True)],
                                      width=2)
 
+    config['model_config']['model'] = 'perceptron_sgd'
     train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 
     perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)

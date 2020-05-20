@@ -4,7 +4,7 @@ from statistics import mean
 import numpy as np
 import pandas as pd
 from sklearn.utils import shuffle
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
 
 from models_component.models.perceptron.perceptron import Perceptron
@@ -346,6 +346,22 @@ class PerceptronGA:
     # EWALUACJA
     # =================================================================================================================
 
+    def get_cv_data(self, genom, data):
+        perceptron = Perceptron(len(data.iloc[0][:-1]))
+        outputs = []
+        real_values = list(data.iloc[:, -1])
+
+        for idx, row in data.iterrows():
+            perceptron.set_weights(genom)
+            prediction = perceptron.predict(row[:-1])
+            outputs.append(prediction)
+
+        cv_data = pd.DataFrame(columns=['real_values', 'prediction'])
+        cv_data['real_values'] = real_values
+        cv_data['prediction'] = outputs
+
+        return cv_data
+
     def calculate_fitness(self, real_values, results):
         """
         Metoda oblicza sumę kwadratów błędów dla konkretengo osobnika, w celu wyznaczenia jego funkcji dopasowania.
@@ -354,7 +370,8 @@ class PerceptronGA:
         :return: float
         """
         # TODO: Zmienic na mean square error - sprawdzić czy wszystko działa dobrze
-        return mean_absolute_error(real_values, results)
+        # return mean_absolute_error(real_values, results)
+        return mean_squared_error(real_values, results)
 
     def individual_evaluation(self, perceptron, data):
         """
@@ -393,7 +410,7 @@ class PerceptronGA:
 
         return pop_fit
 
-    def evaluation_best_individuals(self, population, pop_fitness, test_set, model_config):
+    def evaluation_best_individuals(self, population, pop_fitness, test_set, train_set, model_config):
         """
         Ewaluacja najlepszych osobników w populacji za pomocą zbioru testowego:
         1. Z populacji wybierane są najlepsze osobniki;
@@ -408,7 +425,11 @@ class PerceptronGA:
         best_individuals = self.best_selection(population, pop_fitness, model_config['evaluation_pop'])
 
         best_fitness = self.get_fitness(best_individuals, test_set)
+        train_cv = self.get_cv_data(best_individuals[0], train_set),
+        test_cv = self.get_cv_data(best_individuals[0], test_set)
 
+        model_config['metrics']['train_cv'] = train_cv[0]
+        model_config['metrics']['test_cv'] = test_cv
         model_config['metrics']['val_fit'] = best_fitness
 
     # =================================================================================================================
@@ -446,7 +467,7 @@ class PerceptronGA:
 
         self.aggregate_metrics(model_config, 'data_train')
 
-        return pop_fitness
+        return pop_fitness, population
 
     def split_test_train(self, data, test_set_size):
         """
@@ -495,6 +516,6 @@ class PerceptronGA:
 
         train_set, test_set = self.split_test_train(data, model_config['validation_mode']['test_set_size'])
 
-        pop_fitnes = self.evolution(population, model_config, train_set)
+        pop_fitnes, population = self.evolution(population, model_config, train_set)
 
-        self.evaluation_best_individuals(population, pop_fitnes, test_set, model_config)
+        self.evaluation_best_individuals(population, pop_fitnes, test_set, train_set, model_config)

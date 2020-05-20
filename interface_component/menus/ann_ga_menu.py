@@ -52,7 +52,7 @@ mutation_type = ['swap_mut', 'random_mut']
 
 selection_methods = ['best_selection', 'simple_selection']
 
-parents_choice = ['sequence_parents', 'random_parents']
+parents_choice = ['sequence_parents', 'random_parents', 'roulette_wheel']
 
 cross_type = ['cross_uniform', 'cross_one_point', 'cross_two_point', 'corss_nodes']
 

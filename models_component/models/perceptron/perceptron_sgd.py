@@ -88,7 +88,7 @@ class PerceptronSGD:
         error_sum = 0
 
         for idx, row in test_set.iterrows():
-            prediction = perceptron.predict(row[:1])
+            prediction = perceptron.predict(row[:-1])
 
             error = row.iloc[-1] - prediction
             error_sum += error**2

@@ -72,6 +72,39 @@ def generate_raport(back_link, train_data, test_data):
                                          'font': {'color': '#FFFFFF'}}}),
             justify='center', style={'padding': '10px'}),
 
+        dbc.Row([
+            dcc.Graph(id='cf-matrix-train-set',
+                      figure={'data': [{'type': 'heatmap',
+                                        'x': ['True', 'False'],
+                                        'y': ['Positive', 'Negative'],
+                                        'z': test_metrics['train_cv'],
+                                        'showscale': False}],
+                              'layout': {'title': 'Confusion Matrix',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
+                                         'annotations': [{'x': 'True',
+                                                          'y': 'Positive',
+                                                          'text': test_metrics['train_cv'][0][0],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'True',
+                                                          'y': 'Negative',
+                                                          'text': test_metrics['train_cv'][1][0],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'False',
+                                                          'y': 'Positive',
+                                                          'text': test_metrics['train_cv'][1][1],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'False',
+                                                          'y': 'Negative',
+                                                          'text': test_metrics['train_cv'][0][1],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}}]}})
+        ], justify='center', style={'padding': '10px'}),
+
         # ==METRYKI_ZBIORU_TESTOWEGO====================================================================================
 
         dbc.Row(id='test_metrics-pga-header',
@@ -88,6 +121,39 @@ def generate_raport(back_link, train_data, test_data):
                 ])
             ])
         ], justify='center', style={'margin-bottom': '30px'}),
+
+        dbc.Row([
+            dcc.Graph(id='cf-matrix-train-set',
+                      figure={'data': [{'type': 'heatmap',
+                                        'x': ['True', 'False'],
+                                        'y': ['Positive', 'Negative'],
+                                        'z': test_metrics['test_cv'],
+                                        'showscale': False}],
+                              'layout': {'title': 'Confusion Matrix',
+                                         'plot_bgcolor': 'rgba(0,0,0,0)',
+                                         'paper_bgcolor': 'rgba(0,0,0,0)',
+                                         'font': {'color': '#FFFFFF'},
+                                         'annotations': [{'x': 'True',
+                                                          'y': 'Positive',
+                                                          'text': test_metrics['test_cv'][0][0],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'True',
+                                                          'y': 'Negative',
+                                                          'text': test_metrics['test_cv'][1][0],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'False',
+                                                          'y': 'Positive',
+                                                          'text': test_metrics['test_cv'][1][1],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}},
+                                                         {'x': 'False',
+                                                          'y': 'Negative',
+                                                          'text': test_metrics['test_cv'][0][1],
+                                                          'showarrow': False,
+                                                          'font': {'color': 'white'}}]}})
+        ], justify='center', style={'padding': '10px'}),
 
         # ==STOPKA======================================================================================================
 

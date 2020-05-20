@@ -20,7 +20,7 @@ class DBFacade:
     #     self.ann_ga_collection = self.db.ann_ga_collection
 
     def __init__(self):
-        self.db_name = 'test_db'
+        self.db_name = 'genetic_db'
         self.client = self.db_connect()
         if self.client is not None:
             self.db = getattr(self.client, self.db_name)
@@ -52,17 +52,6 @@ class DBFacade:
             return None
 
     # ==SERIALIZERY=====================================================================================================
-
-    # def parse_gradient_simple_data(self, raport_name, train_metrics, test_metrics):
-    #     raport = {}
-    #     raport['date'] = datetime.datetime.now()
-    #     raport['name'] = raport_name
-    #     raport['test_metrics'] = test_metrics
-    #     train_metrics['data'].index = train_metrics['data'].index.astype(str)
-    #     data_dict = pd.DataFrame.to_dict(train_metrics['data'])
-    #     train_metrics['data'] = data_dict
-    #     raport['train_metrics'] = train_metrics
-    #     return raport
 
     def cv_data_aggregator(self, train_metrics):
         new_data = []
@@ -128,11 +117,6 @@ class DBFacade:
 
     # ==ZAPISYWANIE=====================================================================================================
 
-    # def save_gradient_simple_raport(self, raport_name, train_metrics, test_metrics):
-    #     raport = self.parse_gradient_simple_data(raport_name, train_metrics, test_metrics)
-    #     self.perceptron_simple_raports.insert_one(raport)
-        # print()
-
     def save_raport(self, type, train_metrics, test_metrics):
         model_collection = {'perceptron_sgd':   self.perceptron_sgd_collection,
                             'perceptron_ga':    self.perceptron_ga_collection,
@@ -150,14 +134,13 @@ class DBFacade:
 
     # ==WCZYTYWANIE=====================================================================================================
     def get_collections_list(self):
-        # if self.db is not None:
-        #     collection_list = self.db.list_collection_names()
-        #     return collection_list
-        # else:
-        #     return ['Brak połączenia z bazą danych']
         try:
             collection_list = self.db.list_collection_names()
-            return collection_list
+
+            if len(collection_list) == 0:
+                return ['Brak zaisanych danych']
+            else:
+                return collection_list
         except:
             return ['Brak połączenia z bazą danych']
 
@@ -169,7 +152,7 @@ class DBFacade:
                             'ann_ga_collection':            self.ann_ga_collection}
         self.collection_name = type
 
-        if self.db is not None:
+        if self.db is not None and self.collection_name != 'Brak zaisanych danych':
             documents = model_collection[self.collection_name].find({})
             name_list = [document['name'] for document in documents]
 
@@ -193,8 +176,6 @@ class DBFacade:
 
         documents = model_collection[self.collection_name].find({'name': raport_name})
         document = [document for document in documents][0]
-
-        # test_metrics, train_metrics = self.gradient_data_parser(document)
         test_metrics, train_metrics = data_parser[self.collection_name](document)
 
         return test_metrics, train_metrics
@@ -212,5 +193,3 @@ class DBFacade:
             return self.raport_name
         else:
             return 'Brak połączenia z bazą danych'
-
-# db_facade = DBFacade()

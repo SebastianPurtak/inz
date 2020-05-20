@@ -1,5 +1,6 @@
 import random
 from statistics import mean
+from itertools import cycle
 
 import numpy as np
 import pandas as pd
@@ -294,7 +295,7 @@ class NeuralNetworkGA:
 
         return child1, child2
 
-    def random_parents(self, selected_individuals):
+    def random_parents(self, selected_individuals, parents_fitness, parent_index):
         """
         Losowy wybór rodziców.
         :param selected_individuals: list;
@@ -303,17 +304,25 @@ class NeuralNetworkGA:
         parents = random.sample(selected_individuals, 2)
         return parents
 
-    def sequence_parents(self, selected_individuals):
+    def sequence_parents(self, selected_individuals, parents_fitness, parent_index):
         """
         Wybór rodziców, zgodnie z kolejnością na liście selected_individuals.
         :param selected_individuals: list;
         :return: parents: list;
         """
-        parents = [selected_individuals[self.parents_counter], selected_individuals[self.parents_counter + 1]]
-        self.parents_counter += 2
+        # parents = [selected_individuals[self.parents_counter], selected_individuals[self.parents_counter + 1]]
+        parents = [selected_individuals[next(parent_index)], selected_individuals[next(parent_index)]]
+        # self.parents_counter += 2
         return parents
 
-    def create_offspring(self, population, selected_individuals, model_config):
+    def roulette_wheel(self, selected_individuals, parents_fitness, parent_index):
+        selection_prob = parents_fitness / sum(parents_fitness)
+        parents_idx = np.random.choice([idx for idx in range(len(selected_individuals))], 2, p=selection_prob)
+        parents = [selected_individuals[idx] for idx in parents_idx]
+
+        return parents
+
+    def create_offspring(self, population, selected_individuals, parents_fitness, model_config):
         """
         Metoda odpowiada za stworzenie potomstwa i wypełnienie nim pozostałej części populacji nowego pokolenia:
         1. Do nowej populacji przydzielane są osobniki wybrane z poprzedniego pokolenia;
@@ -329,17 +338,19 @@ class NeuralNetworkGA:
         :return: new_population: list
         """
         parents_choice = {'random_parents':     self.random_parents,
-                          'sequence_parents':   self.sequence_parents}
+                          'sequence_parents':   self.sequence_parents,
+                          'roulette_wheel':     self.roulette_wheel}
         cross_type = {'cross_uniform':      self.cross_uniform,
                       'cross_one_point':    self.cross_one_point,
                       'cross_two_point':    self.cross_two_point,
                       'corss_nodes':        self.corss_nodes}
 
-        new_population = selected_individuals
+        new_population = selected_individuals[:]
         offspring_size = len(population) - len(selected_individuals)
+        parent_index = cycle(range(len(selected_individuals)))
 
         for i in range(int(offspring_size/2)):
-            parents = parents_choice[model_config['parents_choice']](selected_individuals)
+            parents = parents_choice[model_config['parents_choice']](selected_individuals, parents_fitness, parent_index)
             child1, child2 = cross_type[model_config['cross_type']](parents)
             new_population.append(child1)
             new_population.append(child2)
@@ -377,7 +388,7 @@ class NeuralNetworkGA:
         """
         sort_index = np.argsort(pop_fitness)
 
-        return [population[idx] for idx in sort_index[:select_n]]
+        return [population[idx] for idx in sort_index[:select_n]], [pop_fitness[idx] for idx in sort_index[:select_n]]
 
     def nex_generation(self, population, pop_fittness, model_config):
         """
@@ -395,9 +406,9 @@ class NeuralNetworkGA:
 
         select_n = self.get_select_n(len(population), model_config['select_n'])
 
-        selected_individuals = selection_methods[model_config['selection_method']](population, pop_fittness, select_n)
+        selected_individuals, parents_fitness = selection_methods[model_config['selection_method']](population, pop_fittness, select_n)
 
-        population = self.create_offspring(population, selected_individuals, model_config)
+        population = self.create_offspring(population, selected_individuals, parents_fitness, model_config)
 
         return population
 
@@ -457,7 +468,23 @@ class NeuralNetworkGA:
 
         return pop_fittness
 
-    def evaluation_best_individuals(self, model, population, pop_fitness, test_set, model_config):
+    def get_cv_data(self, model, genom, genom_size, data):
+        model.set_weights(genom.copy(), genom_size.copy())
+        outputs = []
+        real_values = list(data.iloc[:, -1])
+
+        for idx, row in data.iterrows():
+            output = model.feed_forward(row[:-1])
+
+            outputs.append(output.index((max(output))) + 1)
+
+        cv_data = pd.DataFrame(columns=['real_values', 'prediction'])
+        cv_data['real_values'] = real_values
+        cv_data['prediction'] = outputs
+
+        return cv_data
+
+    def evaluation_best_individuals(self, model, population, pop_fitness, test_set, train_set, model_config):
         """
         Ewaluacja najlepszych osobników w populacji za pomocą zbioru testowego:
         1. Z populacji wybierane są najlepsze osobniki;
@@ -469,11 +496,17 @@ class NeuralNetworkGA:
         :param model_config: dict
         :return:
         """
-        best_individuals = self.best_selection(population, pop_fitness, model_config['evaluation_pop'])
+        best_individuals, _ = self.best_selection(population, pop_fitness, model_config['evaluation_pop'])
 
         best_fitness = self.get_fitness(model, best_individuals, self.genom_size, test_set)
 
+        train_cv = self.get_cv_data(model, best_individuals[0], self.genom_size, train_set)
+        test_cv = self.get_cv_data(model, best_individuals[0], self.genom_size, test_set)
+
+        model_config['metrics']['train_cv'] = train_cv
+        model_config['metrics']['test_cv'] = test_cv
         model_config['metrics']['val_fit'] = best_fitness
+
 
     # =================================================================================================================
     # METODY STERUJĄCE MODELEM
@@ -505,10 +538,11 @@ class NeuralNetworkGA:
             population = self.nex_generation(population, pop_fitnness, model_config)
             population = self.mutations(population, model_config)
             print('Best fit: ', min(pop_fitnness))
+            print('Len population: ', len(population))
             n_generation += 1
 
         self.aggregate_metrics(model_config, 'data_train')
-        return pop_fitnness
+        return pop_fitnness, population
 
     def split_test_train(self, data, test_set_size):
         """
@@ -553,7 +587,7 @@ class NeuralNetworkGA:
         population = []
 
         for i in range(pop_size):
-            genom = np.random.uniform(-1, 1, size=sum(genom_size)).tolist()
+            genom = np.random.uniform(-10, 10, size=sum(genom_size)).tolist()
             population.append(genom)
 
         return population, genom_size
@@ -594,6 +628,6 @@ class NeuralNetworkGA:
 
         train_set, test_set = self.split_test_train(data, model_config['validation_mode']['test_set_size'])
 
-        pop_fitness = self.evolution(model, population, genom_size, train_set, model_config)
+        pop_fitness, population = self.evolution(model, population, genom_size, train_set, model_config)
 
-        self.evaluation_best_individuals(model, population, pop_fitness, test_set, model_config)
+        self.evaluation_best_individuals(model, population, pop_fitness, test_set, train_set, model_config)

@@ -41,12 +41,25 @@ class MetricPreprocessor:
         return accuracy
 
 
-    def calculate_confusion_matrix(self, data):
-        # TODO: Confusion matrix zwraca różną ilość wartości i należy to ograć
-        # tn, fp, fn, tp = confusion_matrix(data['real_value'], data['prediction']).ravel()
-        tn, fp, fn, tp = 0, 0, 0, 0
-        return [[tp, fp], [tn, fn]]
+    # def calculate_confusion_matrix(self, data):
+    #     # TODO: Confusion matrix zwraca różną ilość wartości i należy to ograć
+    #     # tn, fp, fn, tp = confusion_matrix(data['real_value'], data['prediction']).ravel()
+    #     # tn, fp, fn, tp = 0, 0, 0, 0
+    #     # return [[tp, fp], [tn, fn]]
+    #
+    #     cf_data = confusion_matrix(data['real_value'], data['prediction']).ravel()
+    #
+    #     return cf_data
 
+    def perceptron_confusion_matrix(self, data):
+        tn, fp, fn, tp = confusion_matrix(data['real_value'], data['prediction']).ravel()
+        return [[int(tp), int(tn)], [int(fp), int(fn)]]
+        # tn, fp, fn, tp = 0, 0, 0, 0
+        # return [[tp, fp], [tn, fn]]
+
+    def ann_bp_confusion_matrix(self, data):
+        cf = confusion_matrix(data['real_value'], data['prediction'])
+        return cf
 
     def calculate_auc(self, data):
         area = []
@@ -90,8 +103,16 @@ class MetricPreprocessor:
         test_metrics['accuracy'] = self.calculate_accuracy(test_data)[0]
 
         # confusion matrix
-        train_metrics['confusion_matrix'] = self.calculate_confusion_matrix(train_data)
-        test_metrics['confusion_matrix'] = self.calculate_confusion_matrix(test_data)
+        if model_config['model'] == 'ann_bp':
+            train_metrics['confusion_matrix'] = self.ann_bp_confusion_matrix(train_data)
+            train_metrics['confusion_matrix'] = train_metrics['confusion_matrix'].tolist()
+            test_metrics['confusion_matrix'] = self.ann_bp_confusion_matrix(test_data)
+            test_metrics['confusion_matrix'] = test_metrics['confusion_matrix'].tolist()
+        else:
+            train_metrics['confusion_matrix'] = self.perceptron_confusion_matrix(train_data)
+            # train_metrics['confusion_matrix'] = train_metrics['confusion_matrix'].tolist()
+            test_metrics['confusion_matrix'] = self.perceptron_confusion_matrix(test_data)
+            # test_metrics['confusion_matrix'] = test_metrics['confusion_matrix'].tolist()
 
         return train_metrics, test_metrics
 
@@ -112,6 +133,8 @@ class MetricPreprocessor:
             k_train['data']['mse'] = self.calculate_mse(train_data)
             k_test['mse'] = self.calculate_mse(test_data)[0]
 
+            # mae(test_data)[0]
+
             # mae
             k_train['data']['mae'] = self.calculate_mae(train_data)
             k_test['mae'] = self.calculate_mae(test_data)[0]
@@ -121,8 +144,20 @@ class MetricPreprocessor:
             k_test['accuracy'] = self.calculate_accuracy(test_data)[0]
 
             # confusion matrix
-            k_train['confusion_matrix'] = self.calculate_confusion_matrix(train_data)
-            k_test['confusion_matrix'] = self.calculate_confusion_matrix(test_data)
+            # k_train['confusion_matrix'] = self.calculate_confusion_matrix(train_data)
+            # k_test['confusion_matrix'] = self.calculate_confusion_matrix(test_data)
+            # k_train['confusion_matrix'] = self.perceptron_confusion_matrix(train_data)
+            # k_test['confusion_matrix'] = self.perceptron_confusion_matrix(test_data)
+            if model_config['model'] == 'ann_bp':
+                k_train['confusion_matrix'] = self.ann_bp_confusion_matrix(train_data)
+                k_train['confusion_matrix'] = k_train['confusion_matrix'].tolist()
+                k_test['confusion_matrix'] = self.ann_bp_confusion_matrix(train_data)
+                k_test['confusion_matrix'] = k_test['confusion_matrix'].tolist()
+            else:
+                k_train['confusion_matrix'] = self.perceptron_confusion_matrix(train_data)
+                # k_train['confusion_matrix'] = k_train['confusion_matrix'].tolist()
+                k_test['confusion_matrix'] = self.perceptron_confusion_matrix(test_data)
+                # k_test['confusion_matrix'] = k_test['confusion_matrix'].tolist()
 
             train_metrics.append(k_train)
             test_metrics.append(k_test)
@@ -132,18 +167,30 @@ class MetricPreprocessor:
     def run_sgd(self, model_config):
         mode = {'simple_split':         self.perprocess_sgd_split_metrics,
                 'cross_validation':     self.perprocess_sgd_cv_metrics}
-
         raport_data = mode[model_config['validation_mode']['mode']](model_config['metrics'], model_config)
 
         return raport_data
 
     # ==PERCEPTRON_GA===================================================================================================
 
+    def calculate_ga_confusion_matrix(self, data):
+        cf = confusion_matrix(data['real_values'], data['prediction'])
+        return cf
+
     def perprocess_ga_metrics(self, model_config):
         # train_metrics = {'data': pd.DataFrame()}
         test_metrics = {'val_fit': sorted(model_config['metrics']['val_fit'])}
 
         train_metrics = model_config['metrics']['data_train'][-1]
+
+        if 'train_cv' in model_config['metrics'].keys():
+            train_cv = self.calculate_ga_confusion_matrix(model_config['metrics']['train_cv'])
+            train_cv = train_cv.tolist()
+            test_cv = self.calculate_ga_confusion_matrix(model_config['metrics']['test_cv'])
+            test_cv = test_cv.tolist()
+
+            test_metrics['train_cv'] = train_cv
+            test_metrics['test_cv'] = test_cv
 
         return train_metrics, test_metrics
 

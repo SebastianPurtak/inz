@@ -311,6 +311,7 @@ def run_ann_bp_model(children):
                                         href='/models/ann-bp_raport', size='sm', block=True)],
                             width=2)
 
+    config['model_config']['model'] = 'ann_bp'
     train_metrics, test_metrics = metrics_preprocessor.run_sgd(config['model_config'])
 
     ann_bp_raport.set_metrics(train_metrics, test_metrics)

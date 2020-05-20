@@ -138,21 +138,11 @@ def show_collections_list(collection_name):
               [Input('raports-choice', 'value')])
 def choice_raport(value):
     if 'perceptron_sgd' in value:
-        # print(value)
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
         button = generate_perceptron_sgd_raport(train_metrics, test_metrics)
 
         return button
-
-        # perceptron_sgd_raport.set_metrics(train_metrics, test_metrics)
-        # if isinstance(train_metrics, list):
-        #     perceptron_sgd_raport.generate_cv_raport('/results_menu')
-        # else:
-        #     perceptron_sgd_raport.generate_raport('/results_menu')
-        #
-        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-        #                                 size='lg', block=True, href='/models/perceptron_sgd_raport')], width=4)
 
     elif 'perceptron_ga' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
@@ -161,37 +151,17 @@ def choice_raport(value):
 
         return button
 
-
-        # perceptron_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
-        #
-        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-        #                                     size='lg', block=True, href='/models/perceptron_ga_raport')], width=4)
-
     elif 'ann_bp' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
         button = generate_ann_bp_raport(train_metrics, test_metrics)
         return button
 
-        # ann_bp_raport.set_metrics(train_metrics, test_metrics)
-        # if isinstance(train_metrics, list):
-        #     ann_bp_raport.generate_ann_bp_cv_raport('/results_menu')
-        # else:
-        #     ann_bp_raport.generate_ann_bp_split_raport('/results_menu')
-        #
-        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-        #                                     size='lg', block=True, href='/models/ann-bp_raport')], width=4)
-
     elif 'ann_ga' in value:
         test_metrics, train_metrics = db_facade.get_raport_data(value)
 
         button = generate_ann_ga_raport(train_metrics, test_metrics)
         return button
-
-        # ann_ga_raport.generate_raport('/results_menu', train_metrics, test_metrics)
-        #
-        # return dbc.Col(children=[dbc.Button(id='load-raport-button', children='Wczytaj raport', color='secondary',
-        #                                     size='lg', block=True, href='/models/ann_ga_raport')], width=4)
 
 
 @app.callback(Output('delete-raport-alert', 'children'), [Input('delete-raport-button', 'n_clicks')])
