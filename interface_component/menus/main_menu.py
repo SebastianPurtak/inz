@@ -9,7 +9,7 @@ layout = dbc.Container([
             children=[
                 dbc.Col([
                     html.Div([
-                        html.H1('PRACA INŻYNIERSKA')],
+                        html.H1('Implementacja metod neuroewolucji do celów uczenia sztucznych sieci neuronowych')],
                         style={
                             'position': 'relative',
                             'top': '20%',

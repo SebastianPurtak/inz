@@ -26,7 +26,7 @@ layout = dbc.Container([
 
     # ==OPCJE_POMOCY====================================================================================================
 
-    dbc.Row(html.P('Tu główne okno pomocy .'), justify='center'),
+    # dbc.Row(html.P('Tu główne okno pomocy .'), justify='center'),
 
     dbc.Row([dbc.Col([dbc.Button('Perceptron SGD pomoc', color='secondary', href='/help/perceptron_sgd_help',
                                  size='lg', block=True)], width=4)],

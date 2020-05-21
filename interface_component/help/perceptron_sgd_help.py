@@ -25,7 +25,12 @@ layout = dbc.Container([
 
     # ==OPCJE_POMOCY====================================================================================================
 
-    dbc.Row(html.P('Tu opcje pomocy.'), justify='center'),
+    dbc.Row(html.P('Wybierz źródło danych - pozwala wybrać zbiór danych, które zostaną użyte w procesie uczenia.'), justify='center'),
+    dbc.Row(html.P('Wybierz liczbę epok - pozwala określić liczbę epok procesu uczenia.'), justify='center'),
+    dbc.Row(html.P('Wybierz wartość współczynnika uczenia - pozwala określić wartość wpsółczynnika learning rate.'), justify='center'),
+    dbc.Row(html.P('Wybierz metodę walidacji -  możliwy jest wybór pomiędzy walidacją za pomocą jednego zbioru testowego lub walidacją krzyżową.'), justify='center'),
+    dbc.Row(html.P('Współczynnik podziału na zbiór treningowy i testowy - określa jaka część zbioru treningowego zostanie wydzielona jako zbiór testowy.'), justify='center'),
+    dbc.Row(html.P('k zbiorów - pozwala określić na ile zbiorów podzielone zostaną dane w ramach walidacji krzyżowej.'), justify='center'),
 
     dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/help',
                                          size='lg', block=True)], width=4)],

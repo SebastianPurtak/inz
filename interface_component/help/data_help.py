@@ -26,7 +26,10 @@ layout = dbc.Container([
 
     # ==OPCJE_POMOCY====================================================================================================
 
-    dbc.Row(html.P('Tu opcje pomocy.'), justify='center'),
+    dbc.Row(html.P('Przeciągnij lub wskaż plik - pozwala wskazać plik z nowymi danymi. Po wybraniu plików pojawi się podgląd danych.'), justify='center'),
+    dbc.Row(html.P('Normalizacja, Label Encoding, Mieszaj - opcję przetwarzania danych. Po wybraniu którejś z nich pojawi się podgląd przetworzonych danych.'), justify='center'),
+    dbc.Row(html.P('Podaj nazwę pliku - pole pozwalające nadać nazwę nowemu plikowi z danymi. Jego wypełnienie jest niezbędne do zapisania danych'), justify='center'),
+    dbc.Row(html.P('Aby zapisać przetworzone dane, należy wybrać opcję Zapisz. '), justify='center'),
 
     dbc.Row([dbc.Col([dbc.Button('Wróć', color='secondary', href='/help',
                                          size='lg', block=True)], width=4)],
